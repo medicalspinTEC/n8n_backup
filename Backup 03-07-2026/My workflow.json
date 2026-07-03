@@ -1,0 +1,94 @@
+{
+  "updatedAt": "2026-07-02T16:43:04.775Z",
+  "createdAt": "2026-06-19T18:39:03.457Z",
+  "id": "D83Q4NNKYeCqzMJD",
+  "name": "My workflow",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        0,
+        0
+      ],
+      "id": "badb20a0-11a4-4871-8f86-33f6374f2757",
+      "name": "On form submission",
+      "webhookId": "4ec9f48f-80f0-47bd-ae15-4d406b069c10"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1a1f9571-924f-4f73-9310-52df3745ea14",
+  "activeVersionId": "60f55641-0f0f-44be-b378-cbe2916d4be6",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-06-19T18:39:03.457Z",
+      "createdAt": "2026-06-19T18:39:03.457Z",
+      "role": "workflow:owner",
+      "workflowId": "D83Q4NNKYeCqzMJD",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-07-01T20:17:18.181Z",
+    "createdAt": "2026-07-01T20:17:15.590Z",
+    "versionId": "60f55641-0f0f-44be-b378-cbe2916d4be6",
+    "workflowId": "D83Q4NNKYeCqzMJD",
+    "nodes": [
+      {
+        "parameters": {
+          "formTitle": "teste",
+          "formDescription": "aula",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "idade",
+                "fieldType": "number",
+                "placeholder": "sua idade?",
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "nome",
+                "placeholder": "seu nome?"
+              }
+            ]
+          },
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.formTrigger",
+        "typeVersion": 2.6,
+        "position": [
+          0,
+          0
+        ],
+        "id": "cc52a236-2040-44c8-a126-cdf9ea148593",
+        "name": "On form submission",
+        "webhookId": "29139966-fb44-47b5-98e4-8ab54fd071cf"
+      }
+    ],
+    "connections": {},
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 60f55641",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
