@@ -1,0 +1,717 @@
+{
+  "updatedAt": "2026-07-09T13:42:47.033Z",
+  "createdAt": "2026-06-19T18:39:03.457Z",
+  "id": "D83Q4NNKYeCqzMJD",
+  "name": "AULA BÁSICA N8N",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "aula",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -608,
+        -640
+      ],
+      "id": "01a4a800-d939-4ed4-a4ba-78d21effd948",
+      "name": "Webhook",
+      "webhookId": "872f25c6-b8d3-4298-8e80-4ed9ff17980a",
+      "notes": "O PUT substitui totalmente o recurso (precisa de todos os campos). O PATCH aplica alterações parciais (muda apenas os campos enviados)."
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -1024,
+        -880
+      ],
+      "id": "2628e6d8-9181-43b6-ac3a-90daf7861817",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -608,
+        -368
+      ],
+      "id": "e5ee0882-4048-48c3-a6fc-d0672ecccbac",
+      "name": "On form submission",
+      "webhookId": "d4566788-dace-43eb-8f3a-e507df513be6"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        80,
+        -624
+      ],
+      "id": "82795142-ee1f-4b02-ac4b-e01ea1d359a4",
+      "name": "HTML"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -608,
+        -512
+      ],
+      "id": "b54e530f-6910-4a0d-a2fb-2a7192b5062c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        -640
+      ],
+      "id": "eb6c1bb6-2cdb-462b-be83-418283063f45",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -368
+      ],
+      "id": "c3547185-3c14-4c85-9c12-601074ad647a",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -384
+      ],
+      "id": "016a5b67-01eb-4fcb-96a0-b1d604b755ac",
+      "name": "Get many workflows",
+      "credentials": {
+        "n8nApi": {
+          "id": "OsWXfaE2cSzddKkE",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -400,
+        -512
+      ],
+      "id": "d277d2db-5650-414b-b22a-933abe245ef0",
+      "name": "When chat message received",
+      "webhookId": "6773f664-a123-4a47-b1f5-6c45f0c553bc"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        304,
+        -384
+      ],
+      "id": "5cad8a8d-9571-4562-ac5d-f3700538ea11",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -144,
+        -624
+      ],
+      "id": "99a958be-f464-429e-9b35-c4660735f283",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9e53c83a-943b-4f29-af50-ca754fa05fc8",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -832,
+        -640
+      ],
+      "id": "099f2aa9-3e22-401f-b069-cc5ff6f32af4",
+      "name": "Filter"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -1024,
+        -640
+      ],
+      "id": "cd1ace3f-920b-478f-9aaf-43cfe25f4503",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        -512
+      ],
+      "id": "ad9ba97c-6226-4619-a620-9290fa47439a",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1024,
+        -512
+      ],
+      "id": "274e8048-5848-4672-973d-eb80304a6ccb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -368,
+        -864
+      ],
+      "id": "3ec51dd4-11a0-4606-9c51-f09ac5c294ce",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -176,
+        -864
+      ],
+      "id": "f80f7144-2700-4bf9-ac29-5c480a011d0b",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e5842c32-8e43-4094-b179-eba8377eddd7"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        -288
+      ],
+      "id": "ebacfcc6-73fc-40d6-aa93-3bf896fb3fe8",
+      "name": "Switch"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        80,
+        -384
+      ],
+      "id": "61be667f-fa4c-49e1-abae-788d761d0bb5",
+      "name": "Wait",
+      "webhookId": "9334261e-c1ab-4fec-a6b5-b5ec470d1bbb"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -576,
+        -880
+      ],
+      "id": "6a91cf64-0f2b-4bc2-817a-2b11d4fc961e",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -800,
+        -880
+      ],
+      "id": "b9de9269-65e6-4837-b657-3ff1b3a3e313",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        304,
+        -624
+      ],
+      "id": "15705721-2508-4866-9ff3-3439b02efa3e",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "# Triggers",
+        "height": 496,
+        "width": 432,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -704
+      ],
+      "id": "a7841ee9-d6eb-47d7-903b-554367cf5c4e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -912
+      ],
+      "id": "959a5d3d-a87d-48ff-91c1-eb827012e5f1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Note",
+        "height": 272,
+        "width": 304,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -992
+      ],
+      "id": "ff68d8d9-3086-45fb-be93-4f1626540228",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Manupular json/dados",
+        "height": 336,
+        "width": 416,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        -704
+      ],
+      "id": "f310c8a6-4494-42eb-b32e-06f6e63df686",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Converter e extrair base64",
+        "height": 208,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -928
+      ],
+      "id": "ddbe3ebd-acbd-4374-9ca8-f7588c53e015",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# Codificar js e py",
+        "height": 224,
+        "width": 208,
+        "color": "#736335"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -448
+      ],
+      "id": "7ddafa51-7b22-4a55-b689-bfa1beab0457",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "# Setar dados",
+        "height": 224,
+        "width": 208,
+        "color": "#595D1D"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -688
+      ],
+      "id": "ce49f3c8-e5fd-4d32-9681-2c351d1fab83",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "# Manipular chamadas API ",
+        "height": 256,
+        "width": 208,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -848,
+        -976
+      ],
+      "id": "472f958f-a99f-4901-a3a3-ff63a729d28d",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "# Manipular HTML",
+        "height": 224,
+        "width": 208,
+        "color": "#3E7544"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -688
+      ],
+      "id": "42f224bc-a027-414d-92e3-be023af05cbd",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "# Devolve resposta da web",
+        "height": 256,
+        "width": 208,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        -976
+      ],
+      "id": "5fd872d7-a7ca-4c10-8dde-feec093ac39b",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "# API N8N",
+        "height": 224,
+        "width": 208,
+        "color": "#A02727"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -192,
+        -448
+      ],
+      "id": "030f4abb-4944-4daa-bf06-0617ad4dec25",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "# Espera x tempo",
+        "height": 224,
+        "width": 208,
+        "color": "#4F6C92"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        32,
+        -448
+      ],
+      "id": "39de3980-c89a-434d-9437-a88122c03a9f",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "# DATATABLE LOCAL N8N",
+        "height": 256,
+        "width": 208,
+        "color": "#895A2F"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -976
+      ],
+      "id": "8d0b99c8-bedf-4f48-be44-1f774509cc63",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "# NÃO FAZ NADA",
+        "height": 224,
+        "width": 208,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        256,
+        -688
+      ],
+      "id": "6f5bfe94-2e46-47d2-80e9-3ef96ccd6898",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a604a283-2b4d-49c9-8570-5a6b0b87eb43",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1040,
+        -288
+      ],
+      "id": "19590101-fc2c-4624-9a3a-cfb95af6c6d6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "# Condições",
+        "height": 208,
+        "width": 416,
+        "color": "#207425"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        -352
+      ],
+      "id": "c31a2cfa-c9c9-46a7-a6a0-387a6d00335b",
+      "name": "Sticky Note14"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Filter": {
+      "main": [
+        []
+      ]
+    },
+    "Switch": {
+      "main": [
+        []
+      ]
+    },
+    "Wait": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5c4db0c5-4971-40b0-a262-365d5b6166ff",
+  "activeVersionId": "60f55641-0f0f-44be-b378-cbe2916d4be6",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-06-19T18:39:03.457Z",
+      "createdAt": "2026-06-19T18:39:03.457Z",
+      "role": "workflow:owner",
+      "workflowId": "D83Q4NNKYeCqzMJD",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-07-01T20:17:18.181Z",
+    "createdAt": "2026-07-01T20:17:15.590Z",
+    "versionId": "60f55641-0f0f-44be-b378-cbe2916d4be6",
+    "workflowId": "D83Q4NNKYeCqzMJD",
+    "nodes": [
+      {
+        "parameters": {
+          "formTitle": "teste",
+          "formDescription": "aula",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "idade",
+                "fieldType": "number",
+                "placeholder": "sua idade?",
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "nome",
+                "placeholder": "seu nome?"
+              }
+            ]
+          },
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.formTrigger",
+        "typeVersion": 2.6,
+        "position": [
+          0,
+          0
+        ],
+        "id": "cc52a236-2040-44c8-a126-cdf9ea148593",
+        "name": "On form submission",
+        "webhookId": "29139966-fb44-47b5-98e4-8ab54fd071cf"
+      }
+    ],
+    "connections": {},
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 60f55641",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
