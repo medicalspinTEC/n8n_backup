@@ -1,0 +1,138 @@
+{
+  "updatedAt": "2026-07-14T16:13:57.980Z",
+  "createdAt": "2026-07-10T13:14:35.733Z",
+  "id": "G9BvHpjS96grVvXk",
+  "name": "My workflow 3",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "teste",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "c691881f-1021-48ab-9d12-bf1ebe8f1768",
+      "name": "Webhook",
+      "webhookId": "872f25c6-b8d3-4298-8e80-4ed9ff17980a",
+      "notes": "O PUT substitui totalmente o recurso (precisa de todos os campos). O PATCH aplica alterações parciais (muda apenas os campos enviados)."
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        368,
+        0
+      ],
+      "id": "390503b4-cfcf-498e-809f-d29d6e92f429",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        192,
+        0
+      ],
+      "id": "c34f9130-0b3b-4996-b4f5-32cadb9e4634",
+      "name": "HTML1"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTML1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "gzip, deflate, br, zstd",
+            "accept-language": "pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7",
+            "cookie": "rl_page_init_referrer=RudderEncrypt%3AU2FsdGVkX1%2BewtitVNDfznt%2FQWnFolpfeJYTT16%2FtkE%3D; rl_page_init_referring_domain=RudderEncrypt%3AU2FsdGVkX1%2BWIskQRGjHBD0y5HcyjAJpumxaM5V1ICo%3D; rl_anonymous_id=RudderEncrypt%3AU2FsdGVkX19GGLrUsAA%2FJsSm9OuVUWG%2Fx2fpTg2hBqADyM8jb9ig2ds4Zo%2BlGaQj5c100ec7P%2F7Tn5pZcTTyzw%3D%3D; rl_user_id=RudderEncrypt%3AU2FsdGVkX19YhLXXz7byqS2TYmAtkRh0zEfM414oIdiBlzhHD2zC%2Fcaz6O%2FVLexX79ZtZ%2Fj7U%2BZkPAwU%2B5JVwgITs3F2UZbPLCRJ2ABCL2CdqRp5tAyQMgL7zjCV%2FzHLpcDyzBWy73A3DwxCBrsDsYWxKnQMqlcRV4vfZKfFEog%3D; rl_trait=RudderEncrypt%3AU2FsdGVkX19K6XXps%2BL1EtRxZNQd2G9R03j%2BYdw%2B6F99tHBVxsi3nFR9uUsX19FMPY9Z7xebk0G3KB%2FNYJ3C9OGTK5fhGd5ITZ%2BhfvHfItss9sNQ2njUwkT7PbcfNwEsP8St6cAvXsXFiHCf3eNC8Gb5lY3terntNMJLYmwa1ZvhWLLUHWibpHFo892fDbJRbjoJ8ZdRArxstYs7k9ga6w%3D%3D; rl_session=RudderEncrypt%3AU2FsdGVkX1%2FLvRDkSyIQAP30ObOfwfuPYlKta2tl%2Bm38o1%2F3RacU5IgBW1mWnEmSY7lj8Z%2FnGa3qTI4yCzzalDU8PD0zVfcW5zM3L%2BsYDsT0R%2BCYnUXUcwIOk0mq6KKGAMSbBzwZbwz%2FkwhDKKjgtg%3D%3D; ph_phc_kMstNfAgBcBkWSh6KdsgN09heqqNe5VNmalHP1Ni9Q4_posthog=%7B%22%24device_id%22%3A%22a8ca9db8f365895dea8e9a74bf89e78eb5f5ec482599edebf62592a864d74708%23efab0b6d-d70d-4205-bdcf-84f23a513867%22%2C%22distinct_id%22%3A%22a8ca9db8f365895dea8e9a74bf89e78eb5f5ec482599edebf62592a864d74708%23efab0b6d-d70d-4205-bdcf-84f23a513867%22%2C%22%24sesid%22%3A%5B1783689291690%2C%22019f4c1e-5af4-785f-8818-026fa45281b3%22%2C1783688485620%5D%2C%22%24epp%22%3Atrue%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22%24direct%22%2C%22u%22%3A%22https%3A%2F%2Fn8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io%2Fhome%2Fexecutions%22%7D%2C%22%24user_state%22%3A%22anonymous%22%7D",
+            "priority": "u=0, i",
+            "sec-ch-ua": "\"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"150\", \"Google Chrome\";v=\"150\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Linux\"",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "none",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "x-forwarded-for": "45.233.99.6",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "45.233.99.6"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/aula",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "9d5833f5-635b-4729-bc0c-f85aeef39ea4",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-07-10T13:14:35.733Z",
+      "createdAt": "2026-07-10T13:14:35.733Z",
+      "role": "workflow:owner",
+      "workflowId": "G9BvHpjS96grVvXk",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
