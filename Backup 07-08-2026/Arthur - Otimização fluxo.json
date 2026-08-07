@@ -1,0 +1,1729 @@
+{
+  "updatedAt": "2026-07-10T21:34:25.681Z",
+  "createdAt": "2026-07-09T16:40:45.544Z",
+  "id": "JAmvO6kDm3KJ66ys",
+  "name": "Arthur - Otimização fluxo",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS OUTBOUND CNES2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Banco de dados Outbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CNPJ": "={{ $json.CNPJ }}",
+            "UF": "={{ $json.UF }}",
+            "Data de criação do negócio": "={{ DateTime.fromFormat($json.dataNegocio, 'yyyy-MM-dd HH:mm:ss').toFormat('dd/MM/yyyy') }}",
+            "Cadência de e-mails inicial": "={{ $json[\"Cadência de e-mails inicial\"] }}",
+            "Direcionamento": "={{ $json.SDRDirecionamento }}",
+            "Resp. pela investigação": "={{ $json.Resp[\" pela investigação\"] }}",
+            "Marca de RM": "={{ $json[\"Marca de RM\"] }}",
+            "Modelo de RM": "={{ $json[\"Modelo de RM\"] }}",
+            "ID": "={{ $json.ID }}",
+            "Instituição": "={{ $json[\"Razão social\"] }}",
+            "Endereço": "={{ $json[\"Endereço\"] }}",
+            "Campanha": "={{ $json.Campanha }}",
+            "Empreendimento": "={{ $json.Empreendimento }}",
+            " Cadência Phillips ou outras marcas": "={{ $json[\"Cadência de contato Phillips ou Outras Marcas\"] }}",
+            "Temperatura do lead": "={{ $json.temperaturaLead }}",
+            "Resp. pela reunião / fechamento / acompanhamento": "={{ $json.Resp[\" pela Reunião / Fechamento\"] }}",
+            "Resp. pela cadência de contatos": "={{ $json.Resp[\" pela cadência\"] }}",
+            "Resultado da cadência de contatos": "={{ $json[\"Resultado da cadência de contatos\"] }}",
+            "Objetivo da ligação contato inicial": "={{ $json.SDRObjetivodaLigfiltragemdedados }}"
+          },
+          "matchingColumns": [
+            "CNPJ"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instituição",
+              "displayName": "Instituição",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CNPJ",
+              "displayName": "CNPJ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Endereço",
+              "displayName": "Endereço",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "UF",
+              "displayName": "UF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campanha",
+              "displayName": "Campanha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Empreendimento",
+              "displayName": "Empreendimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data de criação do negócio",
+              "displayName": "Data de criação do negócio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cadência de e-mails inicial",
+              "displayName": "Cadência de e-mails inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data da Investigação Web",
+              "displayName": "Data da Investigação Web",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resp. pela investigação",
+              "displayName": "Resp. pela investigação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Direcionamento",
+              "displayName": "Direcionamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data da ligação contato inicial",
+              "displayName": "Data da ligação contato inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Objetivo da ligação contato inicial",
+              "displayName": "Objetivo da ligação contato inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " Cadência Phillips ou outras marcas",
+              "displayName": " Cadência Phillips ou outras marcas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resultado da cadência de contatos",
+              "displayName": "Resultado da cadência de contatos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resp. pela cadência de contatos",
+              "displayName": "Resp. pela cadência de contatos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cold call",
+              "displayName": "Cold call",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reunião comercial OB",
+              "displayName": "Reunião comercial OB",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Temperatura do lead",
+              "displayName": "Temperatura do lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resp. pela reunião / fechamento / acompanhamento",
+              "displayName": "Resp. pela reunião / fechamento / acompanhamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Marca de RM",
+              "displayName": "Marca de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Modelo de RM",
+              "displayName": "Modelo de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -480,
+        1024
+      ],
+      "id": "0d376dd6-b5ae-4ae9-96c8-a99f484da88f",
+      "name": "ATUALIZAR DADOS OUTBOUND1",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS INBOUNBD",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Banco de dados Inbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nome": "={{ $('Atualizar dados').item.json.nomeLead }}",
+            "CNPJ": "={{ $('Atualizar dados').item.json.CNPJ }}",
+            "Instituição": "={{ $('Atualizar dados').item.json['Razão social'] }}",
+            "Endereço": "={{ $('Atualizar dados').item.json['Endereço'] }}",
+            "UF": "={{ $('Atualizar dados').item.json.UF }}",
+            "Campanha": "={{ $('Atualizar dados').item.json.Campanha }}",
+            "Cadencia Inbound": "={{ $('Atualizar dados').item.json['CadênciaInbound'] }}",
+            "ID": "={{ $json.ID }}",
+            "Resp. pela investigação": "={{ $('Atualizar dados').item.json.Resp[\" pela investigação\"] }}",
+            "Resp. pela cadência ": "={{ $('Atualizar dados').item.json.Resp[\" pela cadência\"] }}",
+            "Marca de RM": "={{ $('Atualizar dados').item.json[\"Marca de RM\"] }}",
+            "Modelo de RM": "={{ $('Atualizar dados').item.json[\"Modelo de RM\"] }}",
+            "Data de entrada": "={{ new Date($('Atualizar dados').item.json.dataNegocio).toLocaleDateString('pt-BR') }}",
+            "Destino do lead após cadência": "={{ $('Atualizar dados').item.json[\"Destino do Lead após investigação e cadência\"] }}",
+            "Temperatura do lead": "={{ $('Atualizar dados').item.json.temperaturaLead }}",
+            " Resp. pela reunião / fechamento / acompanhamento": "={{ $('Atualizar dados').item.json.Resp[\" pela Reunião / Fechamento\"] }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "26.313.383/0001-41",
+              "displayName": "26.313.383/0001-41",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instituição",
+              "displayName": "Instituição",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CNPJ",
+              "displayName": "CNPJ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Endereço",
+              "displayName": "Endereço",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "UF",
+              "displayName": "UF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campanha",
+              "displayName": "Campanha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Data de entrada",
+              "displayName": "Data de entrada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data da investigação",
+              "displayName": "Data da investigação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resp. pela investigação",
+              "displayName": "Resp. pela investigação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cadencia Inbound",
+              "displayName": "Cadencia Inbound",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resp. pela cadência ",
+              "displayName": "Resp. pela cadência ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Destino do lead após cadência",
+              "displayName": "Destino do lead após cadência",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cold call",
+              "displayName": "Cold call",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reunião de apresentação",
+              "displayName": "Reunião de apresentação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Temperatura do lead",
+              "displayName": "Temperatura do lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " Resp. pela reunião / fechamento / acompanhamento",
+              "displayName": " Resp. pela reunião / fechamento / acompanhamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Marca de RM",
+              "displayName": "Marca de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Modelo de RM",
+              "displayName": "Modelo de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -480,
+        800
+      ],
+      "id": "bd2f6a14-3db0-402a-9df7-7eb72019acff",
+      "name": "ATUALIZAR DADOS INBOUND",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4e38ee66-2684-4104-af1e-c136649b6ba2",
+                    "leftValue": "={{ $json.tipoAtividade }}",
+                    "rightValue": "atualizar_dados_inbound",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "atualizar_dados_inbound"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dad78205-76e3-46a6-abf4-efa12fa3cff3",
+                    "leftValue": "={{ $json.tipoAtividade }}",
+                    "rightValue": "atualizar_dados_inbound1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "atualizar_dados_inbound1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -768,
+        864
+      ],
+      "id": "0c758bfb-c662-4218-8437-c0a193e86379",
+      "name": "Atualizar dados"
+    },
+    {
+      "parameters": {
+        "content": "## Atualiza o lead na planilha pelo ID. Se já existir, atualiza a linha; se não existir, cria uma nova (appendOrUpdate).",
+        "height": 568,
+        "width": 912,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        704
+      ],
+      "id": "f0b1cb73-ef2b-4f55-92dd-0984f51dafaa",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS INBOUND",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Banco de dados Inbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "ID",
+              "lookupValue": "={{ $json.ID }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -608,
+        208
+      ],
+      "id": "7fb4797e-9041-4034-ac0c-8a5f7c7b2dd3",
+      "name": "Get row(s) in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ae1ee673-7622-4e5c-996d-dfd0fe60f2d3",
+              "leftValue": "={{ $json.ID }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -416,
+        224
+      ],
+      "id": "10c5be15-fb32-4233-9c01-2de7ce8e0345",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS INBOUNBD",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Banco de dados Inbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nome": "={{ $('Atualizar dados1').item.json.nomeLead }}",
+            "CNPJ": "={{ $('Atualizar dados1').item.json.CNPJ }}",
+            "Instituição": "={{ $('Atualizar dados1').item.json['Razão social'] }}",
+            "Endereço": "={{ $('Atualizar dados1').item.json['Endereço'] }}",
+            "UF": "={{ $('Atualizar dados1').item.json.UF }}",
+            "Campanha": "={{ $('Atualizar dados1').item.json.Campanha }}",
+            "Cadencia Inbound": "={{ $('Atualizar dados1').item.json['CadênciaInbound'] }}",
+            "ID": "={{ $('Atualizar dados1').item.json.ID }}",
+            "Resp. pela investigação": "={{ $('Atualizar dados1').item.json.Resp[\" pela investigação\"] }}",
+            "Resp. pela cadência ": "={{ $('Atualizar dados1').item.json.Resp[\" pela cadência\"] }}",
+            "Marca de RM": "={{ $('Atualizar dados1').item.json[\"Marca de RM\"] }}",
+            "Modelo de RM": "={{ $('Atualizar dados1').item.json[\"Modelo de RM\"] }}",
+            "Data de entrada": "={{ new Date($('Atualizar dados1').item.json.dataNegocio).toLocaleDateString('pt-BR') }}",
+            "Destino do lead após cadência": "={{ $('Atualizar dados1').item.json[\"Destino do Lead após investigação e cadência\"] }}",
+            "Temperatura do lead": "={{ $('Atualizar dados1').item.json.temperaturaLead }}",
+            " Resp. pela reunião / fechamento / acompanhamento": "={{ $('Atualizar dados1').item.json.Resp[\" pela Reunião / Fechamento\"] }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "26.313.383/0001-41",
+              "displayName": "26.313.383/0001-41",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instituição",
+              "displayName": "Instituição",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CNPJ",
+              "displayName": "CNPJ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Endereço",
+              "displayName": "Endereço",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "UF",
+              "displayName": "UF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campanha",
+              "displayName": "Campanha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Data de entrada",
+              "displayName": "Data de entrada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data da investigação",
+              "displayName": "Data da investigação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resp. pela investigação",
+              "displayName": "Resp. pela investigação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cadencia Inbound",
+              "displayName": "Cadencia Inbound",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resp. pela cadência ",
+              "displayName": "Resp. pela cadência ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Destino do lead após cadência",
+              "displayName": "Destino do lead após cadência",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cold call",
+              "displayName": "Cold call",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reunião de apresentação",
+              "displayName": "Reunião de apresentação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Temperatura do lead",
+              "displayName": "Temperatura do lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " Resp. pela reunião / fechamento / acompanhamento",
+              "displayName": " Resp. pela reunião / fechamento / acompanhamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Marca de RM",
+              "displayName": "Marca de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Modelo de RM",
+              "displayName": "Modelo de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        240
+      ],
+      "id": "47b3153c-8aa2-4919-8a4b-2c4e948e40b0",
+      "name": "ATUALIZAR DADOS INBOUND1",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS OUTBOUND CNES2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Banco de dados Outbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "CNPJ": "={{ $json.CNPJ }}",
+            "UF": "={{ $json.UF }}",
+            "Data de criação do negócio": "={{ DateTime.fromFormat($json.dataNegocio, 'yyyy-MM-dd HH:mm:ss').toFormat('dd/MM/yyyy') }}",
+            "Cadência de e-mails inicial": "={{ $json[\"Cadência de e-mails inicial\"] }}",
+            "Direcionamento": "={{ $json.SDRDirecionamento }}",
+            "Resp. pela investigação": "={{ $json.Resp[\" pela investigação\"] }}",
+            "Marca de RM": "={{ $json[\"Marca de RM\"] }}",
+            "Modelo de RM": "={{ $json[\"Modelo de RM\"] }}",
+            "ID": "={{ $json.ID }}",
+            "Instituição": "={{ $json[\"Razão social\"] }}",
+            "Endereço": "={{ $json[\"Endereço\"] }}",
+            "Campanha": "={{ $json.Campanha }}",
+            "Empreendimento": "={{ $json.Empreendimento }}",
+            " Cadência Phillips ou outras marcas": "={{ $json[\"Cadência de contato Phillips ou Outras Marcas\"] }}",
+            "Temperatura do lead": "={{ $json.temperaturaLead }}",
+            "Resp. pela reunião / fechamento / acompanhamento": "={{ $json.Resp[\" pela Reunião / Fechamento\"] }}",
+            "Resp. pela cadência de contatos": "={{ $json.Resp[\" pela cadência\"] }}",
+            "Resultado da cadência de contatos": "={{ $json[\"Resultado da cadência de contatos\"] }}",
+            "Objetivo da ligação contato inicial": "={{ $json.SDRObjetivodaLigfiltragemdedados }}"
+          },
+          "matchingColumns": [
+            "CNPJ"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instituição",
+              "displayName": "Instituição",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CNPJ",
+              "displayName": "CNPJ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Endereço",
+              "displayName": "Endereço",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "UF",
+              "displayName": "UF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campanha",
+              "displayName": "Campanha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Empreendimento",
+              "displayName": "Empreendimento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data de criação do negócio",
+              "displayName": "Data de criação do negócio",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cadência de e-mails inicial",
+              "displayName": "Cadência de e-mails inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data da Investigação Web",
+              "displayName": "Data da Investigação Web",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resp. pela investigação",
+              "displayName": "Resp. pela investigação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Direcionamento",
+              "displayName": "Direcionamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data da ligação contato inicial",
+              "displayName": "Data da ligação contato inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Objetivo da ligação contato inicial",
+              "displayName": "Objetivo da ligação contato inicial",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " Cadência Phillips ou outras marcas",
+              "displayName": " Cadência Phillips ou outras marcas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resultado da cadência de contatos",
+              "displayName": "Resultado da cadência de contatos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resp. pela cadência de contatos",
+              "displayName": "Resp. pela cadência de contatos",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cold call",
+              "displayName": "Cold call",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reunião comercial OB",
+              "displayName": "Reunião comercial OB",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Temperatura do lead",
+              "displayName": "Temperatura do lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resp. pela reunião / fechamento / acompanhamento",
+              "displayName": "Resp. pela reunião / fechamento / acompanhamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Marca de RM",
+              "displayName": "Marca de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Modelo de RM",
+              "displayName": "Modelo de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -576,
+        448
+      ],
+      "id": "622a29ea-0522-40e8-a3ba-3d5d58c7351d",
+      "name": "ATUALIZAR DADOS OUTBOUND",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS INBOUNBD",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Banco de dados Inbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nome": "={{ $('Atualizar dados1').item.json.nomeLead }}",
+            "CNPJ": "={{ $('Atualizar dados1').item.json.CNPJ }}",
+            "Instituição": "={{ $('Atualizar dados1').item.json['Razão social'] }}",
+            "Endereço": "={{ $('Atualizar dados1').item.json['Endereço'] }}",
+            "UF": "={{ $('Atualizar dados1').item.json.UF }}",
+            "Campanha": "={{ $('Atualizar dados1').item.json.Campanha }}",
+            "Cadencia Inbound": "={{ $('Atualizar dados1').item.json['CadênciaInbound'] }}",
+            "ID": "={{ $json.ID }}",
+            "Resp. pela investigação": "={{ $('Atualizar dados1').item.json.Resp[\" pela investigação\"] }}",
+            "Resp. pela cadência ": "={{ $('Atualizar dados1').item.json.Resp[\" pela cadência\"] }}",
+            "Marca de RM": "={{ $('Atualizar dados1').item.json[\"Marca de RM\"] }}",
+            "Modelo de RM": "={{ $('Atualizar dados1').item.json[\"Modelo de RM\"] }}",
+            "Data de entrada": "={{ new Date($('Atualizar dados1').item.json.dataNegocio).toLocaleDateString('pt-BR') }}",
+            "Destino do lead após cadência": "={{ $('Atualizar dados1').item.json[\"Destino do Lead após investigação e cadência\"] }}",
+            "Temperatura do lead": "={{ $('Atualizar dados1').item.json.temperaturaLead }}",
+            " Resp. pela reunião / fechamento / acompanhamento": "={{ $('Atualizar dados1').item.json.Resp[\" pela Reunião / Fechamento\"] }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "26.313.383/0001-41",
+              "displayName": "26.313.383/0001-41",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Nome",
+              "displayName": "Nome",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Instituição",
+              "displayName": "Instituição",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CNPJ",
+              "displayName": "CNPJ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Endereço",
+              "displayName": "Endereço",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "UF",
+              "displayName": "UF",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Campanha",
+              "displayName": "Campanha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Data de entrada",
+              "displayName": "Data de entrada",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Data da investigação",
+              "displayName": "Data da investigação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resp. pela investigação",
+              "displayName": "Resp. pela investigação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cadencia Inbound",
+              "displayName": "Cadencia Inbound",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resp. pela cadência ",
+              "displayName": "Resp. pela cadência ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Destino do lead após cadência",
+              "displayName": "Destino do lead após cadência",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Cold call",
+              "displayName": "Cold call",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Reunião de apresentação",
+              "displayName": "Reunião de apresentação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Temperatura do lead",
+              "displayName": "Temperatura do lead",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " Resp. pela reunião / fechamento / acompanhamento",
+              "displayName": " Resp. pela reunião / fechamento / acompanhamento",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Marca de RM",
+              "displayName": "Marca de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Modelo de RM",
+              "displayName": "Modelo de RM",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -144,
+        64
+      ],
+      "id": "549c6056-34f9-4b1e-9c0c-cf5daa3f2797",
+      "name": "ATUALIZAR DADOS INBOUND2",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "4e38ee66-2684-4104-af1e-c136649b6ba2",
+                    "leftValue": "={{ $json.tipoAtividade }}",
+                    "rightValue": "atualizar_dados_inbound",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "atualizar_dados_inbound"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "dad78205-76e3-46a6-abf4-efa12fa3cff3",
+                    "leftValue": "={{ $json.tipoAtividade }}",
+                    "rightValue": "atualizar_dados_inbound1",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "atualizar_dados_inbound1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        -848,
+        432
+      ],
+      "id": "28d58190-be96-448d-81ee-c1b7623ee9d6",
+      "name": "Atualizar dados1"
+    },
+    {
+      "parameters": {
+        "content": "## Verifica na hora da atualização se o lead já existe na planilha. Se existir, atualiza, se não existir, adiciona.",
+        "height": 720,
+        "width": 944,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        -48
+      ],
+      "id": "338a0f7d-f350-416f-ab95-dbc24e0e7d2e",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "Atualizar dados": {
+      "main": [
+        [
+          {
+            "node": "ATUALIZAR DADOS INBOUND",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ATUALIZAR DADOS OUTBOUND1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "ATUALIZAR DADOS INBOUND2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ATUALIZAR DADOS INBOUND1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Atualizar dados1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ATUALIZAR DADOS OUTBOUND",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "24b5a21f-6033-4310-b9c5-a3eaa1a2c74c",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-07-09T16:40:45.544Z",
+      "createdAt": "2026-07-09T16:40:45.544Z",
+      "role": "workflow:owner",
+      "workflowId": "JAmvO6kDm3KJ66ys",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
