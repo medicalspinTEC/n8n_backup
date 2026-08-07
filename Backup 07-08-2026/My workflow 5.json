@@ -1,0 +1,79 @@
+{
+  "updatedAt": "2026-08-03T13:41:47.551Z",
+  "createdAt": "2026-08-03T13:41:37.064Z",
+  "id": "rzaT9Zi1MzQGog02",
+  "name": "My workflow 5",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "disparos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8acbfd8d-7e73-48b0-abeb-b44ba753dc33",
+      "name": "Webhook",
+      "webhookId": "012f5ac3-09c7-43cf-b800-a3488e23acba"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "340cc0b4-72ce-41c1-808b-2d12dbc493a8",
+  "activeVersionId": "340cc0b4-72ce-41c1-808b-2d12dbc493a8",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-08-03T13:41:37.064Z",
+      "createdAt": "2026-08-03T13:41:37.064Z",
+      "role": "workflow:owner",
+      "workflowId": "rzaT9Zi1MzQGog02",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-08-03T13:41:50.750Z",
+    "createdAt": "2026-08-03T13:41:47.552Z",
+    "versionId": "340cc0b4-72ce-41c1-808b-2d12dbc493a8",
+    "workflowId": "rzaT9Zi1MzQGog02",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "disparos",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "8acbfd8d-7e73-48b0-abeb-b44ba753dc33",
+        "name": "Webhook",
+        "webhookId": "012f5ac3-09c7-43cf-b800-a3488e23acba"
+      }
+    ],
+    "connections": {},
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 340cc0b4",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
