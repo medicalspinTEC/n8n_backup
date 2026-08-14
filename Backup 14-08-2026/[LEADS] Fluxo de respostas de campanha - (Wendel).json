@@ -1,0 +1,247 @@
+{
+  "updatedAt": "2026-08-13T15:54:13.026Z",
+  "createdAt": "2026-01-12T12:56:29.168Z",
+  "id": "6S7VBGXIThgmcuCK",
+  "name": "[LEADS] Fluxo de respostas de campanha - (Wendel)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "teste",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        -160
+      ],
+      "id": "83e62bbc-b027-48e5-98c8-ef0a72be4bc1",
+      "name": "Webhook",
+      "webhookId": "bd533aca-f1db-488b-a6b2-a03c85d16d28"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://campaignsmsp.95.217.164.173.sslip.io/api/webhook/entrada",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-webhook-token",
+              "value": "whin_c97796c480d7139a7307f65617e308bbd5b83e05ec4e6cf7ab1c14e003cbbea0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "evento",
+              "value": "RespostaLead"
+            },
+            {
+              "name": "dados",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        720,
+        -160
+      ],
+      "id": "d2997bf8-3467-42d6-8b0d-2a075f6eee37",
+      "name": "HTTP Request4"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "axios/1.13.2",
+            "content-length": "788",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "10.0.1.1",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "10.0.1.1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "teste",
+            "data": {
+              "key": {
+                "remoteJid": "5579991054765@s.whatsapp.net",
+                "remoteJidAlt": "5579991054765@s.whatsapp.net",
+                "fromMe": false,
+                "id": "ACFCBCBE527EFAAF0549045EFAB5628D",
+                "participant": "",
+                "addressingMode": "lid"
+              },
+              "pushName": "6uy_1nc06n1t0",
+              "status": "SERVER_ACK",
+              "message": {
+                "conversation": "A gente conversa quando você chegar em casa"
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1786551979,
+              "instanceId": "5d3470be-0678-4908-a873-45413232d44f",
+              "source": "android"
+            },
+            "destination": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/teste",
+            "date_time": "2026-08-12T13:26:19.755Z",
+            "sender": "557999801810@s.whatsapp.net",
+            "server_url": "http://evo-j0o08ok8sgwc4cog04w0owok.95.217.164.173.sslip.io",
+            "apikey": "47C540EF977F-48E1-A7BC-8F23DB0E9F71"
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/teste",
+          "executionMode": "production"
+        }
+      }
+    ]
+  },
+  "versionId": "22408300-0c8a-4282-8a8d-e0c419f3026a",
+  "activeVersionId": "22408300-0c8a-4282-8a8d-e0c419f3026a",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-01-12T12:56:29.168Z",
+      "createdAt": "2026-01-12T12:56:29.168Z",
+      "role": "workflow:owner",
+      "workflowId": "6S7VBGXIThgmcuCK",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-08-13T15:42:53.360Z",
+    "createdAt": "2026-08-13T15:42:52.109Z",
+    "versionId": "22408300-0c8a-4282-8a8d-e0c419f3026a",
+    "workflowId": "6S7VBGXIThgmcuCK",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "teste",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          544,
+          -160
+        ],
+        "id": "83e62bbc-b027-48e5-98c8-ef0a72be4bc1",
+        "name": "Webhook",
+        "webhookId": "bd533aca-f1db-488b-a6b2-a03c85d16d28"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://campaignsmsp.95.217.164.173.sslip.io/api/webhook/entrada",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "x-webhook-token",
+                "value": "whin_c97796c480d7139a7307f65617e308bbd5b83e05ec4e6cf7ab1c14e003cbbea0"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "evento",
+                "value": "RespostaLead"
+              },
+              {
+                "name": "dados",
+                "value": "={{ $json }}"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          720,
+          -160
+        ],
+        "id": "d2997bf8-3467-42d6-8b0d-2a075f6eee37",
+        "name": "HTTP Request4"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 22408300",
+    "description": "",
+    "autosaved": false
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-11-17T14:32:35.191Z",
+      "createdAt": "2025-11-17T14:32:35.191Z",
+      "id": "Llfmd66GWbMUHQMr",
+      "name": "Http"
+    }
+  ]
+}
