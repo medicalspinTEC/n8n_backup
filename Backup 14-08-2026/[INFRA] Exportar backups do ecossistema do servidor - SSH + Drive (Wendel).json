@@ -1,0 +1,603 @@
+{
+  "updatedAt": "2026-07-31T12:07:56.415Z",
+  "createdAt": "2026-07-16T14:57:28.959Z",
+  "id": "9FsNivIbJae4KKnh",
+  "name": "[INFRA] Exportar backups do ecossistema do servidor - SSH + Drive (Wendel)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "46363c93-a3a9-4660-a2b3-7ec2dd46b81e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "command": "ls -t | head -n 1",
+        "cwd": "/data/coolify/backups/coolify/coolify-db-hostdockerinternal"
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "af683a90-9eed-42ea-a602-f29696f224b0",
+      "name": "Execute a command",
+      "credentials": {
+        "sshPassword": {
+          "id": "gmZEvPFpOOfL26ym",
+          "name": "SSH Primario"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "path": "=/data/coolify/backups/coolify/coolify-db-hostdockerinternal/{{ $json.stdout }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "1e66ff07-b39e-4212-b56b-e2beef989394",
+      "name": "Download a file",
+      "credentials": {
+        "sshPassword": {
+          "id": "gmZEvPFpOOfL26ym",
+          "name": "SSH Primario"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "Backup Completo do Servidor Principal.dmp",
+        "driveId": {
+          "__rl": true,
+          "value": "0AKJ3bKfyFPVrUk9PVA",
+          "mode": "list",
+          "cachedResultName": "Tech-Desenv-Software",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/0AKJ3bKfyFPVrUk9PVA"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1wsAJFPKKMde2fhfhjZscTPt2bFE7K2fd",
+          "mode": "list",
+          "cachedResultName": "Ecosistema",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1wsAJFPKKMde2fhfhjZscTPt2bFE7K2fd"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        624,
+        0
+      ],
+      "id": "cb4a1357-6b4e-421f-9dae-b2d8aff8ad73",
+      "name": "Upload file",
+      "retryOnFail": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Yg0MqWhsgxFkLHnh",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtMinute": 10
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        144
+      ],
+      "id": "19739aba-1f3b-4054-a399-3f517fe8fd6c",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "Backup Completo do Servidor Principal.dmp",
+        "returnAll": true,
+        "filter": {},
+        "options": {
+          "fields": [
+            "*"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        208,
+        144
+      ],
+      "id": "a8dfc979-bae2-4bd6-b604-973798215dbc",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Yg0MqWhsgxFkLHnh",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const files = items.filter(item => !item.json.trashed);\n\nif (files.length === 0) {\n  return [];\n}\n\nconst oldest = files.reduce((oldest, current) => {\n  return new Date(current.json.createdTime) < new Date(oldest.json.createdTime)\n    ? current\n    : oldest;\n});\n\nreturn [oldest];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        144
+      ],
+      "id": "b91ff97c-7e10-4d2f-8db4-ee4df0669fa4",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.webViewLink }}",
+          "mode": "url"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        624,
+        144
+      ],
+      "id": "a1cf0992-78ae-4b60-b710-e14eef07506e",
+      "name": "Delete a file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "Yg0MqWhsgxFkLHnh",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Execute a command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a command": {
+      "main": [
+        [
+          {
+            "node": "Download a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download a file": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Delete a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Cw4BKEAZCX2tPyvL",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    },
+    "node:Schedule Trigger1": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {
+    "Schedule Trigger1": [
+      {
+        "json": {
+          "timestamp": "2026-07-30T00:10:05.007-03:00",
+          "Readable date": "July 30th 2026, 12:10:05 am",
+          "Readable time": "12:10:05 am",
+          "Day of week": "Thursday",
+          "Year": "2026",
+          "Month": "July",
+          "Day of month": "30",
+          "Hour": "00",
+          "Minute": "10",
+          "Second": "05",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "ee072385-a5fb-4b1a-b811-0524e488d1a3",
+  "activeVersionId": "ee072385-a5fb-4b1a-b811-0524e488d1a3",
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-07-16T14:57:28.959Z",
+      "createdAt": "2026-07-16T14:57:28.959Z",
+      "role": "workflow:owner",
+      "workflowId": "9FsNivIbJae4KKnh",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-07-31T12:08:52.129Z",
+    "createdAt": "2026-07-31T12:07:56.417Z",
+    "versionId": "ee072385-a5fb-4b1a-b811-0524e488d1a3",
+    "workflowId": "9FsNivIbJae4KKnh",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {}
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          0,
+          0
+        ],
+        "id": "46363c93-a3a9-4660-a2b3-7ec2dd46b81e",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "command": "ls -t | head -n 1",
+          "cwd": "/data/coolify/backups/coolify/coolify-db-hostdockerinternal"
+        },
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          208,
+          0
+        ],
+        "id": "af683a90-9eed-42ea-a602-f29696f224b0",
+        "name": "Execute a command",
+        "credentials": {
+          "sshPassword": {
+            "id": "gmZEvPFpOOfL26ym",
+            "name": "SSH Primario"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "file",
+          "operation": "download",
+          "path": "=/data/coolify/backups/coolify/coolify-db-hostdockerinternal/{{ $json.stdout }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.ssh",
+        "typeVersion": 1,
+        "position": [
+          416,
+          0
+        ],
+        "id": "1e66ff07-b39e-4212-b56b-e2beef989394",
+        "name": "Download a file",
+        "credentials": {
+          "sshPassword": {
+            "id": "gmZEvPFpOOfL26ym",
+            "name": "SSH Primario"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "name": "Backup Completo do Servidor Principal.dmp",
+          "driveId": {
+            "__rl": true,
+            "value": "0AKJ3bKfyFPVrUk9PVA",
+            "mode": "list",
+            "cachedResultName": "Tech-Desenv-Software",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/0AKJ3bKfyFPVrUk9PVA"
+          },
+          "folderId": {
+            "__rl": true,
+            "value": "1wsAJFPKKMde2fhfhjZscTPt2bFE7K2fd",
+            "mode": "list",
+            "cachedResultName": "Ecosistema",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1wsAJFPKKMde2fhfhjZscTPt2bFE7K2fd"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          624,
+          0
+        ],
+        "id": "cb4a1357-6b4e-421f-9dae-b2d8aff8ad73",
+        "name": "Upload file",
+        "retryOnFail": true,
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "Yg0MqWhsgxFkLHnh",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "triggerAtMinute": 10
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          0,
+          144
+        ],
+        "id": "19739aba-1f3b-4054-a399-3f517fe8fd6c",
+        "name": "Schedule Trigger1"
+      },
+      {
+        "parameters": {
+          "resource": "fileFolder",
+          "queryString": "Backup Completo do Servidor Principal.dmp",
+          "returnAll": true,
+          "filter": {},
+          "options": {
+            "fields": [
+              "*"
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          208,
+          144
+        ],
+        "id": "a8dfc979-bae2-4bd6-b604-973798215dbc",
+        "name": "Search files and folders",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "Yg0MqWhsgxFkLHnh",
+            "name": "Google Drive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const files = items.filter(item => !item.json.trashed);\n\nif (files.length === 0) {\n  return [];\n}\n\nconst oldest = files.reduce((oldest, current) => {\n  return new Date(current.json.createdTime) < new Date(oldest.json.createdTime)\n    ? current\n    : oldest;\n});\n\nreturn [oldest];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          416,
+          144
+        ],
+        "id": "b91ff97c-7e10-4d2f-8db4-ee4df0669fa4",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "operation": "deleteFile",
+          "fileId": {
+            "__rl": true,
+            "value": "={{ $json.webViewLink }}",
+            "mode": "url"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleDrive",
+        "typeVersion": 3,
+        "position": [
+          624,
+          144
+        ],
+        "id": "a1cf0992-78ae-4b60-b710-e14eef07506e",
+        "name": "Delete a file",
+        "credentials": {
+          "googleDriveOAuth2Api": {
+            "id": "Yg0MqWhsgxFkLHnh",
+            "name": "Google Drive account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Execute a command",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Execute a command": {
+        "main": [
+          [
+            {
+              "node": "Download a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Download a file": {
+        "main": [
+          [
+            {
+              "node": "Upload file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Upload file": {
+        "main": [
+          []
+        ]
+      },
+      "Schedule Trigger1": {
+        "main": [
+          [
+            {
+              "node": "Search files and folders",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Search files and folders": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Delete a file",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version ee072385",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2026-07-14T12:01:50.609Z",
+      "createdAt": "2026-07-14T12:01:50.609Z",
+      "id": "mmLkDUhaGxXA5GY0",
+      "name": "SSH"
+    },
+    {
+      "updatedAt": "2025-11-27T17:41:23.357Z",
+      "createdAt": "2025-11-27T17:41:23.357Z",
+      "id": "qlhMLSlMQRcl50k1",
+      "name": "Drive"
+    }
+  ]
+}
