@@ -1,0 +1,1013 @@
+{
+  "updatedAt": "2026-07-31T12:34:04.608Z",
+  "createdAt": "2026-06-19T18:39:03.457Z",
+  "id": "D83Q4NNKYeCqzMJD",
+  "name": "[AULAS E TREINAMENTOS N8N] AULAS E TREINAMENTOS N8N (wendel)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "aula",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1168,
+        -800
+      ],
+      "id": "01a4a800-d939-4ed4-a4ba-78d21effd948",
+      "name": "Webhook",
+      "webhookId": "872f25c6-b8d3-4298-8e80-4ed9ff17980a",
+      "notes": "O PUT substitui totalmente o recurso (precisa de todos os campos). O PATCH aplica alterações parciais (muda apenas os campos enviados)."
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -1264,
+        -1216
+      ],
+      "id": "2628e6d8-9181-43b6-ac3a-90daf7861817",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -1168,
+        -528
+      ],
+      "id": "e5ee0882-4048-48c3-a6fc-d0672ecccbac",
+      "name": "On form submission",
+      "webhookId": "d4566788-dace-43eb-8f3a-e507df513be6"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        -1056,
+        -96
+      ],
+      "id": "82795142-ee1f-4b02-ac4b-e01ea1d359a4",
+      "name": "HTML"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        -672
+      ],
+      "id": "b54e530f-6910-4a0d-a2fb-2a7192b5062c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -960,
+        -800
+      ],
+      "id": "eb6c1bb6-2cdb-462b-be83-418283063f45",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -528
+      ],
+      "id": "c3547185-3c14-4c85-9c12-601074ad647a",
+      "name": "Error Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -960,
+        -672
+      ],
+      "id": "d277d2db-5650-414b-b22a-933abe245ef0",
+      "name": "When chat message received",
+      "webhookId": "6773f664-a123-4a47-b1f5-6c45f0c553bc"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1280,
+        -96
+      ],
+      "id": "99a958be-f464-429e-9b35-c4660735f283",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9e53c83a-943b-4f29-af50-ca754fa05fc8",
+              "leftValue": "teste",
+              "rightValue": "teste",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        -320,
+        -928
+      ],
+      "id": "099f2aa9-3e22-401f-b069-cc5ff6f32af4",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "maxItems": 100
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -928
+      ],
+      "id": "cd1ace3f-920b-478f-9aaf-43cfe25f4503",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        -800
+      ],
+      "id": "ad9ba97c-6226-4619-a620-9290fa47439a",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -512,
+        -800
+      ],
+      "id": "274e8048-5848-4672-973d-eb80304a6ccb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1776,
+        -880
+      ],
+      "id": "3ec51dd4-11a0-4606-9c51-f09ac5c294ce",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1584,
+        -880
+      ],
+      "id": "f80f7144-2700-4bf9-ac29-5c480a011d0b",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e5842c32-8e43-4094-b179-eba8377eddd7"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2a5d8f4a-a044-4bb3-afde-99d90b3f4a65",
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2016723e-f26a-4d85-8148-6e9cacc91ccf",
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1584,
+        -496
+      ],
+      "id": "ebacfcc6-73fc-40d6-aa93-3bf896fb3fe8",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "unit": "days"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1056,
+        144
+      ],
+      "id": "61be667f-fa4c-49e1-abae-788d761d0bb5",
+      "name": "Wait",
+      "webhookId": "9334261e-c1ab-4fec-a6b5-b5ec470d1bbb"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -816,
+        -1216
+      ],
+      "id": "6a91cf64-0f2b-4bc2-817a-2b11d4fc961e",
+      "name": "Get row(s)"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1040,
+        -1216
+      ],
+      "id": "b9de9269-65e6-4837-b657-3ff1b3a3e313",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -832,
+        -96
+      ],
+      "id": "15705721-2508-4866-9ff3-3439b02efa3e",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "# Triggers",
+        "height": 496,
+        "width": 432,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        -864
+      ],
+      "id": "a7841ee9-d6eb-47d7-903b-554367cf5c4e",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -544,
+        -144
+      ],
+      "id": "959a5d3d-a87d-48ff-91c1-eb827012e5f1",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Note",
+        "height": 272,
+        "width": 304,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -576,
+        -224
+      ],
+      "id": "ff68d8d9-3086-45fb-be93-4f1626540228",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Manupular json/dados",
+        "height": 336,
+        "width": 416,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        -992
+      ],
+      "id": "f310c8a6-4494-42eb-b32e-06f6e63df686",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Converter e extrair base64",
+        "height": 208,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1808,
+        -944
+      ],
+      "id": "ddbe3ebd-acbd-4374-9ca8-f7588c53e015",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "# Codificar js e py",
+        "height": 224,
+        "width": 208,
+        "color": "#736335"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        80
+      ],
+      "id": "7ddafa51-7b22-4a55-b689-bfa1beab0457",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "# Setar dados",
+        "height": 224,
+        "width": 208,
+        "color": "#595D1D"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1328,
+        -160
+      ],
+      "id": "ce49f3c8-e5fd-4d32-9681-2c351d1fab83",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "# Manipular chamadas API ",
+        "height": 256,
+        "width": 208,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1088,
+        -1312
+      ],
+      "id": "472f958f-a99f-4901-a3a3-ff63a729d28d",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "# Manipular HTML",
+        "height": 224,
+        "width": 208,
+        "color": "#3E7544"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        -160
+      ],
+      "id": "42f224bc-a027-414d-92e3-be023af05cbd",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "# Devolve resposta da web",
+        "height": 256,
+        "width": 208,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        -1312
+      ],
+      "id": "5fd872d7-a7ca-4c10-8dde-feec093ac39b",
+      "name": "Sticky Note9"
+    },
+    {
+      "parameters": {
+        "content": "# API N8N",
+        "height": 224,
+        "width": 208,
+        "color": "#A02727"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1328,
+        80
+      ],
+      "id": "030f4abb-4944-4daa-bf06-0617ad4dec25",
+      "name": "Sticky Note10"
+    },
+    {
+      "parameters": {
+        "content": "# Espera x tempo",
+        "height": 224,
+        "width": 208,
+        "color": "#4F6C92"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        80
+      ],
+      "id": "39de3980-c89a-434d-9437-a88122c03a9f",
+      "name": "Sticky Note11"
+    },
+    {
+      "parameters": {
+        "content": "# DATATABLE LOCAL N8N",
+        "height": 256,
+        "width": 208,
+        "color": "#895A2F"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -864,
+        -1312
+      ],
+      "id": "8d0b99c8-bedf-4f48-be44-1f774509cc63",
+      "name": "Sticky Note12"
+    },
+    {
+      "parameters": {
+        "content": "# NÃO FAZ NADA",
+        "height": 224,
+        "width": 208,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        -160
+      ],
+      "id": "6f5bfe94-2e46-47d2-80e9-3ef96ccd6898",
+      "name": "Sticky Note13"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a604a283-2b4d-49c9-8570-5a6b0b87eb43",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1792,
+        -496
+      ],
+      "id": "19590101-fc2c-4624-9a3a-cfb95af6c6d6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "# Condições",
+        "height": 208,
+        "width": 416,
+        "color": "#207425"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1824,
+        -560
+      ],
+      "id": "c31a2cfa-c9c9-46a7-a6a0-387a6d00335b",
+      "name": "Sticky Note14"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -416,
+        -496
+      ],
+      "id": "c0b77159-d0c8-49d8-9f46-060d831eb2d0",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over input items and add a new field called 'myNewField' to the JSON of each one\nfor (const item of $input.all()) {\n  item.json.myNewField = 1;\n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -832,
+        144
+      ],
+      "id": "5cad8a8d-9571-4562-ac5d-f3700538ea11",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.n8n",
+      "typeVersion": 1,
+      "position": [
+        -1280,
+        144
+      ],
+      "id": "016a5b67-01eb-4fcb-96a0-b1d604b755ac",
+      "name": "Get many workflows",
+      "credentials": {
+        "n8nApi": {
+          "id": "OsWXfaE2cSzddKkE",
+          "name": "n8n account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Loop",
+        "height": 208,
+        "width": 224,
+        "color": "#3E1937"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -560
+      ],
+      "id": "7a5b7c16-a208-4b9e-832d-1732158d3b2d",
+      "name": "Sticky Note15"
+    },
+    {
+      "parameters": {
+        "content": "# BÁSICO N8N",
+        "height": 2304,
+        "width": 2576,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2208,
+        -1728
+      ],
+      "id": "022f81e9-c17f-4e0b-a8fb-f45acec26eec",
+      "name": "Sticky Note16"
+    },
+    {
+      "parameters": {
+        "content": "# SERVIDORES",
+        "height": 256,
+        "width": 848,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        -1856
+      ],
+      "id": "7cc63bc7-ab52-4aca-81fa-eeec324ecc70",
+      "name": "Sticky Note17"
+    },
+    {
+      "parameters": {
+        "command": "sudo apt update "
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2784,
+        -1760
+      ],
+      "id": "b1025077-3bf9-40fd-85ce-e704deddcef5",
+      "name": "Execute a command",
+      "credentials": {
+        "sshPassword": {
+          "id": "gmZEvPFpOOfL26ym",
+          "name": "SSH Primario"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "download",
+        "options": {
+          "fileName": ""
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        2944,
+        -1760
+      ],
+      "id": "65b46e9c-d3bb-437f-8f6d-94cdb214ba19",
+      "name": "Download a file",
+      "credentials": {
+        "sshPassword": {
+          "id": "gmZEvPFpOOfL26ym",
+          "name": "SSH Primario"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Comandos Básicos de Servidores Linux na MSP\n\n# Navegação\npwd                 # Mostra o diretório atual\nls                  # Lista arquivos\nls -la              # Lista incluindo arquivos ocultos\ncd /caminho         # Entra em uma pasta\ncd ..               # Volta um diretório\ncd ~                # Vai para a pasta do usuário\ntree                # Exibe estrutura de diretórios (se instalado)\n\n# Arquivos e Pastas\ntouch arquivo.txt           # Cria um arquivo\nmkdir pasta                 # Cria uma pasta\nmkdir -p pasta/subpasta     # Cria pastas em sequência\ncp origem destino           # Copia arquivo\ncp -r pasta1 pasta2         # Copia pasta\nmv origem destino           # Move ou renomeia\nrm arquivo                  # Remove arquivo\nrm -rf pasta                # Remove pasta e conteúdo\nfind . -name \"*.log\"        # Procura arquivos\n\n# Visualizar Arquivos\ncat arquivo.txt         # Mostra conteúdo\nless arquivo.txt        # Navega pelo arquivo\nmore arquivo.txt        # Exibe página por página\nhead arquivo.txt        # Primeiras linhas\ntail arquivo.txt        # Últimas linhas\ntail -f log.txt         # Acompanha um log em tempo real\n\n# Editores\nnano arquivo.txt\nvim arquivo.txt\n\n# Permissões\nchmod 755 arquivo\nchmod +x script.sh\nchown usuario:grupo arquivo\nsudo comando\n\n# Usuários\nwhoami\nid\npasswd\nadduser usuario\nuserdel usuario\ngroups\n\n# Processos\nps aux\ntop\nhtop                 # Se instalado\nkill PID\nkill -9 PID\npkill nome\n\n# Serviços\nsystemctl status nginx\nsystemctl start nginx\nsystemctl stop nginx\nsystemctl restart nginx  # Ferramenta de DevOps\nsystemctl reload nginx\nsystemctl enable nginx\nsystemctl disable nginx\nsystemctl list-units --type=service\n\n# Logs\njournalctl\njournalctl -u nginx\njournalctl -f\ndmesg\n\n# Rede\nip a\nip route\nping google.com\ncurl https://google.com\nwget https://site.com/arquivo.zip\nhostname\nhostname -I\nss -tulpn\nnetstat -tulpn          # Se instalado\n\n# SSH\nssh usuario@ip\nssh -p 2222 usuario@ip\nscp arquivo usuario@ip:/destino\nscp -r pasta usuario@ip:/destino\n\n# Disco\ndf -h\ndu -sh *\ndu -sh pasta\nlsblk\nmount\numount /dev/sdb1\n\n# Memória e CPU\nfree -h\nvmstat\nlscpu\nnproc\nuptime\n\n# Pacotes (Ubuntu/Debian)\nsudo apt update\nsudo apt upgrade\nsudo apt install nginx\nsudo apt remove nginx\nsudo apt autoremove\n\n# Compressão\nzip arquivo.zip pasta\nunzip arquivo.zip\ntar -czvf backup.tar.gz pasta\ntar -xzvf backup.tar.gz\n\n# Docker\ndocker ps\ndocker ps -a\ndocker images\ndocker logs container\ndocker logs -f container\ndocker exec -it container bash\ndocker restart container\ndocker stop container\ndocker start container\ndocker rm container\ndocker rmi imagem\ndocker compose up -d\ndocker compose down\ndocker compose logs -f\n\n# Monitoramento\ntop\nhtop\niotop\niftop\nwatch df -h\nwatch docker ps\n\n# Busca\ngrep \"texto\" arquivo\ngrep -R \"texto\" .\nfind / -name \"*.conf\"\nlocate nginx\nwhich node\nwhereis docker\n\n# Variáveis\necho $PATH\nenv\nexport NODE_ENV=production\n\n# Informações do Sistema\nuname -a\nhostnamectl\ncat /etc/os-release\ndate\ntimedatectl\n\n# date\ntimedatectl\n\n# Reiniciar e reboot\nreboot\nshutdown now\nshutdown -h now\nshutdown -r now\nshutdown +10",
+        "height": 4528,
+        "width": 624,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        -1584
+      ],
+      "id": "47e8bf4e-0a6a-479a-b971-f809f94bad54",
+      "name": "Sticky Note18"
+    },
+    {
+      "parameters": {
+        "content": "# Comandos muito usados no dia a dia da MSP\ncd # Frequente\nls # Frequente\nsystemctl status #Raramente\nsystemctl restart #Raramente\ndocker ps #Momentos críticos\nping #Momentos críticos\ncurl # Frequente\nssh # Frequente\ngrep #Quase nunca\nchmod #Quase nunca\nchown #Quase nunca\nsudo apt update # Frequente\nsudo apt upgrade # Frequente\n-y - aliás para permitir automátiacamente alguma ação (CUIDADO!!!!!!)\ntimedatectl #Quase nunca\nmkdir #Raramente\nrm #Raramente\nnano #Raramente\ngit clone #Raramente",
+        "height": 544,
+        "width": 544,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3392,
+        -1584
+      ],
+      "id": "accabe19-c990-4a02-a963-2383ebe23e8a",
+      "name": "Sticky Note19"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b79bb511-7476-4f34-94b1-5694ef071f6c",
+              "name": "data",
+              "value": "olá, mundo",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3104,
+        -1760
+      ],
+      "id": "7d7f6166-81c5-437a-8e3d-af5c0579a15f",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        3264,
+        -1760
+      ],
+      "id": "105209d1-386a-4592-953f-d3b9d9acd779",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "options": {
+          "fileName": ""
+        }
+      },
+      "type": "n8n-nodes-base.ssh",
+      "typeVersion": 1,
+      "position": [
+        3424,
+        -1760
+      ],
+      "id": "65bac93a-3fa6-478e-bea4-a1f73a8fdeee",
+      "name": "Upload a file",
+      "credentials": {
+        "sshPassword": {
+          "id": "gmZEvPFpOOfL26ym",
+          "name": "SSH Primario"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    },
+    "Filter": {
+      "main": [
+        []
+      ]
+    },
+    "Switch": {
+      "main": [
+        [],
+        [],
+        []
+      ]
+    },
+    "Wait": {
+      "main": [
+        []
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        []
+      ]
+    },
+    "Limit": {
+      "main": [
+        []
+      ]
+    },
+    "Execute a command": {
+      "main": [
+        []
+      ]
+    },
+    "Download a file": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File1": {
+      "main": [
+        [
+          {
+            "node": "Upload a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "1edcee1e-3466-41ba-a629-bde06cb17291",
+  "activeVersionId": "60f55641-0f0f-44be-b378-cbe2916d4be6",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-06-19T18:39:03.457Z",
+      "createdAt": "2026-06-19T18:39:03.457Z",
+      "role": "workflow:owner",
+      "workflowId": "D83Q4NNKYeCqzMJD",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-07-01T20:17:18.181Z",
+    "createdAt": "2026-07-01T20:17:15.590Z",
+    "versionId": "60f55641-0f0f-44be-b378-cbe2916d4be6",
+    "workflowId": "D83Q4NNKYeCqzMJD",
+    "nodes": [
+      {
+        "parameters": {
+          "formTitle": "teste",
+          "formDescription": "aula",
+          "formFields": {
+            "values": [
+              {
+                "fieldLabel": "idade",
+                "fieldType": "number",
+                "placeholder": "sua idade?",
+                "requiredField": true
+              },
+              {
+                "fieldLabel": "nome",
+                "placeholder": "seu nome?"
+              }
+            ]
+          },
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.formTrigger",
+        "typeVersion": 2.6,
+        "position": [
+          0,
+          0
+        ],
+        "id": "cc52a236-2040-44c8-a126-cdf9ea148593",
+        "name": "On form submission",
+        "webhookId": "29139966-fb44-47b5-98e4-8ab54fd071cf"
+      }
+    ],
+    "connections": {},
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 60f55641",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
