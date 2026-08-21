@@ -1,0 +1,506 @@
+{
+  "updatedAt": "2026-08-14T23:44:54.458Z",
+  "createdAt": "2026-08-12T12:27:56.266Z",
+  "id": "cZtYByAiL2WeYgmM",
+  "name": "[LEADS] Verificação automática na planilhas IB 19h - Pipedrive + Sheets + Gmail (Wendel)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "triggerAtHour": 19
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b0cef7ab-1139-4be7-88f9-032880eb9ab1",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS INBOUND",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Banco de dados Inbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Data de entrada",
+              "lookupValue": "={{ $now.format('dd/MM/yyyy') }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        608,
+        0
+      ],
+      "id": "c715a3ef-f21d-4d0a-8afe-d823b89fba82",
+      "name": "Get row(s) in sheet",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "sendTo": "desenvmedicalspin@gmail.com",
+        "subject": "=SINAL VERMELHO! - Leads com campos vazios {{ $now.format('dd/MM/yyyy T') }}",
+        "message": "={{ $json.mensagem }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1024,
+        -16
+      ],
+      "id": "659073f6-c29a-4405-8b0a-8f006af73ee1",
+      "name": "Send a message",
+      "webhookId": "04973c5b-0f50-450b-9039-ae0b1946bde8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KvJgpEKJ3c13wnGv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "returnAll": true,
+        "filters": {
+          "status": "open"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        208,
+        0
+      ],
+      "id": "c25fe0e3-f8ac-45a1-a483-8d4382482e56",
+      "name": "Get many deals",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "4qJXbNcTRplBXhrh",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const hoje = new Date();\n\nconst inicioDoDia = new Date(\n  hoje.getFullYear(),\n  hoje.getMonth(),\n  hoje.getDate()\n);\n\nconst fimDoDia = new Date(\n  hoje.getFullYear(),\n  hoje.getMonth(),\n  hoje.getDate() + 1\n);\n\n// Etapas permitidas do OUTBOUND\nconst etapasOutbound = [\n  11, // Novo Lead OB\n  6,  // Leads qualificados\n  7,  // Contato inicial OB\n  39, // Pós Contato Phillips\n  9,  // Pós Contato RM Outras Marcas\n  12, // Agendamento / reagendamento OB\n  8   // Follow-up quente\n];\n\nreturn items.filter(item => {\n  const addTime = item.json.add_time;\n  const stageId = Number(item.json.stage_id);\n\n  // Sem data de criação\n  if (!addTime) {\n    return false;\n  }\n\n  const dataAdicao = new Date(addTime);\n\n  // Adicionado hoje\n  const adicionadoHoje =\n    dataAdicao >= inicioDoDia &&\n    dataAdicao < fimDoDia;\n\n  // Está em uma etapa do OUTBOUND\n  const etapaOutbound = etapasOutbound.includes(stageId);\n\n  return adicionadoHoje && etapaOutbound;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "e6ef1cf1-a484-42f2-ab9e-899c8473c64d",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const camposIgnorados = [\n  '26.313.383/0001-41'\n];\n\nconst resultado = [];\n\nfor (const item of $input.all()) {\n  const dados = item.json;\n\n  const camposVazios = Object.entries(dados)\n    .filter(([campo, valor]) => {\n      if (camposIgnorados.includes(campo)) return false;\n\n      return valor === '' || valor === null || valor === undefined;\n    })\n    .map(([campo]) => campo);\n\n  if (camposVazios.length > 0) {\n    resultado.push({\n      id: dados.ID,\n      nome: dados.Nome,\n      instituicao: dados['Instituição'],\n      cnpj: dados.CNPJ,\n      camposVazios\n    });\n  }\n}\n\nlet mensagem = '';\n\nif (resultado.length === 0) {\n  mensagem = `\n    <h2>Todos os leads estão completos</h2>\n    <p>Nenhum lead possui campos vazios.</p>\n  `;\n} else {\n  mensagem = `\n    <h2>Leads com campos vazios</h2>\n    <p>Foram encontrados <strong>${resultado.length}</strong> leads com informações pendentes.</p>\n\n    <table border=\"1\" cellpadding=\"8\" cellspacing=\"0\" style=\"border-collapse: collapse;\">\n      <thead>\n        <tr>\n          <th>ID</th>\n          <th>Nome</th>\n          <th>Instituição</th>\n          <th>CNPJ</th>\n          <th>Campos vazios</th>\n        </tr>\n      </thead>\n      <tbody>\n  `;\n\n  for (const lead of resultado) {\n    mensagem += `\n      <tr>\n        <td>${lead.id ?? ''}</td>\n        <td>${lead.nome ?? ''}</td>\n        <td>${lead.instituicao ?? ''}</td>\n        <td>${lead.cnpj ?? ''}</td>\n        <td>${lead.camposVazios.join(', ')}</td>\n      </tr>\n    `;\n  }\n\n  mensagem += `\n      </tbody>\n    </table>\n  `;\n}\n\nreturn [\n  {\n    json: {\n      total: resultado.length,\n      mensagem\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        -16
+      ],
+      "id": "3d857804-a5e1-4051-a44f-fdcf31c66c3f",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Get many deals": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "timestamp": "2026-08-14T19:00:03.012-03:00",
+          "Readable date": "August 14th 2026, 7:00:03 pm",
+          "Readable time": "7:00:03 pm",
+          "Day of week": "Friday",
+          "Year": "2026",
+          "Month": "August",
+          "Day of month": "14",
+          "Hour": "19",
+          "Minute": "00",
+          "Second": "03",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "9306272a-138b-431b-a35c-bab17874b37f",
+  "activeVersionId": "9306272a-138b-431b-a35c-bab17874b37f",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-08-12T12:27:56.266Z",
+      "createdAt": "2026-08-12T12:27:56.266Z",
+      "role": "workflow:owner",
+      "workflowId": "cZtYByAiL2WeYgmM",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-08-14T23:31:37.549Z",
+    "createdAt": "2026-08-14T23:31:35.597Z",
+    "versionId": "9306272a-138b-431b-a35c-bab17874b37f",
+    "workflowId": "cZtYByAiL2WeYgmM",
+    "nodes": [
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "weeks",
+                "triggerAtDay": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                "triggerAtHour": 19
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          0,
+          0
+        ],
+        "id": "b0cef7ab-1139-4be7-88f9-032880eb9ab1",
+        "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+            "mode": "list",
+            "cachedResultName": "BANCO DE DADOS INBOUND",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "Banco de dados Inbound",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit#gid=0"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "Data de entrada",
+                "lookupValue": "={{ $now.format('dd/MM/yyyy') }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          608,
+          0
+        ],
+        "id": "c715a3ef-f21d-4d0a-8afe-d823b89fba82",
+        "name": "Get row(s) in sheet",
+        "retryOnFail": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "2DSmp4SarxDNx6pV",
+            "name": "Google Sheets account"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "sendTo": "desenvmedicalspin@gmail.com",
+          "subject": "=SINAL VERMELHO! - Leads com campos vazios {{ $now.format('dd/MM/yyyy T') }}",
+          "message": "={{ $json.mensagem }}",
+          "options": {
+            "appendAttribution": false
+          }
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "position": [
+          1024,
+          -16
+        ],
+        "id": "659073f6-c29a-4405-8b0a-8f006af73ee1",
+        "name": "Send a message",
+        "webhookId": "04973c5b-0f50-450b-9039-ae0b1946bde8",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "KvJgpEKJ3c13wnGv",
+            "name": "Gmail account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "getAll",
+          "returnAll": true,
+          "filters": {
+            "status": "open"
+          }
+        },
+        "type": "n8n-nodes-base.pipedrive",
+        "typeVersion": 2,
+        "position": [
+          208,
+          0
+        ],
+        "id": "c25fe0e3-f8ac-45a1-a483-8d4382482e56",
+        "name": "Get many deals",
+        "credentials": {
+          "pipedriveApi": {
+            "id": "4qJXbNcTRplBXhrh",
+            "name": "Pipedrive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const hoje = new Date();\n\nconst inicioDoDia = new Date(\n  hoje.getFullYear(),\n  hoje.getMonth(),\n  hoje.getDate()\n);\n\nconst fimDoDia = new Date(\n  hoje.getFullYear(),\n  hoje.getMonth(),\n  hoje.getDate() + 1\n);\n\n// Etapas permitidas do OUTBOUND\nconst etapasOutbound = [\n  11, // Novo Lead OB\n  6,  // Leads qualificados\n  7,  // Contato inicial OB\n  39, // Pós Contato Phillips\n  9,  // Pós Contato RM Outras Marcas\n  12, // Agendamento / reagendamento OB\n  8   // Follow-up quente\n];\n\nreturn items.filter(item => {\n  const addTime = item.json.add_time;\n  const stageId = Number(item.json.stage_id);\n\n  // Sem data de criação\n  if (!addTime) {\n    return false;\n  }\n\n  const dataAdicao = new Date(addTime);\n\n  // Adicionado hoje\n  const adicionadoHoje =\n    dataAdicao >= inicioDoDia &&\n    dataAdicao < fimDoDia;\n\n  // Está em uma etapa do OUTBOUND\n  const etapaOutbound = etapasOutbound.includes(stageId);\n\n  return adicionadoHoje && etapaOutbound;\n});"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          416,
+          0
+        ],
+        "id": "e6ef1cf1-a484-42f2-ab9e-899c8473c64d",
+        "name": "Code in JavaScript1"
+      },
+      {
+        "parameters": {
+          "jsCode": "const camposIgnorados = [\n  '26.313.383/0001-41'\n];\n\nconst resultado = [];\n\nfor (const item of $input.all()) {\n  const dados = item.json;\n\n  const camposVazios = Object.entries(dados)\n    .filter(([campo, valor]) => {\n      if (camposIgnorados.includes(campo)) return false;\n\n      return valor === '' || valor === null || valor === undefined;\n    })\n    .map(([campo]) => campo);\n\n  if (camposVazios.length > 0) {\n    resultado.push({\n      id: dados.ID,\n      nome: dados.Nome,\n      instituicao: dados['Instituição'],\n      cnpj: dados.CNPJ,\n      camposVazios\n    });\n  }\n}\n\nlet mensagem = '';\n\nif (resultado.length === 0) {\n  mensagem = `\n    <h2>Todos os leads estão completos</h2>\n    <p>Nenhum lead possui campos vazios.</p>\n  `;\n} else {\n  mensagem = `\n    <h2>Leads com campos vazios</h2>\n    <p>Foram encontrados <strong>${resultado.length}</strong> leads com informações pendentes.</p>\n\n    <table border=\"1\" cellpadding=\"8\" cellspacing=\"0\" style=\"border-collapse: collapse;\">\n      <thead>\n        <tr>\n          <th>ID</th>\n          <th>Nome</th>\n          <th>Instituição</th>\n          <th>CNPJ</th>\n          <th>Campos vazios</th>\n        </tr>\n      </thead>\n      <tbody>\n  `;\n\n  for (const lead of resultado) {\n    mensagem += `\n      <tr>\n        <td>${lead.id ?? ''}</td>\n        <td>${lead.nome ?? ''}</td>\n        <td>${lead.instituicao ?? ''}</td>\n        <td>${lead.cnpj ?? ''}</td>\n        <td>${lead.camposVazios.join(', ')}</td>\n      </tr>\n    `;\n  }\n\n  mensagem += `\n      </tbody>\n    </table>\n  `;\n}\n\nreturn [\n  {\n    json: {\n      total: resultado.length,\n      mensagem\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          832,
+          -16
+        ],
+        "id": "3d857804-a5e1-4051-a44f-fdcf31c66c3f",
+        "name": "Code in JavaScript"
+      }
+    ],
+    "connections": {
+      "Schedule Trigger": {
+        "main": [
+          [
+            {
+              "node": "Get many deals",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Get row(s) in sheet": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          []
+        ]
+      },
+      "Get many deals": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript1": {
+        "main": [
+          [
+            {
+              "node": "Get row(s) in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Send a message",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 9306272a",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-11-17T14:09:04.153Z",
+      "createdAt": "2025-11-17T14:09:04.153Z",
+      "id": "32ehNS7DwOBedRQc",
+      "name": "Sheets"
+    },
+    {
+      "updatedAt": "2025-11-17T14:34:30.644Z",
+      "createdAt": "2025-11-17T14:34:30.644Z",
+      "id": "ro1Seq0NGEH7zm0y",
+      "name": "Pipedrive"
+    },
+    {
+      "updatedAt": "2025-11-17T14:46:49.579Z",
+      "createdAt": "2025-11-17T14:46:49.579Z",
+      "id": "9yuumwfUmri83S1w",
+      "name": "Javascript"
+    },
+    {
+      "updatedAt": "2025-11-17T14:48:08.204Z",
+      "createdAt": "2025-11-17T14:48:08.204Z",
+      "id": "uO0uf6z2emeG4Xy4",
+      "name": "Gmail"
+    }
+  ]
+}
