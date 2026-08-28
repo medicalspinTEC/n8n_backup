@@ -1,0 +1,79 @@
+{
+  "updatedAt": "2026-08-19T13:23:17.934Z",
+  "createdAt": "2026-08-14T12:46:01.343Z",
+  "id": "EYFFznPkY441pMT1",
+  "name": "[CAMPAIGNS-APP] Webhook test events - (Wendel)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "campaigns-webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b19b8b92-ebdb-437e-9758-2c83d51d828c",
+      "name": "Webhook",
+      "webhookId": "0a3212d1-2715-444e-ad2b-f6512290d312"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "38098968-a81e-49a0-95c1-45005c0897ba",
+  "activeVersionId": "38098968-a81e-49a0-95c1-45005c0897ba",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-08-14T12:46:01.343Z",
+      "createdAt": "2026-08-14T12:46:01.343Z",
+      "role": "workflow:owner",
+      "workflowId": "EYFFznPkY441pMT1",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-08-14T12:46:24.200Z",
+    "createdAt": "2026-08-14T12:46:20.066Z",
+    "versionId": "38098968-a81e-49a0-95c1-45005c0897ba",
+    "workflowId": "EYFFznPkY441pMT1",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "campaigns-webhook",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "b19b8b92-ebdb-437e-9758-2c83d51d828c",
+        "name": "Webhook",
+        "webhookId": "0a3212d1-2715-444e-ad2b-f6512290d312"
+      }
+    ],
+    "connections": {},
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 38098968",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
