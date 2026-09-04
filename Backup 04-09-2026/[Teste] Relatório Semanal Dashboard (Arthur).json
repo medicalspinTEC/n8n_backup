@@ -1,0 +1,447 @@
+{
+  "updatedAt": "2026-08-07T13:04:01.812Z",
+  "createdAt": "2026-07-30T15:06:20.588Z",
+  "id": "kcsT9lnbwwXG2Utk",
+  "name": "[Teste] Relatório Semanal Dashboard (Arthur)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2512,
+        320
+      ],
+      "id": "5b2c45ee-7094-40ee-8d56-939d713d7d82",
+      "name": "Gatilho Segunda 8h"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q",
+          "mode": "list",
+          "cachedResultName": "Ligações / Reuniões (time comercial)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 243288521,
+          "mode": "list",
+          "cachedResultName": "Registros de ligações",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit#gid=243288521"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2368,
+        320
+      ],
+      "id": "6d5de664-b5d5-485a-a4f8-226dccdad5d4",
+      "name": "Ler Ligações",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q",
+          "mode": "list",
+          "cachedResultName": "Ligações / Reuniões (time comercial)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 979513920,
+          "mode": "list",
+          "cachedResultName": "Registro de reuniões",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit#gid=979513920"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -2064,
+        320
+      ],
+      "id": "3c7b8c0b-237b-4bb5-8602-6cfdb66c1dee",
+      "name": "Ler Reuniões",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS INBOUND",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Banco de dados Inbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1776,
+        320
+      ],
+      "id": "bcde7dc3-61c6-42d7-acda-eed07b79fa6d",
+      "name": "Ler Inbound",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 20000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS OUTBOUND CNES2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Banco de dados Outbound",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1472,
+        320
+      ],
+      "id": "7c58ba22-4a34-4e6b-8d6f-f0b77e436d65",
+      "name": "Ler Outbound",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 20000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ================================================================\n// Calcula as métricas da semana anterior (segunda a sexta) e as\n// compara com a semana retrasada, a partir dos dados brutos das\n// 4 planilhas. Roda toda segunda às 8h (gatilho).\n// ================================================================\n\nfunction parseDataBR(str) {\n  if (!str) return null;\n  const partes = String(str).trim().split(' ');\n  const [d, m, y] = partes[0].split('/').map(Number);\n  if (!d || !m || !y) return null;\n  let hh = 0, mi = 0, ss = 0;\n  if (partes[1]) {\n    const t = partes[1].split(':').map(Number);\n    hh = t[0] || 0; mi = t[1] || 0; ss = t[2] || 0;\n  }\n  return new Date(y, m - 1, d, hh, mi, ss);\n}\n\nfunction dentro(data, inicio, fim) {\n  return data !== null && data >= inicio && data <= fim;\n}\n\nfunction fmt(atual, anterior) {\n  if (atual === anterior) {\n    return anterior ? `${atual} = semana passada (${anterior})` : `${atual} = semana passada`;\n  }\n  if (anterior === 0) return `${atual} (novo — 0 na semana passada)`;\n  const pct = ((atual - anterior) / anterior) * 100;\n  const sinal = pct >= 0 ? '+' : '-';\n  return `${atual} ${sinal}${Math.abs(pct).toFixed(0)}% em relação à semana passada (${anterior})`;\n}\n\nfunction fmtTaxa(atualPct, anteriorPct) {\n  const diff = atualPct - anteriorPct;\n  if (diff === 0) return `${atualPct}% = semana passada (${anteriorPct}%)`;\n  const sinal = diff >= 0 ? '+' : '';\n  return `${atualPct}% ${sinal}${diff}% em relação à semana passada (${anteriorPct}%)`;\n}\n\n// ---------- Definição da semana (segunda a sexta) ----------\n// O gatilho roda na segunda às 8h; a \"semana atual\" do relatório é a\n// que acabou de terminar (segunda a sexta passados).\nconst hoje = new Date();\nconst semanaFim = new Date(hoje); semanaFim.setDate(hoje.getDate() - 3); semanaFim.setHours(23, 59, 59, 999);\nconst semanaInicio = new Date(semanaFim); semanaInicio.setDate(semanaFim.getDate() - 4); semanaInicio.setHours(0, 0, 0, 0);\nconst semanaAntFim = new Date(semanaInicio); semanaAntFim.setDate(semanaInicio.getDate() - 3); semanaAntFim.setHours(23, 59, 59, 999);\nconst semanaAntInicio = new Date(semanaAntFim); semanaAntInicio.setDate(semanaAntFim.getDate() - 4); semanaAntInicio.setHours(0, 0, 0, 0);\n\n// ---------- Dados brutos das 4 planilhas ----------\nconst ligacoes = $('Ler Ligações').all().map(i => i.json);\nconst reunioes = $('Ler Reuniões').all().map(i => i.json);\nconst inbound  = $('Ler Inbound').all().map(i => i.json);\nconst outbound = $('Ler Outbound').all().map(i => i.json);\n\nconst RESPONSAVEIS = ['CAMILA', 'ALISSON'];\n\n// ---------- LIGAÇÕES (só Camila + Alisson) ----------\nconst ligFiltradas = ligacoes.filter(l => RESPONSAVEIS.includes((l['Usuário'] || '').trim().toUpperCase()));\nconst ligA = ligFiltradas.filter(l => dentro(parseDataBR(l['Data / Hora']), semanaInicio, semanaFim));\nconst ligP = ligFiltradas.filter(l => dentro(parseDataBR(l['Data / Hora']), semanaAntInicio, semanaAntFim));\n\nconst totA = ligA.length, totP = ligP.length;\nconst atendA = ligA.filter(l => l['Atendida'] === 'Sim').length;\nconst atendP = ligP.filter(l => l['Atendida'] === 'Sim').length;\nconst taxaA = totA ? Math.round((atendA / totA) * 100) : 0;\nconst taxaP = totP ? Math.round((atendP / totP) * 100) : 0;\n\nconst porPessoa = {};\nfor (const pessoa of RESPONSAVEIS) {\n  const subA = ligA.filter(l => (l['Usuário'] || '').trim().toUpperCase() === pessoa);\n  const subP = ligP.filter(l => (l['Usuário'] || '').trim().toUpperCase() === pessoa);\n  const atA = subA.filter(l => l['Atendida'] === 'Sim').length;\n  const atP = subP.filter(l => l['Atendida'] === 'Sim').length;\n  const txA = subA.length ? Math.round((atA / subA.length) * 100) : 0;\n  const txP = subP.length ? Math.round((atP / subP.length) * 100) : 0;\n  porPessoa[pessoa] = { totalA: subA.length, totalP: subP.length, atA, atP, txA, txP };\n}\n\n// ---------- REUNIÕES ----------\nconst status = r => (r['STATUS'] || '').trim();\nconst reuA = reunioes.filter(r => dentro(parseDataBR(r['AGENDAMENTO']), semanaInicio, semanaFim));\nconst reuP = reunioes.filter(r => dentro(parseDataBR(r['AGENDAMENTO']), semanaAntInicio, semanaAntFim));\nconst agA = reuA.length, agP = reuP.length;\nconst realA = reuA.filter(r => status(r) === 'Realizada').length;\nconst realP = reuP.filter(r => status(r) === 'Realizada').length;\nconst noshowA = reuA.filter(r => status(r) === 'Lead não compareceu').length;\nconst noshowP = reuP.filter(r => status(r) === 'Lead não compareceu').length;\nconst cancelA = reuA.filter(r => ['Cancelado p/ lead', 'Cancelado p/ MS'].includes(status(r))).length;\nconst cancelP = reuP.filter(r => ['Cancelado p/ lead', 'Cancelado p/ MS'].includes(status(r))).length;\n\n// ---------- INBOUND ----------\nconst ibNovosA = inbound.filter(l => dentro(parseDataBR(l['Data de entrada']), semanaInicio, semanaFim));\nconst ibNovosP = inbound.filter(l => dentro(parseDataBR(l['Data de entrada']), semanaAntInicio, semanaAntFim));\nfunction validosInvalidos(lista) {\n  const invalidos = lista.filter(l => (l['Cadencia Inbound'] || '').trim() === 'Lead Inválido').length;\n  return { validos: lista.length - invalidos, invalidos };\n}\nconst viA = validosInvalidos(ibNovosA), viP = validosInvalidos(ibNovosP);\nconst ibReuniaoA = inbound.filter(l => dentro(parseDataBR(l['Reunião de apresentação']), semanaInicio, semanaFim));\nconst ibReuniaoP = inbound.filter(l => dentro(parseDataBR(l['Reunião de apresentação']), semanaAntInicio, semanaAntFim));\n\n// ---------- OUTBOUND ----------\nconst obContatosA = outbound.filter(l => dentro(parseDataBR(l['Data da ligação contato inicial']), semanaInicio, semanaFim));\nconst obContatosP = outbound.filter(l => dentro(parseDataBR(l['Data da ligação contato inicial']), semanaAntInicio, semanaAntFim));\nconst obReuniaoA = outbound.filter(l => dentro(parseDataBR(l['Reunião comercial OB']), semanaInicio, semanaFim));\nconst obReuniaoP = outbound.filter(l => dentro(parseDataBR(l['Reunião comercial OB']), semanaAntInicio, semanaAntFim));\n\n// ---------- INSIGHTS (regra: variação >= 20% em módulo, sem LLM) ----------\nconst insights = [];\nfunction registrarInsight(nome, atual, anterior, invertido) {\n  if (!anterior) return;\n  const pct = ((atual - anterior) / anterior) * 100;\n  if (Math.abs(pct) < 20) return;\n  const caiu = pct < 0;\n  const ruim = invertido ? !caiu : caiu;\n  const emoji = ruim ? '⚠️' : '✅';\n  insights.push(`${emoji} ${nome} ${caiu ? 'caiu' : 'subiu'} ${Math.abs(pct).toFixed(0)}% em relação à semana passada.`);\n}\nregistrarInsight('Volume de ligações', totA, totP);\nregistrarInsight('Taxa de atendimento', taxaA, taxaP);\nregistrarInsight('Agendamentos de reunião', agA, agP);\nregistrarInsight('No-show', noshowA, noshowP, true);\nregistrarInsight('Novos leads Inbound', ibNovosA.length, ibNovosP.length);\nregistrarInsight('Contatos iniciais Outbound', obContatosA.length, obContatosP.length);\n\n// ---------- MONTAGEM DO TEXTO DO E-MAIL ----------\nconst fmtData = d => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`;\nconst assunto = `Relatório semanal dashboard - ${fmtData(semanaInicio)} até ${fmtData(semanaFim)}`;\n\nconst linhas = [];\nlinhas.push('Bom dia, time! Segue o relatório semanal do dashboard.\\n');\nlinhas.push('LIGAÇÕES (Camila + Alisson)');\nlinhas.push(`Total de ligações: ${fmt(totA, totP)}`);\nlinhas.push(`Atendidas: ${fmt(atendA, atendP)}`);\nlinhas.push(`Taxa de atendimento: ${fmtTaxa(taxaA, taxaP)}`);\nfor (const pessoa of RESPONSAVEIS) {\n  const p = porPessoa[pessoa];\n  const nome = pessoa.charAt(0) + pessoa.slice(1).toLowerCase();\n  linhas.push(`\\n  ${nome}:`);\n  linhas.push(`  Ligações: ${fmt(p.totalA, p.totalP)}`);\n  linhas.push(`  Atendidas: ${fmt(p.atA, p.atP)}`);\n  linhas.push(`  Taxa de atendimento: ${fmtTaxa(p.txA, p.txP)}`);\n}\nlinhas.push('\\nREUNIÕES');\nlinhas.push(`Agendamentos: ${fmt(agA, agP)}`);\nlinhas.push(`Realizadas: ${fmt(realA, realP)}`);\nlinhas.push(`No-show: ${fmt(noshowA, noshowP)}`);\nlinhas.push(`Canceladas: ${fmt(cancelA, cancelP)}`);\nlinhas.push('\\nINBOUND');\nlinhas.push(`Novos leads: ${fmt(ibNovosA.length, ibNovosP.length)}`);\nlinhas.push(`  Válidos: ${fmt(viA.validos, viP.validos)}`);\nlinhas.push(`  Inválidos: ${fmt(viA.invalidos, viP.invalidos)}`);\nlinhas.push(`Reuniões marcadas: ${fmt(ibReuniaoA.length, ibReuniaoP.length)}`);\nlinhas.push('\\nOUTBOUND');\nlinhas.push(`Contatos iniciais realizados: ${fmt(obContatosA.length, obContatosP.length)}`);\nlinhas.push(`Reuniões marcadas: ${fmt(obReuniaoA.length, obReuniaoP.length)}`);\nlinhas.push('\\nINSIGHTS');\nlinhas.push(insights.length ? insights.join('\\n') : 'Nenhuma variação relevante (acima de 20%) identificada essa semana.');\n\nconst corpo = linhas.join('\\n');\n\nreturn [{\n  json: {\n    assunto,\n    corpo,\n    semana_inicio: fmtData(semanaInicio),\n    semana_fim: fmtData(semanaFim),\n    ligacoes_total: totA,\n    ligacoes_atendidas: atendA,\n    ligacoes_taxa: taxaA,\n    camila_ligacoes: porPessoa['CAMILA'].totalA,\n    camila_atendidas: porPessoa['CAMILA'].atA,\n    camila_taxa: porPessoa['CAMILA'].txA,\n    alisson_ligacoes: porPessoa['ALISSON'].totalA,\n    alisson_atendidas: porPessoa['ALISSON'].atA,\n    alisson_taxa: porPessoa['ALISSON'].txA,\n    reunioes_agendamentos: agA,\n    reunioes_realizadas: realA,\n    reunioes_noshow: noshowA,\n    reunioes_canceladas: cancelA,\n    ib_novos_leads: ibNovosA.length,\n    ib_validos: viA.validos,\n    ib_invalidos: viA.invalidos,\n    ib_reunioes_marcadas: ibReuniaoA.length,\n    ob_contatos_iniciais: obContatosA.length,\n    ob_reunioes_marcadas: obReuniaoA.length,\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1312,
+        320
+      ],
+      "id": "8cb57e95-c255-4496-9b8b-802781a235eb",
+      "name": "Calcular Métricas da Semana"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17MIoC7LlZxsVH-G0h_GbHZTBYUoStNtLddQqWYeVYbE",
+          "mode": "list",
+          "cachedResultName": "Log Histórico - Relatório Semanal",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17MIoC7LlZxsVH-G0h_GbHZTBYUoStNtLddQqWYeVYbE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 0,
+          "mode": "list",
+          "cachedResultName": "Página1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17MIoC7LlZxsVH-G0h_GbHZTBYUoStNtLddQqWYeVYbE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Semana Início": "={{ $json.semana_inicio }}",
+            "Semana Fim": "={{ $json.semana_fim }}",
+            "Ligações Total": "={{ $json.ligacoes_total }}",
+            "Ligações Atendidas": "={{ $json.ligacoes_atendidas }}",
+            "Ligações Taxa": "={{ $json.ligacoes_taxa }}",
+            "Camila Ligações": "={{ $json.camila_ligacoes }}",
+            "Camila Atendidas": "={{ $json.camila_atendidas }}",
+            "Camila Taxa": "={{ $json.camila_taxa }}",
+            "Alisson Ligações": "={{ $json.alisson_ligacoes }}",
+            "Alisson Atendidas": "={{ $json.alisson_atendidas }}",
+            "Alisson Taxa": "={{ $json.alisson_taxa }}",
+            "Reuniões Agendamentos": "={{ $json.reunioes_agendamentos }}",
+            "Reuniões Realizadas": "={{ $json.reunioes_realizadas }}",
+            "Reuniões No-show": "={{ $json.reunioes_noshow }}",
+            "Reuniões Canceladas": "={{ $json.reunioes_canceladas }}",
+            "IB Novos Leads": "={{ $json.ib_novos_leads }}",
+            "IB Válidos": "={{ $json.ib_validos }}",
+            "IB Inválidos": "={{ $json.ib_invalidos }}",
+            "IB Reuniões Marcadas": "={{ $json.ib_reunioes_marcadas }}",
+            "OB Contatos Iniciais": "={{ $json.ob_contatos_iniciais }}",
+            "OB Reuniões Marcadas": "={{ $json.ob_reunioes_marcadas }}"
+          },
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1024,
+        192
+      ],
+      "id": "4f098055-ae15-48c3-9af2-2c46d49bbdda",
+      "name": "Gravar Log Histórico",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "arthur.medicalspin@gmail.com,executivo.negocios@medicalspin.com.br",
+        "subject": "={{ $json.assunto }}",
+        "message": "={{ $json.corpo }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -1024,
+        432
+      ],
+      "id": "8693eb70-897a-443d-b564-04c892b660ea",
+      "name": "Enviar Relatório Semanal",
+      "retryOnFail": true,
+      "webhookId": "f4ba2c4e-9e51-459e-993d-b339bda6f038",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KvJgpEKJ3c13wnGv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -2208,
+        320
+      ],
+      "id": "8042a2e1-e37d-4a86-9e75-bef6831e2f3d",
+      "name": "Aguardar 15s (1)",
+      "webhookId": "wait-wait-1"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1920,
+        320
+      ],
+      "id": "194a6929-6db1-4d83-bf33-578a343f647c",
+      "name": "Aguardar 15s (2)",
+      "webhookId": "wait-wait-2"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1632,
+        320
+      ],
+      "id": "afb64342-ecc6-46a8-aad5-b72cd3457ae1",
+      "name": "Aguardar 15s (3)",
+      "webhookId": "wait-wait-3"
+    }
+  ],
+  "connections": {
+    "Gatilho Segunda 8h": {
+      "main": [
+        [
+          {
+            "node": "Ler Ligações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Ligações": {
+      "main": [
+        [
+          {
+            "node": "Aguardar 15s (1)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Reuniões": {
+      "main": [
+        [
+          {
+            "node": "Aguardar 15s (2)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Inbound": {
+      "main": [
+        [
+          {
+            "node": "Aguardar 15s (3)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Outbound": {
+      "main": [
+        [
+          {
+            "node": "Calcular Métricas da Semana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Métricas da Semana": {
+      "main": [
+        [
+          {
+            "node": "Gravar Log Histórico",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Enviar Relatório Semanal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aguardar 15s (1)": {
+      "main": [
+        [
+          {
+            "node": "Ler Reuniões",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aguardar 15s (2)": {
+      "main": [
+        [
+          {
+            "node": "Ler Inbound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aguardar 15s (3)": {
+      "main": [
+        [
+          {
+            "node": "Ler Outbound",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "d1699946-023d-433c-88b1-c2dc6456dd61",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-07-30T15:06:20.588Z",
+      "createdAt": "2026-07-30T15:06:20.588Z",
+      "role": "workflow:owner",
+      "workflowId": "kcsT9lnbwwXG2Utk",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
