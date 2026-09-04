@@ -1,0 +1,50 @@
+{
+  "updatedAt": "2026-08-07T12:54:10.461Z",
+  "createdAt": "2026-08-03T13:41:37.064Z",
+  "id": "rzaT9Zi1MzQGog02",
+  "name": "My workflow 5",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "disparos",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8acbfd8d-7e73-48b0-abeb-b44ba753dc33",
+      "name": "Webhook",
+      "webhookId": "012f5ac3-09c7-43cf-b800-a3488e23acba"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "4aaa335c-c73d-4fc9-9a07-d47d57172bb4",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-08-03T13:41:37.064Z",
+      "createdAt": "2026-08-03T13:41:37.064Z",
+      "role": "workflow:owner",
+      "workflowId": "rzaT9Zi1MzQGog02",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
