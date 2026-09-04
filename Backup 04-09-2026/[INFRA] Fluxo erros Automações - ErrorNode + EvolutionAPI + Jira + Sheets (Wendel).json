@@ -1,0 +1,1170 @@
+{
+  "updatedAt": "2026-08-31T13:19:47.359Z",
+  "createdAt": "2025-11-17T14:09:10.373Z",
+  "id": "Cw4BKEAZCX2tPyvL",
+  "name": "[INFRA] Fluxo erros Automações - ErrorNode + EvolutionAPI + Jira + Sheets (Wendel)",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        64,
+        0
+      ],
+      "id": "d73e4ad8-ba2d-4949-9e95-e3c26d813269",
+      "name": "Error Trigger",
+      "notesInFlow": false,
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "jsCode": "const erroOriginal = $input.first().json.execution?.error?.message || \"\";\n\nconst traducoes = {\n  \"Erro ao enviar mensagem de texto.\":\n    \"Não foi possível enviar a mensagem. Verifique a conexão, o número de destino ou tente novamente.\",\n\n  \"The service is receiving too many requests from you.\":\n    \"O sistema recebeu muitas solicitações em um curto período. Aguarde alguns instantes e tente novamente.\",\n\n  \"Workflow did not finish, possible out-of-memory issue.\":\n    \"A automação foi interrompida porque o servidor ficou sem memória ou recursos suficientes para concluir a execução.\",\n\n  \"Column names were updated after the node's setup.\":\n    \"As colunas da planilha ou banco de dados foram alteradas depois que a automação foi configurada. Atualize a configuração do node.\",\n\n  \"Bad request - please check your parameters.\":\n    \"A solicitação enviada contém informações inválidas ou incompletas. Verifique os dados informados e tente novamente.\",\n\n  \"Service unavailable - try again later or consider setting this node to retry automatically (in the node settings).\":\n    \"O serviço está temporariamente indisponível. Aguarde alguns minutos e tente novamente. Se o problema continuar, configure tentativas automáticas no node.\",\n\n  \"The resource you are requesting could not be found.\":\n    \"O recurso solicitado não foi encontrado. Verifique se o ID, URL ou registro informado existe.\",\n\n  \"Mapear Novo Funil/Etapa.\":    \n    \"Mapear Novo Funil/Etapa.\",\n\n  \"The connection to the server was closed unexpectedly, perhaps it is offline. You can retry the request immediately or wait and retry later.\":\n    \"Sobrecarga de conexão na API do Google, execute o node novamente manualmente.\",\n\n  \"Forbidden - perhaps check your credentials?\":\n    \"Recusado por credenciais inválidas.\",\n\n  \"The service was not able to process your request\":\n    \"O serviço não conseguiu processar sua solicitação.\"\n};\n\nconst erroConhecido = erroOriginal in traducoes;\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    erroOriginal,\n    erroTraduzido: erroConhecido\n      ? traducoes[erroOriginal]\n      : \"Erro ainda não catalogado.\",\n    erroConhecido\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        144
+      ],
+      "id": "0c53b2ac-5d70-4ff4-8a3f-04acd98da4da",
+      "name": "ErrosConhecidos"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7caeaf03-3a52-4877-af29-6fa92e54160d",
+              "leftValue": "={{ $json.erroConhecido }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        640,
+        144
+      ],
+      "id": "5c0ceba3-86ca-4cc4-9908-aa76edd8da4a",
+      "name": "Condição"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://medicalspin.atlassian.net/rest/api/3/issue",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic ZGVzZW52bWVkaWNhbHNwaW5AZ21haWwuY29tOkFUQVRUM3hGZkdGMHU2b0VCbDlTcHdsNGFPYmo3 OXIzc3F0b1hxWkxQOUp5OWJiWlFOQ29seEtBX1FxLXNHb2lLdXFPS1lMTWJqT2swUE45QldNSS02 ZlhkLXJuTlhmRERHZmt1SzU4X0VwazQyVXZ3VjN1YUJFdC1xeFE3UXRaWWZuMEl5cUZBbEZqRU05 OWFLbk5JWVIzQVZNZ2xSZHVHallIY2ZNV2ZzNXBDdXBPamh6N25oYz0zQTk5QUE2NQ=="
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"project\": {\n      \"key\": \"TEC\"\n    },\n    \"summary\": \"Execução com erro no fluxo - {{ $('Error Trigger').item.json.workflow.name }}\",\n    \"description\": {\n      \"type\": \"doc\",\n      \"version\": 1,\n      \"content\": [\n        {\n          \"type\": \"paragraph\",\n          \"content\": [\n            {\"type\": \"text\", \"text\": \"ID: {{ $('Error Trigger').item.json.execution.id }}\"},\n            {\"type\": \"text\", \"text\": \"\\nURL: {{ $('Error Trigger').item.json.execution.url.replace('http://localhost:5678', 'https://n8n.medicalspin.com.br').replace(/\\/executions\\/\\d+$/, '') }}\"},\n            {\"type\": \"text\", \"text\": \"\\nERRO: {{ $('Error Trigger').item.json.execution.error.name }}\"},\n            {\"type\": \"text\", \"text\": \"\\nTIPO: {{ $('Error Trigger').item.json.execution.error.node.type }}\"},\n            {\"type\": \"text\", \"text\": \"\\nMSG: {{ $json.erroTraduzido }}\"},\n            {\"type\": \"text\", \"text\": \"\\nFLUXO: {{ $('Error Trigger').item.json.workflow.name }}\"}\n          ]\n        }\n      ]\n    },\n    \"issuetype\": {\n      \"name\": \"Bug\"\n    },\n    \"customfield_10248\": {\n    \"value\": \"N8N\"\n    },\n    \"parent\": {\n    \"key\": \"TEC-5\"\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        128
+      ],
+      "id": "bb143067-1502-433b-b46b-1844b2c03e82",
+      "name": "CriaIssueErroConhecido"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://medicalspin.atlassian.net/rest/api/3/issue",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic ZGVzZW52bWVkaWNhbHNwaW5AZ21haWwuY29tOkFUQVRUM3hGZkdGMHU2b0VCbDlTcHdsNGFPYmo3 OXIzc3F0b1hxWkxQOUp5OWJiWlFOQ29seEtBX1FxLXNHb2lLdXFPS1lMTWJqT2swUE45QldNSS02 ZlhkLXJuTlhmRERHZmt1SzU4X0VwazQyVXZ3VjN1YUJFdC1xeFE3UXRaWWZuMEl5cUZBbEZqRU05 OWFLbk5JWVIzQVZNZ2xSZHVHallIY2ZNV2ZzNXBDdXBPamh6N25oYz0zQTk5QUE2NQ=="
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"fields\": {\n    \"project\": {\n      \"key\": \"TEC\"\n    },\n    \"summary\": \"Execução com erro no fluxo - {{ $('Error Trigger').item.json.workflow.name }}\",\n    \"description\": {\n      \"type\": \"doc\",\n      \"version\": 1,\n      \"content\": [\n        {\n          \"type\": \"paragraph\",\n          \"content\": [\n            {\"type\": \"text\", \"text\": \"ID: {{ $('Error Trigger').item.json.execution.id }}\"},\n            {\"type\": \"text\", \"text\": \"\\nURL: {{ $('Error Trigger').item.json.execution.url.replace('http://localhost:5678', 'https://n8n.medicalspin.com.br').replace(/\\/executions\\/\\d+$/, '') }}\"},\n            {\"type\": \"text\", \"text\": \"\\nERRO: {{ $('Error Trigger').item.json.execution.error.name }}\"},\n            {\"type\": \"text\", \"text\": \"\\nTIPO: {{ $('Error Trigger').item.json.execution.error.node.type }}\"},\n            {\"type\": \"text\", \"text\": \"\\nMSG: {{ $json.erroTraduzido }}\"},\n            {\"type\": \"text\", \"text\": \"\\nFLUXO: {{ $('Error Trigger').item.json.workflow.name }}\"}\n          ]\n        }\n      ]\n    },\n    \"issuetype\": {\n      \"name\": \"Bug\"\n    },\n    \"customfield_10248\": {\n    \"value\": \"N8N\"\n    },\n    \"parent\": {\n    \"key\": \"TEC-5\"\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        272
+      ],
+      "id": "ea69036c-6c4f-439b-b62b-b8873887414a",
+      "name": "CriaIssueErroNconhecido"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs",
+          "mode": "list",
+          "cachedResultName": "ErrosGeral",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ErrosConhecidos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Error Trigger').item.json.execution.id }}",
+            "URL": "={{ $('Error Trigger').item.json.execution.url }}",
+            "FLUXO": "={{ $('Error Trigger').item.json.workflow.name }}",
+            "ERRO": "={{ $('Error Trigger').item.json.execution.error.name }}",
+            "MSG": "={{ $('ErrosConhecidos').item.json.erroTraduzido }}",
+            "TIPO": "={{ $('Error Trigger').item.json.execution.error.node.type }}",
+            "DATA": "={{ $now.format('dd/LL/yyyy T') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ERRO",
+              "displayName": "ERRO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TIPO",
+              "displayName": "TIPO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MSG",
+              "displayName": "MSG",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FLUXO",
+              "displayName": "FLUXO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DATA",
+              "displayName": "DATA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        128
+      ],
+      "id": "44d252ef-feb5-46ce-8fa5-74c78fd957a7",
+      "name": "ErrosConhecidos1",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs",
+          "mode": "list",
+          "cachedResultName": "ErrosGeral",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 906320793,
+          "mode": "list",
+          "cachedResultName": "ErrosNconhecidos",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs/edit#gid=906320793"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "MSG": "={{ $('ErrosConhecidos').item.json.execution.error.message }}",
+            "ID": "={{ $('Error Trigger').item.json.execution.id }}",
+            "URL": "={{ $('Error Trigger').item.json.execution.url }}",
+            "ERRO": "={{ $('Error Trigger').item.json.execution.error.name }}",
+            "TIPO": "={{ $('Error Trigger').item.json.execution.error.node.type }}",
+            "FLUXO": "={{ $('Error Trigger').item.json.workflow.name }}",
+            "DATA": "={{ $now.format('dd/LL/yyyy T') }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "URL",
+              "displayName": "URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ERRO",
+              "displayName": "ERRO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TIPO",
+              "displayName": "TIPO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "MSG",
+              "displayName": "MSG",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "FLUXO",
+              "displayName": "FLUXO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DATA",
+              "displayName": "DATA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        272
+      ],
+      "id": "c98199aa-0f42-4972-8797-de9b6feeec12",
+      "name": "ErrosNconhecidos",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "810009c2-b5cf-4a3e-925c-795e1fc88fa9",
+              "leftValue": "={{ $json.erroOriginal }}",
+              "rightValue": "Workflow did not finish, possible out-of-memory issue",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        144
+      ],
+      "id": "0a4c5056-0c9d-4aab-b050-0e967e8a11ba",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        640,
+        272
+      ],
+      "id": "4492809e-a7c3-46ce-ba6c-0ed4f29a96a8",
+      "name": "No Operation, do nothing"
+    }
+  ],
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "ErrosConhecidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ErrosConhecidos": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Condição": {
+      "main": [
+        [
+          {
+            "node": "CriaIssueErroConhecido",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "CriaIssueErroNconhecido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CriaIssueErroConhecido": {
+      "main": [
+        [
+          {
+            "node": "ErrosConhecidos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CriaIssueErroNconhecido": {
+      "main": [
+        [
+          {
+            "node": "ErrosNconhecidos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Condição",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [
+    {
+      "id": "bee51d05-60db-4df5-b925-ce0de74b1e62",
+      "name": "Recebe e redireciona os erros para os canais de manutenção",
+      "nodeIds": [
+        "0c53b2ac-5d70-4ff4-8a3f-04acd98da4da",
+        "5c0ceba3-86ca-4cc4-9908-aa76edd8da4a",
+        "bb143067-1502-433b-b46b-1844b2c03e82",
+        "ea69036c-6c4f-439b-b62b-b8873887414a",
+        "44d252ef-feb5-46ce-8fa5-74c78fd957a7",
+        "c98199aa-0f42-4972-8797-de9b6feeec12",
+        "0a4c5056-0c9d-4aab-b050-0e967e8a11ba",
+        "4492809e-a7c3-46ce-ba6c-0ed4f29a96a8"
+      ]
+    }
+  ],
+  "pinData": {
+    "Error Trigger": [
+      {
+        "json": {
+          "execution": {
+            "id": "156433",
+            "url": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/workflow/xbqPYnWoXEB6LQ2t/executions/156433",
+            "error": {
+              "level": "warning",
+              "shouldReport": true,
+              "description": "The caller does not have permission",
+              "tags": {},
+              "timestamp": 1786550408867,
+              "context": {},
+              "functionality": "regular",
+              "name": "NodeApiError",
+              "node": {
+                "parameters": {
+                  "authentication": "oAuth2",
+                  "resource": "sheet",
+                  "operation": "read",
+                  "documentId": {
+                    "__rl": true,
+                    "value": "19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q",
+                    "mode": "list",
+                    "cachedResultName": "Ligações / Reuniões (time comercial)",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit?usp=drivesdk"
+                  },
+                  "sheetName": {
+                    "__rl": true,
+                    "value": 243288521,
+                    "mode": "list",
+                    "cachedResultName": "Registros de ligações",
+                    "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit#gid=243288521"
+                  },
+                  "filtersUI": {},
+                  "combineFilters": "AND",
+                  "options": {}
+                },
+                "type": "n8n-nodes-base.googleSheets",
+                "typeVersion": 4.7,
+                "position": [
+                  -208,
+                  224
+                ],
+                "id": "04dfd3fc-3703-4484-833c-496be83810bf",
+                "name": "Ler Planilha Atual",
+                "retryOnFail": true,
+                "credentials": {
+                  "googleSheetsOAuth2Api": {
+                    "id": "2DSmp4SarxDNx6pV",
+                    "name": "Google Sheets account"
+                  }
+                }
+              },
+              "messages": [
+                "403 - {\"error\":{\"code\":403,\"message\":\"The caller does not have permission\",\"status\":\"PERMISSION_DENIED\"}}"
+              ],
+              "httpCode": "403",
+              "message": "Forbidden - perhaps check your credentials?",
+              "stack": "NodeApiError: Forbidden - perhaps check your credentials?\n    at ExecuteContext.apiRequest (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file+packages+nodes-base_@opentelemetry+api@1.9.0_@opentelemetry+exporte_9e31dcec10980323a9c957753d2416c7/node_modules/n8n-nodes-base/nodes/Google/Sheet/v2/transport/index.ts:80:9)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at GoogleSheet.spreadsheetGetSheet (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file+packages+nodes-base_@opentelemetry+api@1.9.0_@opentelemetry+exporte_9e31dcec10980323a9c957753d2416c7/node_modules/n8n-nodes-base/nodes/Google/Sheet/v2/helpers/GoogleSheet.ts:141:21)\n    at ExecuteContext.router (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file+packages+nodes-base_@opentelemetry+api@1.9.0_@opentelemetry+exporte_9e31dcec10980323a9c957753d2416c7/node_modules/n8n-nodes-base/nodes/Google/Sheet/v2/actions/router.ts:43:20)\n    at ExecuteContext.execute (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-nodes-base@file+packages+nodes-base_@opentelemetry+api@1.9.0_@opentelemetry+exporte_9e31dcec10980323a9c957753d2416c7/node_modules/n8n-nodes-base/nodes/Google/Sheet/v2/GoogleSheetsV2.node.ts:30:10)\n    at WorkflowExecute.executeNode (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_56f5a5be5f9a76dfbcdc404d6ec4dea5/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1081:8)\n    at WorkflowExecute.runNode (/usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_56f5a5be5f9a76dfbcdc404d6ec4dea5/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1381:11)\n    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_56f5a5be5f9a76dfbcdc404d6ec4dea5/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:1854:27\n    at /usr/local/lib/node_modules/n8n/node_modules/.pnpm/n8n-core@file+packages+core_@opentelemetry+api@1.9.0_@opentelemetry+exporter-trace-otlp_56f5a5be5f9a76dfbcdc404d6ec4dea5/node_modules/n8n-core/src/execution-engine/workflow-execute.ts:2546:11"
+            },
+            "lastNodeExecuted": "Ler Planilha Atual",
+            "mode": "trigger",
+            "executionContext": {
+              "version": 1,
+              "establishedAt": 1786550400018,
+              "source": "trigger",
+              "triggerNode": {
+                "name": "Gatilho 8 as 18 seg a sexta",
+                "type": "n8n-nodes-base.scheduleTrigger"
+              },
+              "redaction": {
+                "version": 2,
+                "production": false,
+                "manual": false,
+                "source": "workflow"
+              }
+            }
+          },
+          "workflow": {
+            "id": "xbqPYnWoXEB6LQ2t",
+            "name": "[COMERCIAL] Ligações dashboard V2 - Voxfree + Sheets (Arthur)"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "3e888a9e-2ad3-450f-8113-e33bb85c56f0",
+  "activeVersionId": "3e888a9e-2ad3-450f-8113-e33bb85c56f0",
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2025-11-17T14:09:10.373Z",
+      "createdAt": "2025-11-17T14:09:10.373Z",
+      "role": "workflow:owner",
+      "workflowId": "Cw4BKEAZCX2tPyvL",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-08-31T13:19:50.444Z",
+    "createdAt": "2026-08-31T13:19:47.361Z",
+    "versionId": "3e888a9e-2ad3-450f-8113-e33bb85c56f0",
+    "workflowId": "Cw4BKEAZCX2tPyvL",
+    "nodes": [
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.errorTrigger",
+        "typeVersion": 1,
+        "position": [
+          64,
+          0
+        ],
+        "id": "d73e4ad8-ba2d-4949-9e95-e3c26d813269",
+        "name": "Error Trigger",
+        "notesInFlow": false,
+        "alwaysOutputData": false,
+        "executeOnce": false,
+        "retryOnFail": false
+      },
+      {
+        "parameters": {
+          "jsCode": "const erroOriginal = $input.first().json.execution?.error?.message || \"\";\n\nconst traducoes = {\n  \"Erro ao enviar mensagem de texto.\":\n    \"Não foi possível enviar a mensagem. Verifique a conexão, o número de destino ou tente novamente.\",\n\n  \"The service is receiving too many requests from you.\":\n    \"O sistema recebeu muitas solicitações em um curto período. Aguarde alguns instantes e tente novamente.\",\n\n  \"Workflow did not finish, possible out-of-memory issue.\":\n    \"A automação foi interrompida porque o servidor ficou sem memória ou recursos suficientes para concluir a execução.\",\n\n  \"Column names were updated after the node's setup.\":\n    \"As colunas da planilha ou banco de dados foram alteradas depois que a automação foi configurada. Atualize a configuração do node.\",\n\n  \"Bad request - please check your parameters.\":\n    \"A solicitação enviada contém informações inválidas ou incompletas. Verifique os dados informados e tente novamente.\",\n\n  \"Service unavailable - try again later or consider setting this node to retry automatically (in the node settings).\":\n    \"O serviço está temporariamente indisponível. Aguarde alguns minutos e tente novamente. Se o problema continuar, configure tentativas automáticas no node.\",\n\n  \"The resource you are requesting could not be found.\":\n    \"O recurso solicitado não foi encontrado. Verifique se o ID, URL ou registro informado existe.\",\n\n  \"Mapear Novo Funil/Etapa.\":    \n    \"Mapear Novo Funil/Etapa.\",\n\n  \"The connection to the server was closed unexpectedly, perhaps it is offline. You can retry the request immediately or wait and retry later.\":\n    \"Sobrecarga de conexão na API do Google, execute o node novamente manualmente.\",\n\n  \"Forbidden - perhaps check your credentials?\":\n    \"Recusado por credenciais inválidas.\",\n\n  \"The service was not able to process your request\":\n    \"O serviço não conseguiu processar sua solicitação.\"\n};\n\nconst erroConhecido = erroOriginal in traducoes;\n\nreturn [{\n  json: {\n    ...$input.first().json,\n    erroOriginal,\n    erroTraduzido: erroConhecido\n      ? traducoes[erroOriginal]\n      : \"Erro ainda não catalogado.\",\n    erroConhecido\n  }\n}];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          272,
+          144
+        ],
+        "id": "0c53b2ac-5d70-4ff4-8a3f-04acd98da4da",
+        "name": "ErrosConhecidos"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "7caeaf03-3a52-4877-af29-6fa92e54160d",
+                "leftValue": "={{ $json.erroConhecido }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          640,
+          144
+        ],
+        "id": "5c0ceba3-86ca-4cc4-9908-aa76edd8da4a",
+        "name": "Condição"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://medicalspin.atlassian.net/rest/api/3/issue",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Basic ZGVzZW52bWVkaWNhbHNwaW5AZ21haWwuY29tOkFUQVRUM3hGZkdGMHU2b0VCbDlTcHdsNGFPYmo3 OXIzc3F0b1hxWkxQOUp5OWJiWlFOQ29seEtBX1FxLXNHb2lLdXFPS1lMTWJqT2swUE45QldNSS02 ZlhkLXJuTlhmRERHZmt1SzU4X0VwazQyVXZ3VjN1YUJFdC1xeFE3UXRaWWZuMEl5cUZBbEZqRU05 OWFLbk5JWVIzQVZNZ2xSZHVHallIY2ZNV2ZzNXBDdXBPamh6N25oYz0zQTk5QUE2NQ=="
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"fields\": {\n    \"project\": {\n      \"key\": \"TEC\"\n    },\n    \"summary\": \"Execução com erro no fluxo - {{ $('Error Trigger').item.json.workflow.name }}\",\n    \"description\": {\n      \"type\": \"doc\",\n      \"version\": 1,\n      \"content\": [\n        {\n          \"type\": \"paragraph\",\n          \"content\": [\n            {\"type\": \"text\", \"text\": \"ID: {{ $('Error Trigger').item.json.execution.id }}\"},\n            {\"type\": \"text\", \"text\": \"\\nURL: {{ $('Error Trigger').item.json.execution.url.replace('http://localhost:5678', 'https://n8n.medicalspin.com.br').replace(/\\/executions\\/\\d+$/, '') }}\"},\n            {\"type\": \"text\", \"text\": \"\\nERRO: {{ $('Error Trigger').item.json.execution.error.name }}\"},\n            {\"type\": \"text\", \"text\": \"\\nTIPO: {{ $('Error Trigger').item.json.execution.error.node.type }}\"},\n            {\"type\": \"text\", \"text\": \"\\nMSG: {{ $json.erroTraduzido }}\"},\n            {\"type\": \"text\", \"text\": \"\\nFLUXO: {{ $('Error Trigger').item.json.workflow.name }}\"}\n          ]\n        }\n      ]\n    },\n    \"issuetype\": {\n      \"name\": \"Bug\"\n    },\n    \"customfield_10248\": {\n    \"value\": \"N8N\"\n    },\n    \"parent\": {\n    \"key\": \"TEC-5\"\n    }\n  }\n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          848,
+          128
+        ],
+        "id": "bb143067-1502-433b-b46b-1844b2c03e82",
+        "name": "CriaIssueErroConhecido"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://medicalspin.atlassian.net/rest/api/3/issue",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Basic ZGVzZW52bWVkaWNhbHNwaW5AZ21haWwuY29tOkFUQVRUM3hGZkdGMHU2b0VCbDlTcHdsNGFPYmo3 OXIzc3F0b1hxWkxQOUp5OWJiWlFOQ29seEtBX1FxLXNHb2lLdXFPS1lMTWJqT2swUE45QldNSS02 ZlhkLXJuTlhmRERHZmt1SzU4X0VwazQyVXZ3VjN1YUJFdC1xeFE3UXRaWWZuMEl5cUZBbEZqRU05 OWFLbk5JWVIzQVZNZ2xSZHVHallIY2ZNV2ZzNXBDdXBPamh6N25oYz0zQTk5QUE2NQ=="
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "name": "Accept",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={\n  \"fields\": {\n    \"project\": {\n      \"key\": \"TEC\"\n    },\n    \"summary\": \"Execução com erro no fluxo - {{ $('Error Trigger').item.json.workflow.name }}\",\n    \"description\": {\n      \"type\": \"doc\",\n      \"version\": 1,\n      \"content\": [\n        {\n          \"type\": \"paragraph\",\n          \"content\": [\n            {\"type\": \"text\", \"text\": \"ID: {{ $('Error Trigger').item.json.execution.id }}\"},\n            {\"type\": \"text\", \"text\": \"\\nURL: {{ $('Error Trigger').item.json.execution.url.replace('http://localhost:5678', 'https://n8n.medicalspin.com.br').replace(/\\/executions\\/\\d+$/, '') }}\"},\n            {\"type\": \"text\", \"text\": \"\\nERRO: {{ $('Error Trigger').item.json.execution.error.name }}\"},\n            {\"type\": \"text\", \"text\": \"\\nTIPO: {{ $('Error Trigger').item.json.execution.error.node.type }}\"},\n            {\"type\": \"text\", \"text\": \"\\nMSG: {{ $json.erroTraduzido }}\"},\n            {\"type\": \"text\", \"text\": \"\\nFLUXO: {{ $('Error Trigger').item.json.workflow.name }}\"}\n          ]\n        }\n      ]\n    },\n    \"issuetype\": {\n      \"name\": \"Bug\"\n    },\n    \"customfield_10248\": {\n    \"value\": \"N8N\"\n    },\n    \"parent\": {\n    \"key\": \"TEC-5\"\n    }\n  }\n}\n",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          848,
+          272
+        ],
+        "id": "ea69036c-6c4f-439b-b62b-b8873887414a",
+        "name": "CriaIssueErroNconhecido"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs",
+            "mode": "list",
+            "cachedResultName": "ErrosGeral",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "ErrosConhecidos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "ID": "={{ $('Error Trigger').item.json.execution.id }}",
+              "URL": "={{ $('Error Trigger').item.json.execution.url }}",
+              "FLUXO": "={{ $('Error Trigger').item.json.workflow.name }}",
+              "ERRO": "={{ $('Error Trigger').item.json.execution.error.name }}",
+              "MSG": "={{ $('ErrosConhecidos').item.json.erroTraduzido }}",
+              "TIPO": "={{ $('Error Trigger').item.json.execution.error.node.type }}",
+              "DATA": "={{ $now.format('dd/LL/yyyy T') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "ID",
+                "displayName": "ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "URL",
+                "displayName": "URL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ERRO",
+                "displayName": "ERRO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "TIPO",
+                "displayName": "TIPO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "MSG",
+                "displayName": "MSG",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "FLUXO",
+                "displayName": "FLUXO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "DATA",
+                "displayName": "DATA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1040,
+          128
+        ],
+        "id": "44d252ef-feb5-46ce-8fa5-74c78fd957a7",
+        "name": "ErrosConhecidos1",
+        "retryOnFail": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "2DSmp4SarxDNx6pV",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs",
+            "mode": "list",
+            "cachedResultName": "ErrosGeral",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 906320793,
+            "mode": "list",
+            "cachedResultName": "ErrosNconhecidos",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mTNaDFY7XY1V5gESfBKCdgd2ZVChW2CLEGA3ix_bUPs/edit#gid=906320793"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "MSG": "={{ $('ErrosConhecidos').item.json.execution.error.message }}",
+              "ID": "={{ $('Error Trigger').item.json.execution.id }}",
+              "URL": "={{ $('Error Trigger').item.json.execution.url }}",
+              "ERRO": "={{ $('Error Trigger').item.json.execution.error.name }}",
+              "TIPO": "={{ $('Error Trigger').item.json.execution.error.node.type }}",
+              "FLUXO": "={{ $('Error Trigger').item.json.workflow.name }}",
+              "DATA": "={{ $now.format('dd/LL/yyyy T') }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "ID",
+                "displayName": "ID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "URL",
+                "displayName": "URL",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "ERRO",
+                "displayName": "ERRO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "TIPO",
+                "displayName": "TIPO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "MSG",
+                "displayName": "MSG",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "FLUXO",
+                "displayName": "FLUXO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              },
+              {
+                "id": "DATA",
+                "displayName": "DATA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1040,
+          272
+        ],
+        "id": "c98199aa-0f42-4972-8797-de9b6feeec12",
+        "name": "ErrosNconhecidos",
+        "retryOnFail": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "2DSmp4SarxDNx6pV",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "810009c2-b5cf-4a3e-925c-795e1fc88fa9",
+                "leftValue": "={{ $json.erroOriginal }}",
+                "rightValue": "Workflow did not finish, possible out-of-memory issue",
+                "operator": {
+                  "type": "string",
+                  "operation": "notEquals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          448,
+          144
+        ],
+        "id": "0a4c5056-0c9d-4aab-b050-0e967e8a11ba",
+        "name": "If"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          640,
+          272
+        ],
+        "id": "4492809e-a7c3-46ce-ba6c-0ed4f29a96a8",
+        "name": "No Operation, do nothing"
+      }
+    ],
+    "connections": {
+      "Error Trigger": {
+        "main": [
+          [
+            {
+              "node": "ErrosConhecidos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "ErrosConhecidos": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Condição": {
+        "main": [
+          [
+            {
+              "node": "CriaIssueErroConhecido",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "CriaIssueErroNconhecido",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "CriaIssueErroConhecido": {
+        "main": [
+          [
+            {
+              "node": "ErrosConhecidos1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "CriaIssueErroNconhecido": {
+        "main": [
+          [
+            {
+              "node": "ErrosNconhecidos",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Condição",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [
+      {
+        "id": "bee51d05-60db-4df5-b925-ce0de74b1e62",
+        "name": "Recebe e redireciona os erros para os canais de manutenção",
+        "nodeIds": [
+          "0c53b2ac-5d70-4ff4-8a3f-04acd98da4da",
+          "5c0ceba3-86ca-4cc4-9908-aa76edd8da4a",
+          "bb143067-1502-433b-b46b-1844b2c03e82",
+          "ea69036c-6c4f-439b-b62b-b8873887414a",
+          "44d252ef-feb5-46ce-8fa5-74c78fd957a7",
+          "c98199aa-0f42-4972-8797-de9b6feeec12",
+          "0a4c5056-0c9d-4aab-b050-0e967e8a11ba",
+          "4492809e-a7c3-46ce-ba6c-0ed4f29a96a8"
+        ]
+      }
+    ],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 3e888a9e",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": [
+    {
+      "updatedAt": "2025-11-17T14:30:14.174Z",
+      "createdAt": "2025-11-17T14:30:14.174Z",
+      "id": "moijdFGlY2w64Ect",
+      "name": "Jira"
+    },
+    {
+      "updatedAt": "2025-11-17T14:00:11.395Z",
+      "createdAt": "2025-11-17T14:00:11.395Z",
+      "id": "BiXlsIc9sGawCxiS",
+      "name": "EvolutionAPI"
+    },
+    {
+      "updatedAt": "2025-11-17T14:09:04.161Z",
+      "createdAt": "2025-11-17T14:09:04.161Z",
+      "id": "2IpHgvBDztgEYNnL",
+      "name": "errorNode"
+    },
+    {
+      "updatedAt": "2025-11-17T14:09:04.153Z",
+      "createdAt": "2025-11-17T14:09:04.153Z",
+      "id": "32ehNS7DwOBedRQc",
+      "name": "Sheets"
+    }
+  ]
+}
