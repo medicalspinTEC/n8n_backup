@@ -1,0 +1,414 @@
+{
+  "updatedAt": "2026-08-03T14:32:16.496Z",
+  "createdAt": "2026-07-22T13:40:31.554Z",
+  "id": "FHmFo5Wu8rHpri3U",
+  "name": "[INFRA] Sprints automáticas no Jira - Jira (Wendel)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://medicalspin.atlassian.net/rest/agile/1.0/board/205/sprint?state=active",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Accept\": \"application/json\",\n  \"Content-Type\": \"application/json\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        816,
+        256
+      ],
+      "id": "4c4a6cd0-eabe-4825-81b2-3940d11ec6d0",
+      "name": "BuscaSprintAtiva",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SOGUBKAG8W4TpmRP",
+          "name": "PainelFollowup"
+        },
+        "jiraSoftwareCloudApi": {
+          "id": "ymJwP6alL1qhPIIH",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://medicalspin.atlassian.net/rest/agile/1.0/sprint",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Accept\": \"application/json\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"Sprint {{$now.format('dd/MM/yyyy HH:mm')}}\",\n  \"originBoardId\": 205,\n  \"goal\": \"Sprint criada automaticamente pelo n8n\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        992,
+        256
+      ],
+      "id": "8bab76f4-92e9-45fc-a1ce-c262c0973d48",
+      "name": "CriaNovaSprint",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SOGUBKAG8W4TpmRP",
+          "name": "PainelFollowup"
+        },
+        "jiraSoftwareCloudApi": {
+          "id": "ymJwP6alL1qhPIIH",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://medicalspin.atlassian.net/rest/api/3/search/jql",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Accept\": \"application/json\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"jql\": \"sprint in openSprints() AND statusCategory != Done\",\n  \"fields\": [\"key\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1168,
+        256
+      ],
+      "id": "6657d0b3-3284-475c-bc55-148856f8109a",
+      "name": "BuscaIssuesNconcluidas",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SOGUBKAG8W4TpmRP",
+          "name": "PainelFollowup"
+        },
+        "jiraSoftwareCloudApi": {
+          "id": "ymJwP6alL1qhPIIH",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const issues = $input.first().json.issues ?? [];\n\nreturn issues.map(issue => ({\n  json: {\n    issues: [issue.key]\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        256
+      ],
+      "id": "13dca2d6-bd07-4d85-bf27-209d06b607b1",
+      "name": "NormalizaKey"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://medicalspin.atlassian.net/rest/agile/1.0/sprint/{{ $('CriaNovaSprint').item.json.id }}/issue",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Accept\": \"application/json\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"issues\": [\n    \"{{ $json.issues }}\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1520,
+        256
+      ],
+      "id": "8aa768c8-b72a-4d3d-a475-6aaa9aa9eb2d",
+      "name": "MoveIssuesNovaSprint",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SOGUBKAG8W4TpmRP",
+          "name": "PainelFollowup"
+        },
+        "jiraSoftwareCloudApi": {
+          "id": "ymJwP6alL1qhPIIH",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://medicalspin.atlassian.net/rest/agile/1.0/sprint/{{ $('BuscaSprintAtiva').item.json.values[0].id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Accept\": \"application/json\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"state\": \"closed\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1696,
+        256
+      ],
+      "id": "55d8f37a-d6f9-45ba-b9d7-b8b476693a0a",
+      "name": "ConcluiSpritAntiga",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SOGUBKAG8W4TpmRP",
+          "name": "PainelFollowup"
+        },
+        "jiraSoftwareCloudApi": {
+          "id": "ymJwP6alL1qhPIIH",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://medicalspin.atlassian.net/rest/agile/1.0/sprint/{{ $('CriaNovaSprint').item.json.id }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "jiraSoftwareCloudApi",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Accept\": \"application/json\",\n  \"Content-Type\": \"application/json\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"state\": \"active\",\n  \"startDate\": \"{{$now.toISO()}}\",\n  \"endDate\": \"{{$now.plus({ days: 7 }).toISO()}}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1872,
+        256
+      ],
+      "id": "dac729ad-ed27-4792-89a9-ed5499ee8f10",
+      "name": "IniciaNovaSprint",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "SOGUBKAG8W4TpmRP",
+          "name": "PainelFollowup"
+        },
+        "jiraSoftwareCloudApi": {
+          "id": "ymJwP6alL1qhPIIH",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                2
+              ],
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        128
+      ],
+      "id": "74ee4a32-5ee8-4422-9f1d-e82aaa8a23c1",
+      "name": "Toda Terça às 7h"
+    }
+  ],
+  "connections": {
+    "BuscaSprintAtiva": {
+      "main": [
+        [
+          {
+            "node": "CriaNovaSprint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CriaNovaSprint": {
+      "main": [
+        [
+          {
+            "node": "BuscaIssuesNconcluidas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BuscaIssuesNconcluidas": {
+      "main": [
+        [
+          {
+            "node": "NormalizaKey",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NormalizaKey": {
+      "main": [
+        [
+          {
+            "node": "MoveIssuesNovaSprint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MoveIssuesNovaSprint": {
+      "main": [
+        [
+          {
+            "node": "ConcluiSpritAntiga",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ConcluiSpritAntiga": {
+      "main": [
+        [
+          {
+            "node": "IniciaNovaSprint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IniciaNovaSprint": {
+      "main": [
+        []
+      ]
+    },
+    "Toda Terça às 7h": {
+      "main": [
+        [
+          {
+            "node": "BuscaSprintAtiva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Cw4BKEAZCX2tPyvL",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Toda Segunda às 7h": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    },
+    "node:Toda Terça às 7h": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [
+    {
+      "id": "b049f710-8f89-4c53-8281-cdafe4389188",
+      "name": "Cria nova Sprint, move issues abertas para nova Sprint, conclui Sprint antiga e inicia nova Sprint",
+      "nodeIds": [
+        "4c4a6cd0-eabe-4825-81b2-3940d11ec6d0",
+        "8bab76f4-92e9-45fc-a1ce-c262c0973d48",
+        "6657d0b3-3284-475c-bc55-148856f8109a",
+        "13dca2d6-bd07-4d85-bf27-209d06b607b1",
+        "8aa768c8-b72a-4d3d-a475-6aaa9aa9eb2d",
+        "55d8f37a-d6f9-45ba-b9d7-b8b476693a0a",
+        "dac729ad-ed27-4792-89a9-ed5499ee8f10"
+      ]
+    }
+  ],
+  "pinData": {
+    "Toda Terça às 7h": [
+      {
+        "json": {
+          "timestamp": "2026-07-28T07:00:27.007-03:00",
+          "Readable date": "July 28th 2026, 7:00:27 am",
+          "Readable time": "7:00:27 am",
+          "Day of week": "Tuesday",
+          "Year": "2026",
+          "Month": "July",
+          "Day of month": "28",
+          "Hour": "07",
+          "Minute": "00",
+          "Second": "27",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "92c4530e-e512-4a17-9d6c-f2659edd13c2",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-07-22T13:40:31.554Z",
+      "createdAt": "2026-07-22T13:40:31.554Z",
+      "role": "workflow:owner",
+      "workflowId": "FHmFo5Wu8rHpri3U",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2025-11-17T14:30:14.174Z",
+      "createdAt": "2025-11-17T14:30:14.174Z",
+      "id": "moijdFGlY2w64Ect",
+      "name": "Jira"
+    }
+  ]
+}
