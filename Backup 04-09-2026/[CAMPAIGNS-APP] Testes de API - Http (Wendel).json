@@ -1,0 +1,93 @@
+{
+  "updatedAt": "2026-08-19T13:55:33.166Z",
+  "createdAt": "2026-08-14T16:32:07.483Z",
+  "id": "2RRUfy4FJc1XmgXV",
+  "name": "[CAMPAIGNS-APP] Testes de API - Http (Wendel)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "9c2a464c-544b-47fe-a4d0-31cb37499e8d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://campaigns.medicalspin.com.br/api/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"nome\": \"MarinaAlvesi\",\n  \"telefone\": \"55(11) 98888-7777\",\n  \"produto\": \"Consórcio Imobiliário\",\n  \"marca\": \"Ápice\",\n  \"persona\": \"Primeira Casa\",\n  \"regiao\": \"Sudeste\",\n  \"notas\": \"teste\"\n}",
+        "options": {
+          "allowUnauthorizedCerts": false
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "1bb14077-890e-4279-994b-9d2be0913719",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "c0fe79c4-824c-4361-99a9-d034f18b2f49",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-08-14T16:32:07.483Z",
+      "createdAt": "2026-08-14T16:32:07.483Z",
+      "role": "workflow:owner",
+      "workflowId": "2RRUfy4FJc1XmgXV",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2025-11-17T14:30:41.341Z",
+      "createdAt": "2025-11-17T14:30:41.341Z",
+      "id": "a1SiyDS4bAShAsoW",
+      "name": "html"
+    }
+  ]
+}
