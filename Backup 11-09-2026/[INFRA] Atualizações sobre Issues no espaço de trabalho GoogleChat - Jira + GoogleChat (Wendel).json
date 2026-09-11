@@ -1,0 +1,2186 @@
+{
+  "updatedAt": "2026-08-03T14:32:29.843Z",
+  "createdAt": "2026-07-15T12:26:07.309Z",
+  "id": "5fBV4LWXsxvcFX3H",
+  "name": "[INFRA] Atualizações sobre Issues no espaço de trabalho GoogleChat - Jira + GoogleChat (Wendel)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "jira-task-update",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6cb4a0be-8841-4702-9ca6-d8a0fead551c",
+      "name": "UpdateTask",
+      "webhookId": "b4083aca-8cbf-468a-b49c-199d2446cf71"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "jira-task-created",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        128
+      ],
+      "id": "dedcbd26-cfb8-4be9-a845-97400348eb04",
+      "name": "CreatedTask",
+      "webhookId": "b4083aca-8cbf-468a-b49c-199d2446cf71"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "jira-task-status",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        256
+      ],
+      "id": "812d87f3-7671-4481-beb8-2dc547018826",
+      "name": "StatusTask",
+      "webhookId": "b4083aca-8cbf-468a-b49c-199d2446cf71"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "jira-task-comment",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        384
+      ],
+      "id": "674b46cc-bdf0-4859-b03b-1c7b6023eb87",
+      "name": "CommentTask",
+      "webhookId": "b4083aca-8cbf-468a-b49c-199d2446cf71"
+    },
+    {
+      "parameters": {
+        "jsCode": "const task = $json.body;\nconst comentarios = task.fields.comment.comments;\nconst ultimoComentario = comentarios[comentarios.length - 1];\n\nreturn [{\n  json: {\n    task: {\n      key: task.key,\n      titulo: task.fields.summary,\n      descricao: task.fields.description,\n      status: task.fields.status.name,\n      prioridade: task.fields.priority.name,\n      tipo: task.fields.issuetype.name,\n      projeto: task.fields.project.name,\n      criador: task.fields.creator.displayName,\n      responsavel: task.fields.assignee?.displayName ?? null,\n    },\n    comentario: {\n      autor: ultimoComentario.author.displayName,\n      texto: ultimoComentario.body\n  .replace(/\\[~accountid:[^\\]]+\\]/g, '')\n  .trim(),\n      horario: new Date(ultimoComentario.created).toLocaleString(\"pt-BR\", {\n        timeZone: \"America/Sao_Paulo\",\n      }),\n    },\n  },\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        384
+      ],
+      "id": "4c27646a-c464-475e-bbd0-e6e5bf93bf3a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const task = $json.body;\n\nreturn [{\n  json: {\n    id: task.id,\n    key: task.key,\n    url: task.self,\n\n    titulo: task.fields.summary,\n    descricao: task.fields.description,\n\n    tipo: {\n      id: task.fields.issuetype.id,\n      nome: task.fields.issuetype.name\n    },\n\n    projeto: {\n      id: task.fields.project.id,\n      key: task.fields.project.key,\n      nome: task.fields.project.name,\n      tipo: task.fields.project.projectTypeKey\n    },\n\n    status: {\n      id: task.fields.status.id,\n      nome: task.fields.status.name,\n      categoria: task.fields.status.statusCategory.name\n    },\n\n    prioridade: {\n      id: task.fields.priority.id,\n      nome: task.fields.priority.name\n    },\n\n    criador: {\n      nome: task.fields.creator.displayName,\n      accountId: task.fields.creator.accountId\n    },\n\n    reporter: {\n      nome: task.fields.reporter.displayName,\n      accountId: task.fields.reporter.accountId\n    },\n\n    responsavel: task.fields.assignee\n      ? {\n          nome: task.fields.assignee.displayName,\n          accountId: task.fields.assignee.accountId\n        }\n      : null,\n\n    criadoEm: new Date(task.fields.created).toLocaleString(\"pt-BR\", {\n      timeZone: \"America/Sao_Paulo\"\n    }),\n\n    atualizadoEm: new Date(task.fields.updated).toLocaleString(\"pt-BR\", {\n      timeZone: \"America/Sao_Paulo\"\n    }),\n\n    vencimento: task.fields.duedate,\n\n    labels: task.fields.labels,\n\n    componentes: task.fields.components.map(c => c.name),\n\n    anexos: task.fields.attachment,\n\n    comentarios: {\n      quantidade: task.fields.comment.total\n    },\n\n    horas: {\n      estimativa: task.fields.timeoriginalestimate,\n      restante: task.fields.timeestimate,\n      trabalhado: task.fields.timespent\n    },\n\n    progresso: task.fields.progress,\n\n    observadores: {\n      quantidade: task.fields.watches.watchCount,\n      assistindo: task.fields.watches.isWatching\n    },\n\n    votos: {\n      quantidade: task.fields.votes.votes,\n      votou: task.fields.votes.hasVoted\n    },\n\n    categoria: task.fields.customfield_10249?.value ?? null,\n    tecnologia: task.fields.customfield_10248?.value ?? null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        128
+      ],
+      "id": "b72c9dba-05ae-4807-b5a4-d873d831ce33",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const task = $json.body;\nconst fields = task.fields;\n\nconst comentarios = fields.comment.comments ?? [];\nconst ultimoComentario =\n  comentarios.length > 0 ? comentarios[comentarios.length - 1] : null;\n\nreturn [{\n  json: {\n    evento: \"status_atualizado\",\n\n    id: task.id,\n    key: task.key,\n    url: task.self,\n\n    titulo: fields.summary,\n    descricao: fields.description,\n\n    tipo: fields.issuetype.name,\n\n    projeto: {\n      key: fields.project.key,\n      nome: fields.project.name\n    },\n\n    epic: fields.parent\n      ? {\n          key: fields.parent.key,\n          titulo: fields.parent.fields.summary\n        }\n      : null,\n\n    sprint: fields.customfield_10020?.length\n      ? {\n          id: fields.customfield_10020[0].id,\n          nome: fields.customfield_10020[0].name,\n          estado: fields.customfield_10020[0].state,\n          inicio: fields.customfield_10020[0].startDate,\n          fim: fields.customfield_10020[0].endDate\n        }\n      : null,\n\n    status: {\n      id: fields.status.id,\n      nome: fields.status.name,\n      categoria: fields.status.statusCategory.name,\n      alteradoEm: fields.statuscategorychangedate\n    },\n\n    prioridade: fields.priority.name,\n\n    categoria: fields.customfield_10249?.value ?? null,\n    tecnologia: fields.customfield_10248?.value ?? null,\n\n    responsavel: fields.assignee?.displayName ?? null,\n    criador: fields.creator.displayName,\n    solicitante: fields.reporter.displayName,\n\n    criadoEm: new Date(fields.created).toLocaleString(\"pt-BR\", {\n      timeZone: \"America/Sao_Paulo\"\n    }),\n\n    atualizadoEm: new Date(fields.updated).toLocaleString(\"pt-BR\", {\n      timeZone: \"America/Sao_Paulo\"\n    }),\n\n    comentarios: {\n      quantidade: comentarios.length,\n      ultimo: ultimoComentario\n        ? {\n            autor: ultimoComentario.author.displayName,\n            texto: ultimoComentario.body,\n            criadoEm: new Date(ultimoComentario.created).toLocaleString(\"pt-BR\", {\n              timeZone: \"America/Sao_Paulo\"\n            })\n          }\n        : null\n    },\n\n    anexos: fields.attachment.map(a => ({\n      nome: a.filename,\n      tipo: a.mimeType,\n      url: a.content\n    })),\n\n    observadores: fields.watches.watchCount,\n\n    progresso: fields.progress,\n\n    labels: fields.labels\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        256
+      ],
+      "id": "3e0c4f7b-e6c6-46d3-8481-38c871b3c26a",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "spaceId": "spaces/AAQAQIFambc",
+        "messageUi": {
+          "text": "=*Atualização no Espaço TEC - JIRA: Comentário na Issue*\n\nID da Issue: *{{ $json.task.key }}*\nNome da Issue: *{{ $json.task.titulo }}*\nStatus da Issue: *{{ $json.task.status }}*\nPrioridade da issue: *{{ $json.task.prioridade }}*\nTipo da issue: *{{ $json.task.tipo }}*\nCriador da issue: *{{ $json.task.criador }}*\nQuem comentou: *{{ $json.comentario.autor }}*\nComentário: *{{ $json.comentario.texto }}*\nData/Hora: *{{ $json.comentario.horario }}*\nResponsável pela Execução: *{{ $json.task.responsavel ?? 'Não atribuído ainda' }}*"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleChat",
+      "typeVersion": 1,
+      "position": [
+        416,
+        384
+      ],
+      "id": "e73ac2b9-6a8f-4711-8249-ccab7f8f6afc",
+      "name": "Create a message",
+      "webhookId": "6d1b495a-3c72-4341-b80a-b0a723bb4890",
+      "retryOnFail": true,
+      "credentials": {
+        "googleChatOAuth2Api": {
+          "id": "Z8uxV7MAXQYGNsL3",
+          "name": "Chat account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "spaceId": "spaces/AAQAQIFambc",
+        "messageUi": {
+          "text": "=*Atualização no Espaço TEC - JIRA: Status da issue atualizado*\n\nID da Issue: *{{ $json.key }}*\nNome da Issue: *{{ $json.titulo }}*\nStatus da Issue: *{{ $json.status.nome }}*\nPrioridade da issue: *{{ $json.prioridade }}*\nTipo da issue: *{{ $json.tipo }}*\nCriador da issue: *{{ $json.criador }}*\nData/Hora: *{{ $json.atualizadoEm }}*\nResponsável pela Execução: *{{ $json.responsavel }}*"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleChat",
+      "typeVersion": 1,
+      "position": [
+        416,
+        256
+      ],
+      "id": "7883f1ed-9ee6-4c67-ae4c-f6d7a47a3360",
+      "name": "Create a message1",
+      "webhookId": "6d1b495a-3c72-4341-b80a-b0a723bb4890",
+      "retryOnFail": true,
+      "credentials": {
+        "googleChatOAuth2Api": {
+          "id": "Z8uxV7MAXQYGNsL3",
+          "name": "Chat account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "spaceId": "spaces/AAQAQIFambc",
+        "messageUi": {
+          "text": "=*Atualização no Espaço TEC - JIRA: Nova Issue Criada*\n\nID da Issue: *{{ $json.key }}*\nNome da Issue: *{{ $json.titulo }}*\nDescrição da issue:\n{{ $json.descricao }}\nStatus da Issue: *{{ $json.status.nome }}*\nPrioridade da issue: *{{ $json.prioridade.nome }}*\nTipo da issue: *{{ $json.tipo.nome }}*\nCriador da issue: *{{ $json.criador.nome }}*\nData/Hora: *{{ $json.criadoEm }}*\nResponsável pela Execução: *{{ $json.responsavel.nome ?? 'Não atribuído ainda' }}*"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleChat",
+      "typeVersion": 1,
+      "position": [
+        416,
+        128
+      ],
+      "id": "7e216f41-f291-4776-93e9-573bf506ecc6",
+      "name": "Create a message2",
+      "webhookId": "6d1b495a-3c72-4341-b80a-b0a723bb4890",
+      "retryOnFail": true,
+      "credentials": {
+        "googleChatOAuth2Api": {
+          "id": "Z8uxV7MAXQYGNsL3",
+          "name": "Chat account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "UpdateTask": {
+      "main": [
+        []
+      ]
+    },
+    "CreatedTask": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "StatusTask": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CommentTask": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Create a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Create a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Cw4BKEAZCX2tPyvL",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {
+    "UpdateTask": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "Automation for Jira AC app/1.0;fda3aac0-d2cc-4be6-9038-e8606e0eb658",
+            "content-length": "23859",
+            "accept": "application/json; charset=UTF-8, */*;q=0.8",
+            "accept-encoding": "gzip,deflate",
+            "content-type": "application/json",
+            "x-b3-sampled": "0",
+            "x-b3-spanid": "4071669b7992f070",
+            "x-b3-traceid": "e7df6d8b7c06b79128a7e51fce9eb73f",
+            "x-forwarded-for": "104.192.142.252",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "104.192.142.252"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13198",
+            "id": 13198,
+            "key": "TEC-30",
+            "changelog": {
+              "startAt": 0,
+              "maxResults": 0,
+              "total": 0,
+              "histories": null
+            },
+            "fields": {
+              "statuscategorychangedate": "2026-07-15T09:30:52.018-0300",
+              "issuetype": {
+                "namedValue": "Bug",
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issuetype/10245",
+                "id": 10245,
+                "description": "",
+                "iconUrl": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                "name": "Bug",
+                "untranslatedName": null,
+                "subtask": false,
+                "fields": {},
+                "statuses": [],
+                "hierarchyLevel": 0
+              },
+              "parent": {
+                "id": "13159",
+                "key": "TEC-1",
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13159",
+                "fields": {
+                  "summary": "Pré-vendas & Leads",
+                  "status": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/status/10241",
+                    "description": "",
+                    "iconUrl": "https://medicalspin.atlassian.net/images/icons/statuses/generic.png",
+                    "name": "A Fazer",
+                    "id": "10241",
+                    "statusCategory": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                      "id": 2,
+                      "key": "new",
+                      "colorName": "blue-gray",
+                      "name": "Itens Pendentes"
+                    }
+                  },
+                  "priority": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/priority/3",
+                    "iconUrl": "https://medicalspin.atlassian.net/images/icons/priorities/medium_new.svg",
+                    "name": "P2 - Importante",
+                    "id": "3"
+                  },
+                  "issuetype": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issuetype/10241",
+                    "id": "10241",
+                    "description": "Uma coleção de bugs, histórias e tarefas.",
+                    "iconUrl": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10307?size=medium",
+                    "name": "Epic",
+                    "subtask": false,
+                    "avatarId": 10307,
+                    "entityId": "99bc28b5-1d26-47cd-84d7-32950ba478f1",
+                    "hierarchyLevel": 1
+                  }
+                }
+              },
+              "components": [],
+              "timespent": null,
+              "timeoriginalestimate": null,
+              "project": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/project/10204",
+                "id": 10204,
+                "key": "TEC",
+                "name": "TEC - Tecnologia Medical Spin",
+                "description": null,
+                "avatarUrls": {
+                  "48x48": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405",
+                  "24x24": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=small",
+                  "16x16": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=xsmall",
+                  "32x32": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=medium"
+                },
+                "issuetypes": null,
+                "projectCategory": null,
+                "email": null,
+                "lead": null,
+                "components": null,
+                "versions": null,
+                "projectTypeKey": "software",
+                "simplified": true
+              },
+              "description": "*O que aconteceu:* A informação dos dados estruturados está sendo registrado na planilha em formato JSON - Ex: [\"Nome do responsável\",\"Cargo\",\"E-mail\". \n\n*O que era esperado:* Registrar os dados em formato te texto simples sem separações.  Ex: Nome do responsável Cargo E-mail Marca de RM\n\n*Evidências/links:*\n\n!image-20260710-143526.png|width=333,alt=\"image-20260710-143526.png\"!",
+              "fixVersions": [],
+              "statusCategory": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                "id": 2,
+                "key": "new",
+                "colorName": "blue-gray",
+                "name": "New"
+              },
+              "aggregatetimespent": null,
+              "resolution": null,
+              "customfield_10015": null,
+              "customfield_10248": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/customFieldOption/10091",
+                "value": "Google Sheets",
+                "id": "10091",
+                "color": "PURPLE_DARKER"
+              },
+              "customfield_10249": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/customFieldOption/10105",
+                "value": "Ajuste",
+                "id": "10105",
+                "color": "TEAL_DARKER"
+              },
+              "security": null,
+              "attachment": [
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10258",
+                  "id": 10258,
+                  "filename": "6ed7e980-cfdf-49b1-93bc-aa2a40dd511a.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784117044041,
+                  "size": 13768,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10258"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10250",
+                  "id": 10250,
+                  "filename": "image-20260710-143526.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1783694226890,
+                  "size": 6829,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10250"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10260",
+                  "id": 10260,
+                  "filename": "image-20260715-115132.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784117044778,
+                  "size": 18566,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10260"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10257",
+                  "id": 10257,
+                  "filename": "image-20260715-115236.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784117043671,
+                  "size": 22895,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10257"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10259",
+                  "id": 10259,
+                  "filename": "image-20260715-120027.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784117044402,
+                  "size": 9930,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10259"
+                }
+              ],
+              "aggregatetimeestimate": null,
+              "resolutiondate": null,
+              "workratio": -1,
+              "summary": "Corrigir formato de entrada de dados no banco de dados OB ",
+              "lastViewed": "2026-07-15T09:22:18.457-0300",
+              "watches": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/TEC-30/watchers",
+                "watchCount": 2,
+                "isWatching": false
+              },
+              "issuerestriction": {
+                "issuerestrictions": {},
+                "shouldDisplay": true
+              },
+              "creator": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                "name": null,
+                "key": null,
+                "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                },
+                "displayName": "executivo.negocios",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "subtasks": [],
+              "created": 1783694226478,
+              "customfield_10020": [
+                {
+                  "id": 1339,
+                  "name": "Primeira print",
+                  "state": "active",
+                  "boardId": 205,
+                  "goal": "",
+                  "startDate": "2026-07-10T11:00:00.000Z",
+                  "endDate": "2026-07-17T17:00:00.000Z"
+                }
+              ],
+              "reporter": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                "name": null,
+                "key": null,
+                "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                },
+                "displayName": "executivo.negocios",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "customfield_10021": null,
+              "aggregateprogress": {
+                "progress": 0,
+                "total": 0
+              },
+              "priority": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/priority/2",
+                "id": 2,
+                "name": "P1 - Urgente",
+                "iconUrl": "https://medicalspin.atlassian.net/images/icons/priorities/high_new.svg",
+                "namedValue": "P1 - Urgente"
+              },
+              "customfield_10001": null,
+              "labels": [],
+              "customfield_10019": "0|i001p7:",
+              "timeestimate": null,
+              "aggregatetimeoriginalestimate": null,
+              "versions": [],
+              "duedate": null,
+              "progress": {
+                "progress": 0,
+                "total": 0
+              },
+              "votes": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/TEC-30/votes",
+                "votes": 0,
+                "hasVoted": false
+              },
+              "issuelinks": [],
+              "comment": {
+                "maxResults": 3,
+                "total": 3,
+                "startAt": 0,
+                "comments": [
+                  {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13198/comment/10041",
+                    "id": 10041,
+                    "author": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "24x24": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "16x16": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "32x32": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png"
+                      },
+                      "displayName": "Desenv - Medical Spin",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "body": "Pausado até que evidências sejam anexadas de forma concretas e objetivas. qual o campo errado? Em qual linha houve o erro? Qual o link da planilha? Qual a data e hora foi percebido o erro? (Essas informações ajudam a economizar tempo de investigação); Elaborar melhor a descrição para que seja claro qual é o problema e onde está ocorrendo.",
+                    "renderedBody": null,
+                    "updateAuthor": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "24x24": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "16x16": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "32x32": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png"
+                      },
+                      "displayName": "Desenv - Medical Spin",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "created": 1783959501091,
+                    "updated": 1783959501091,
+                    "visibility": null
+                  },
+                  {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13198/comment/10046",
+                    "id": 10046,
+                    "author": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                      },
+                      "displayName": "executivo.negocios",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "body": "[~accountid:712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a] Sugestão, marcar o responsável / envolvido pelo  desbloqueio no comentário. ",
+                    "renderedBody": null,
+                    "updateAuthor": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                      },
+                      "displayName": "executivo.negocios",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "created": 1784116013064,
+                    "updated": 1784116013064,
+                    "visibility": null
+                  },
+                  {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13198/comment/10047",
+                    "id": 10047,
+                    "author": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                      },
+                      "displayName": "executivo.negocios",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "body": "[~accountid:712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a] [~accountid:70121:3c6e66cc-e7c4-41f2-b022-1b307faa22d7] \nTodos os campos de texto da planilha Outboud que estão subindo no últimos dias estão sendo registrados com com uma formato diferente do antigo. \n\nAntigo registro \n\n!image-20260715-115132.png|width=575,alt=\"image-20260715-115132.png\"!\n\nForma de registro atual \n\n!image-20260715-115236.png|width=575,alt=\"image-20260715-115236.png\"!\n\nNão tenho como precisar exatamente a data de início. Pois a atividade “atualizar dados Outbound” reescreve campos em leads novo e em leads antigos que foram retrabalhados. Notamos este padrão surgindo a mais ou menos 10 dias. \n\n\n\nEsta divergência na escrita está gerando dados duplicados no Dashboard. \n\n!image-20260715-120027.png|width=185,alt=\"image-20260715-120027.png\"!\n\n!6ed7e980-cfdf-49b1-93bc-aa2a40dd511a.png|width=176,alt=\"6ed7e980-cfdf-49b1-93bc-aa2a40dd511a.png\"!\n\nESPERADO: RETORNAR A CONDIÇÃO ANTIGA DE REGISTRO. ",
+                    "renderedBody": null,
+                    "updateAuthor": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                      },
+                      "displayName": "executivo.negocios",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "created": 1784117045329,
+                    "updated": 1784117045329,
+                    "visibility": null
+                  }
+                ],
+                "last": false
+              },
+              "assignee": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                "name": null,
+                "key": null,
+                "accountId": "712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "24x24": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "16x16": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "32x32": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png"
+                },
+                "displayName": "Desenv - Medical Spin",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "worklog": {
+                "maxResults": 20,
+                "total": 0,
+                "startAt": 0,
+                "worklogs": [],
+                "last": false
+              },
+              "updated": 1784118652684,
+              "status": {
+                "untranslatedNameValue": null,
+                "self": "https://medicalspin.atlassian.net/rest/api/2/status/10241",
+                "description": "",
+                "iconUrl": "https://medicalspin.atlassian.net/images/icons/statuses/generic.png",
+                "name": "A Fazer",
+                "untranslatedName": null,
+                "id": 10241,
+                "statusCategory": {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                  "id": 2,
+                  "key": "new",
+                  "colorName": "blue-gray",
+                  "name": "New"
+                }
+              }
+            },
+            "renderedFields": null
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/jira-task",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "StatusTask": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "Automation for Jira AC app/1.0;1b4ea682-2255-47e7-889d-78779ed4d12b",
+            "content-length": "23860",
+            "accept": "application/json; charset=UTF-8, */*;q=0.8",
+            "accept-encoding": "gzip,deflate",
+            "content-type": "application/json",
+            "x-b3-sampled": "0",
+            "x-b3-spanid": "009d9023b7f917c8",
+            "x-b3-traceid": "790e40a774907f23fb93e6b4bde6fc82",
+            "x-forwarded-for": "104.192.142.243",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "104.192.142.243"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13198",
+            "id": 13198,
+            "key": "TEC-30",
+            "changelog": {
+              "startAt": 0,
+              "maxResults": 0,
+              "total": 0,
+              "histories": null
+            },
+            "fields": {
+              "statuscategorychangedate": "2026-07-15T09:30:52.018-0300",
+              "issuetype": {
+                "namedValue": "Bug",
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issuetype/10245",
+                "id": 10245,
+                "description": "",
+                "iconUrl": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+                "name": "Bug",
+                "untranslatedName": null,
+                "subtask": false,
+                "fields": {},
+                "statuses": [],
+                "hierarchyLevel": 0
+              },
+              "parent": {
+                "id": "13159",
+                "key": "TEC-1",
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13159",
+                "fields": {
+                  "summary": "Pré-vendas & Leads",
+                  "status": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/status/10241",
+                    "description": "",
+                    "iconUrl": "https://medicalspin.atlassian.net/images/icons/statuses/generic.png",
+                    "name": "A Fazer",
+                    "id": "10241",
+                    "statusCategory": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                      "id": 2,
+                      "key": "new",
+                      "colorName": "blue-gray",
+                      "name": "Itens Pendentes"
+                    }
+                  },
+                  "priority": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/priority/3",
+                    "iconUrl": "https://medicalspin.atlassian.net/images/icons/priorities/medium_new.svg",
+                    "name": "P2 - Importante",
+                    "id": "3"
+                  },
+                  "issuetype": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issuetype/10241",
+                    "id": "10241",
+                    "description": "Uma coleção de bugs, histórias e tarefas.",
+                    "iconUrl": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10307?size=medium",
+                    "name": "Epic",
+                    "subtask": false,
+                    "avatarId": 10307,
+                    "entityId": "99bc28b5-1d26-47cd-84d7-32950ba478f1",
+                    "hierarchyLevel": 1
+                  }
+                }
+              },
+              "components": [],
+              "timespent": null,
+              "timeoriginalestimate": null,
+              "project": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/project/10204",
+                "id": 10204,
+                "key": "TEC",
+                "name": "TEC - Tecnologia Medical Spin",
+                "description": null,
+                "avatarUrls": {
+                  "48x48": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405",
+                  "24x24": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=small",
+                  "16x16": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=xsmall",
+                  "32x32": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=medium"
+                },
+                "issuetypes": null,
+                "projectCategory": null,
+                "email": null,
+                "lead": null,
+                "components": null,
+                "versions": null,
+                "projectTypeKey": "software",
+                "simplified": true
+              },
+              "description": "*O que aconteceu:* A informação dos dados estruturados está sendo registrado na planilha em formato JSON - Ex: [\"Nome do responsável\",\"Cargo\",\"E-mail\". \n\n*O que era esperado:* Registrar os dados em formato te texto simples sem separações.  Ex: Nome do responsável Cargo E-mail Marca de RM\n\n*Evidências/links:*\n\n!image-20260710-143526.png|width=333,alt=\"image-20260710-143526.png\"!",
+              "fixVersions": [],
+              "statusCategory": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                "id": 2,
+                "key": "new",
+                "colorName": "blue-gray",
+                "name": "New"
+              },
+              "aggregatetimespent": null,
+              "resolution": null,
+              "customfield_10015": null,
+              "customfield_10248": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/customFieldOption/10091",
+                "value": "Google Sheets",
+                "id": "10091",
+                "color": "PURPLE_DARKER"
+              },
+              "customfield_10249": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/customFieldOption/10105",
+                "value": "Ajuste",
+                "id": "10105",
+                "color": "TEAL_DARKER"
+              },
+              "security": null,
+              "attachment": [
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10258",
+                  "id": 10258,
+                  "filename": "6ed7e980-cfdf-49b1-93bc-aa2a40dd511a.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784117044041,
+                  "size": 13768,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10258"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10250",
+                  "id": 10250,
+                  "filename": "image-20260710-143526.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1783694226890,
+                  "size": 6829,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10250"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10260",
+                  "id": 10260,
+                  "filename": "image-20260715-115132.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784117044778,
+                  "size": 18566,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10260"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10257",
+                  "id": 10257,
+                  "filename": "image-20260715-115236.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784117043671,
+                  "size": 22895,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10257"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10259",
+                  "id": 10259,
+                  "filename": "image-20260715-120027.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                      "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                    },
+                    "displayName": "executivo.negocios",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784117044402,
+                  "size": 9930,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10259"
+                }
+              ],
+              "aggregatetimeestimate": null,
+              "resolutiondate": null,
+              "workratio": -1,
+              "summary": "Corrigir formato de entrada de dados no banco de dados OB ",
+              "lastViewed": "2026-07-15T09:22:18.457-0300",
+              "watches": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/TEC-30/watchers",
+                "watchCount": 2,
+                "isWatching": false
+              },
+              "issuerestriction": {
+                "issuerestrictions": {},
+                "shouldDisplay": true
+              },
+              "creator": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                "name": null,
+                "key": null,
+                "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                },
+                "displayName": "executivo.negocios",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "subtasks": [],
+              "created": 1783694226478,
+              "customfield_10020": [
+                {
+                  "id": 1339,
+                  "name": "Primeira print",
+                  "state": "active",
+                  "boardId": 205,
+                  "goal": "",
+                  "startDate": "2026-07-10T11:00:00.000Z",
+                  "endDate": "2026-07-17T17:00:00.000Z"
+                }
+              ],
+              "reporter": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                "name": null,
+                "key": null,
+                "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                  "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                },
+                "displayName": "executivo.negocios",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "customfield_10021": null,
+              "aggregateprogress": {
+                "progress": 0,
+                "total": 0
+              },
+              "priority": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/priority/2",
+                "id": 2,
+                "name": "P1 - Urgente",
+                "iconUrl": "https://medicalspin.atlassian.net/images/icons/priorities/high_new.svg",
+                "namedValue": "P1 - Urgente"
+              },
+              "customfield_10001": null,
+              "labels": [],
+              "customfield_10019": "0|i001sq:r",
+              "timeestimate": null,
+              "aggregatetimeoriginalestimate": null,
+              "versions": [],
+              "duedate": null,
+              "progress": {
+                "progress": 0,
+                "total": 0
+              },
+              "votes": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/TEC-30/votes",
+                "votes": 0,
+                "hasVoted": false
+              },
+              "issuelinks": [],
+              "comment": {
+                "maxResults": 3,
+                "total": 3,
+                "startAt": 0,
+                "comments": [
+                  {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13198/comment/10041",
+                    "id": 10041,
+                    "author": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "24x24": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "16x16": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "32x32": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png"
+                      },
+                      "displayName": "Desenv - Medical Spin",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "body": "Pausado até que evidências sejam anexadas de forma concretas e objetivas. qual o campo errado? Em qual linha houve o erro? Qual o link da planilha? Qual a data e hora foi percebido o erro? (Essas informações ajudam a economizar tempo de investigação); Elaborar melhor a descrição para que seja claro qual é o problema e onde está ocorrendo.",
+                    "renderedBody": null,
+                    "updateAuthor": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "24x24": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "16x16": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                        "32x32": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png"
+                      },
+                      "displayName": "Desenv - Medical Spin",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "created": 1783959501091,
+                    "updated": 1783959501091,
+                    "visibility": null
+                  },
+                  {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13198/comment/10046",
+                    "id": 10046,
+                    "author": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                      },
+                      "displayName": "executivo.negocios",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "body": "[~accountid:712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a] Sugestão, marcar o responsável / envolvido pelo  desbloqueio no comentário. ",
+                    "renderedBody": null,
+                    "updateAuthor": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                      },
+                      "displayName": "executivo.negocios",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "created": 1784116013064,
+                    "updated": 1784116013064,
+                    "visibility": null
+                  },
+                  {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13198/comment/10047",
+                    "id": 10047,
+                    "author": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                      },
+                      "displayName": "executivo.negocios",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "body": "[~accountid:712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a] [~accountid:70121:3c6e66cc-e7c4-41f2-b022-1b307faa22d7] \nTodos os campos de texto da planilha Outboud que estão subindo no últimos dias estão sendo registrados com com uma formato diferente do antigo. \n\nAntigo registro \n\n!image-20260715-115132.png|width=575,alt=\"image-20260715-115132.png\"!\n\nForma de registro atual \n\n!image-20260715-115236.png|width=575,alt=\"image-20260715-115236.png\"!\n\nNão tenho como precisar exatamente a data de início. Pois a atividade “atualizar dados Outbound” reescreve campos em leads novo e em leads antigos que foram retrabalhados. Notamos este padrão surgindo a mais ou menos 10 dias. \n\n\n\nEsta divergência na escrita está gerando dados duplicados no Dashboard. \n\n!image-20260715-120027.png|width=185,alt=\"image-20260715-120027.png\"!\n\n!6ed7e980-cfdf-49b1-93bc-aa2a40dd511a.png|width=176,alt=\"6ed7e980-cfdf-49b1-93bc-aa2a40dd511a.png\"!\n\nESPERADO: RETORNAR A CONDIÇÃO ANTIGA DE REGISTRO. ",
+                    "renderedBody": null,
+                    "updateAuthor": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:9a365067-c8cd-4696-b99e-b2f647c7d820",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "24x24": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "16x16": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png",
+                        "32x32": "https://secure.gravatar.com/avatar/3382655e1329f24f7c1cda6901e05e24?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FE-1.png"
+                      },
+                      "displayName": "executivo.negocios",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "created": 1784117045329,
+                    "updated": 1784117045329,
+                    "visibility": null
+                  }
+                ],
+                "last": false
+              },
+              "assignee": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                "name": null,
+                "key": null,
+                "accountId": "712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "24x24": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "16x16": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "32x32": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png"
+                },
+                "displayName": "Desenv - Medical Spin",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "worklog": {
+                "maxResults": 20,
+                "total": 0,
+                "startAt": 0,
+                "worklogs": [],
+                "last": false
+              },
+              "updated": 1784118652018,
+              "status": {
+                "untranslatedNameValue": null,
+                "self": "https://medicalspin.atlassian.net/rest/api/2/status/10241",
+                "description": "",
+                "iconUrl": "https://medicalspin.atlassian.net/images/icons/statuses/generic.png",
+                "name": "A Fazer",
+                "untranslatedName": null,
+                "id": 10241,
+                "statusCategory": {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                  "id": 2,
+                  "key": "new",
+                  "colorName": "blue-gray",
+                  "name": "New"
+                }
+              }
+            },
+            "renderedFields": null
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/jira-task-status",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "CreatedTask": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "Automation for Jira AC app/1.0;189d00ff-7f0a-4f09-a0ce-aa38829773fc",
+            "content-length": "11494",
+            "accept": "application/json; charset=UTF-8, */*;q=0.8",
+            "accept-encoding": "gzip,deflate",
+            "content-type": "application/json",
+            "x-b3-sampled": "0",
+            "x-b3-spanid": "d14f825d6e21b234",
+            "x-b3-traceid": "8b40cad6b1ff44891376e1d823f2ca52",
+            "x-forwarded-for": "104.192.142.251",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "104.192.142.251"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13210",
+            "id": 13210,
+            "key": "TEC-37",
+            "changelog": {
+              "startAt": 0,
+              "maxResults": 0,
+              "total": 0,
+              "histories": null
+            },
+            "fields": {
+              "statuscategorychangedate": null,
+              "issuetype": {
+                "namedValue": "Task",
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issuetype/10244",
+                "id": 10244,
+                "description": "",
+                "iconUrl": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10314?size=medium",
+                "name": "Task",
+                "untranslatedName": null,
+                "subtask": false,
+                "fields": {},
+                "statuses": [],
+                "hierarchyLevel": 0
+              },
+              "parent": {
+                "id": "13159",
+                "key": "TEC-1",
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13159",
+                "fields": {
+                  "summary": "Pré-vendas & Leads",
+                  "status": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/status/10241",
+                    "description": "",
+                    "iconUrl": "https://medicalspin.atlassian.net/images/icons/statuses/generic.png",
+                    "name": "A Fazer",
+                    "id": "10241",
+                    "statusCategory": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                      "id": 2,
+                      "key": "new",
+                      "colorName": "blue-gray",
+                      "name": "Itens Pendentes"
+                    }
+                  },
+                  "priority": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/priority/3",
+                    "iconUrl": "https://medicalspin.atlassian.net/images/icons/priorities/medium_new.svg",
+                    "name": "P2 - Importante",
+                    "id": "3"
+                  },
+                  "issuetype": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issuetype/10241",
+                    "id": "10241",
+                    "description": "Uma coleção de bugs, histórias e tarefas.",
+                    "iconUrl": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10307?size=medium",
+                    "name": "Epic",
+                    "subtask": false,
+                    "avatarId": 10307,
+                    "entityId": "99bc28b5-1d26-47cd-84d7-32950ba478f1",
+                    "hierarchyLevel": 1
+                  }
+                }
+              },
+              "components": [],
+              "timespent": null,
+              "timeoriginalestimate": null,
+              "project": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/project/10204",
+                "id": 10204,
+                "key": "TEC",
+                "name": "TEC - Tecnologia Medical Spin",
+                "description": null,
+                "avatarUrls": {
+                  "48x48": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405",
+                  "24x24": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=small",
+                  "16x16": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=xsmall",
+                  "32x32": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=medium"
+                },
+                "issuetypes": null,
+                "projectCategory": null,
+                "email": null,
+                "lead": null,
+                "components": null,
+                "versions": null,
+                "projectTypeKey": "software",
+                "simplified": true
+              },
+              "description": "*O que precisa ser feito:* Alteração na automação para que traga o ID do lead junto quando adicionar um erro na aba logs das planilha IB e OB \n\n*Resultado Esperado: Erros IB e OB com lead rastravel, através do ID*\n\n*Evidências/links: Segue links das planilhas e em anexo prints identificando que não existe ID atualmente*\n\n*Planilha OB:* [https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit?gid=1656509236#gid=1656509236|https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit?gid=1656509236#gid=1656509236|smart-link] \nPlanilha IB: [https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?gid=320228705#gid=320228705|https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?gid=320228705#gid=320228705|smart-link] \n\n\n ",
+              "fixVersions": [],
+              "statusCategory": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                "id": 2,
+                "key": "new",
+                "colorName": "blue-gray",
+                "name": "New"
+              },
+              "aggregatetimespent": null,
+              "resolution": null,
+              "customfield_10015": null,
+              "customfield_10248": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/customFieldOption/10089",
+                "value": "N8N",
+                "id": "10089"
+              },
+              "customfield_10249": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/customFieldOption/10105",
+                "value": "Ajuste",
+                "id": "10105",
+                "color": "TEAL_DARKER"
+              },
+              "security": null,
+              "attachment": [
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10264",
+                  "id": 10264,
+                  "filename": "Captura de tela 2026-07-15 161026.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                    },
+                    "displayName": "arthur.medicalspin",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784142790972,
+                  "size": 56436,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10264"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10263",
+                  "id": 10263,
+                  "filename": "Captura de tela 2026-07-15 161039.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                    },
+                    "displayName": "arthur.medicalspin",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784142790905,
+                  "size": 106231,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10263"
+                }
+              ],
+              "aggregatetimeestimate": null,
+              "resolutiondate": null,
+              "workratio": -1,
+              "summary": "Trazer ID do lead na aba Logs das planilhas IB e OB ",
+              "issuerestriction": {
+                "issuerestrictions": {},
+                "shouldDisplay": true
+              },
+              "lastViewed": null,
+              "watches": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/TEC-37/watchers",
+                "watchCount": 1,
+                "isWatching": false
+              },
+              "creator": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                "name": null,
+                "key": null,
+                "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                },
+                "displayName": "arthur.medicalspin",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "subtasks": [],
+              "created": 1784142806211,
+              "customfield_10020": null,
+              "customfield_10021": null,
+              "reporter": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                "name": null,
+                "key": null,
+                "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                },
+                "displayName": "arthur.medicalspin",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "aggregateprogress": {
+                "progress": 0,
+                "total": 0
+              },
+              "priority": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/priority/3",
+                "id": 3,
+                "name": "P2 - Importante",
+                "iconUrl": "https://medicalspin.atlassian.net/images/icons/priorities/medium_new.svg",
+                "namedValue": "P2 - Importante"
+              },
+              "customfield_10001": null,
+              "labels": [],
+              "customfield_10019": "0|i001ur:",
+              "timeestimate": null,
+              "aggregatetimeoriginalestimate": null,
+              "versions": [],
+              "duedate": null,
+              "progress": {
+                "progress": 0,
+                "total": 0
+              },
+              "votes": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/TEC-37/votes",
+                "votes": 0,
+                "hasVoted": false
+              },
+              "issuelinks": [],
+              "comment": {
+                "maxResults": 0,
+                "total": 0,
+                "startAt": 0,
+                "comments": [],
+                "last": false
+              },
+              "assignee": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                "name": null,
+                "key": null,
+                "accountId": "712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "24x24": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "16x16": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "32x32": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png"
+                },
+                "displayName": "Desenv - Medical Spin",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "worklog": {
+                "maxResults": 20,
+                "total": 0,
+                "startAt": 0,
+                "worklogs": [],
+                "last": false
+              },
+              "updated": 1784142806211,
+              "status": {
+                "untranslatedNameValue": null,
+                "self": "https://medicalspin.atlassian.net/rest/api/2/status/10241",
+                "description": "",
+                "iconUrl": "https://medicalspin.atlassian.net/images/icons/statuses/generic.png",
+                "name": "A Fazer",
+                "untranslatedName": null,
+                "id": 10241,
+                "statusCategory": {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                  "id": 2,
+                  "key": "new",
+                  "colorName": "blue-gray",
+                  "name": "New"
+                }
+              }
+            },
+            "renderedFields": null
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/jira-task-created",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "CommentTask": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "Automation for Jira AC app/1.0;73128964-a2d2-420b-a7ed-dddd7ae19903",
+            "content-length": "14215",
+            "accept": "application/json; charset=UTF-8, */*;q=0.8",
+            "accept-encoding": "gzip,deflate",
+            "content-type": "application/json",
+            "x-b3-sampled": "0",
+            "x-b3-spanid": "788a3b8c61471bda",
+            "x-b3-traceid": "a26451c2dc8852ebccce79bf79586db7",
+            "x-forwarded-for": "104.192.142.252",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "104.192.142.252"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13210",
+            "id": 13210,
+            "key": "TEC-37",
+            "changelog": {
+              "startAt": 0,
+              "maxResults": 0,
+              "total": 0,
+              "histories": null
+            },
+            "fields": {
+              "statuscategorychangedate": "2026-07-16T09:29:00.668-0300",
+              "issuetype": {
+                "namedValue": "Task",
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issuetype/10244",
+                "id": 10244,
+                "description": "",
+                "iconUrl": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10314?size=medium",
+                "name": "Task",
+                "untranslatedName": null,
+                "subtask": false,
+                "fields": {},
+                "statuses": [],
+                "hierarchyLevel": 0
+              },
+              "parent": {
+                "id": "13159",
+                "key": "TEC-1",
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13159",
+                "fields": {
+                  "summary": "Pré-vendas & Leads",
+                  "status": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/status/10241",
+                    "description": "",
+                    "iconUrl": "https://medicalspin.atlassian.net/images/icons/statuses/generic.png",
+                    "name": "A Fazer",
+                    "id": "10241",
+                    "statusCategory": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/2",
+                      "id": 2,
+                      "key": "new",
+                      "colorName": "blue-gray",
+                      "name": "To Do"
+                    }
+                  },
+                  "priority": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/priority/3",
+                    "iconUrl": "https://medicalspin.atlassian.net/images/icons/priorities/medium_new.svg",
+                    "name": "P2 - Importante",
+                    "id": "3"
+                  },
+                  "issuetype": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issuetype/10241",
+                    "id": "10241",
+                    "description": "Epics track collections of related bugs, stories, and tasks.",
+                    "iconUrl": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/issuetype/avatar/10307?size=medium",
+                    "name": "Epic",
+                    "subtask": false,
+                    "avatarId": 10307,
+                    "entityId": "99bc28b5-1d26-47cd-84d7-32950ba478f1",
+                    "hierarchyLevel": 1
+                  }
+                }
+              },
+              "components": [],
+              "timespent": null,
+              "timeoriginalestimate": null,
+              "project": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/project/10204",
+                "id": 10204,
+                "key": "TEC",
+                "name": "TEC - Tecnologia Medical Spin",
+                "description": null,
+                "avatarUrls": {
+                  "48x48": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405",
+                  "24x24": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=small",
+                  "16x16": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=xsmall",
+                  "32x32": "https://medicalspin.atlassian.net/rest/api/2/universal_avatar/view/type/project/avatar/10405?size=medium"
+                },
+                "issuetypes": null,
+                "projectCategory": null,
+                "email": null,
+                "lead": null,
+                "components": null,
+                "versions": null,
+                "projectTypeKey": "software",
+                "simplified": true
+              },
+              "description": "*O que precisa ser feito:* Alteração na automação para que traga o ID do lead junto quando adicionar um erro na aba logs das planilha IB e OB \n\n*Resultado Esperado: Erros IB e OB com lead rastravel, através do ID*\n\n*Evidências/links: Segue links das planilhas e em anexo prints identificando que não existe ID atualmente*\n\n*Planilha OB:* [https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit?gid=1656509236#gid=1656509236|https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit?gid=1656509236#gid=1656509236|smart-link] \nPlanilha IB: [https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?gid=320228705#gid=320228705|https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?gid=320228705#gid=320228705|smart-link] \n\n\n ",
+              "fixVersions": [],
+              "aggregatetimespent": null,
+              "statusCategory": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/4",
+                "id": 4,
+                "key": "indeterminate",
+                "colorName": "yellow",
+                "name": "In Progress"
+              },
+              "resolution": null,
+              "customfield_10015": null,
+              "customfield_10248": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/customFieldOption/10089",
+                "value": "N8N",
+                "id": "10089"
+              },
+              "customfield_10249": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/customFieldOption/10105",
+                "value": "Ajuste",
+                "id": "10105",
+                "color": "TEAL_DARKER"
+              },
+              "security": null,
+              "attachment": [
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10264",
+                  "id": 10264,
+                  "filename": "Captura de tela 2026-07-15 161026.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                    },
+                    "displayName": "arthur.medicalspin",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784142790972,
+                  "size": 56436,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10264"
+                },
+                {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/attachment/10263",
+                  "id": 10263,
+                  "filename": "Captura de tela 2026-07-15 161039.png",
+                  "author": {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                    "name": null,
+                    "key": null,
+                    "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                    "emailAddress": null,
+                    "avatarUrls": {
+                      "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                      "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                    },
+                    "displayName": "arthur.medicalspin",
+                    "active": true,
+                    "timeZone": "America/Bahia",
+                    "groups": null,
+                    "locale": null,
+                    "accountType": "atlassian"
+                  },
+                  "created": 1784142790905,
+                  "size": 106231,
+                  "mimeType": "image/png",
+                  "content": "https://medicalspin.atlassian.net/rest/api/2/attachment/content/10263"
+                }
+              ],
+              "aggregatetimeestimate": null,
+              "resolutiondate": null,
+              "workratio": -1,
+              "summary": "Trazer ID do lead na aba Logs das planilhas IB e OB ",
+              "issuerestriction": {
+                "issuerestrictions": {},
+                "shouldDisplay": true
+              },
+              "lastViewed": null,
+              "watches": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/TEC-37/watchers",
+                "watchCount": 1,
+                "isWatching": false
+              },
+              "creator": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                "name": null,
+                "key": null,
+                "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                },
+                "displayName": "arthur.medicalspin",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "subtasks": [],
+              "created": 1784142806211,
+              "customfield_10020": [
+                {
+                  "id": 1339,
+                  "name": "Primeira print",
+                  "state": "active",
+                  "boardId": 205,
+                  "goal": "",
+                  "startDate": "2026-07-10T11:00:00.000Z",
+                  "endDate": "2026-07-17T17:00:00.000Z"
+                }
+              ],
+              "customfield_10021": null,
+              "reporter": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                "name": null,
+                "key": null,
+                "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                  "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                },
+                "displayName": "arthur.medicalspin",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "aggregateprogress": {
+                "progress": 0,
+                "total": 0
+              },
+              "priority": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/priority/3",
+                "id": 3,
+                "name": "P2 - Importante",
+                "iconUrl": "https://medicalspin.atlassian.net/images/icons/priorities/medium_new.svg",
+                "namedValue": "P2 - Importante"
+              },
+              "customfield_10001": null,
+              "labels": [],
+              "customfield_10019": "0|i001sq:x",
+              "timeestimate": null,
+              "aggregatetimeoriginalestimate": null,
+              "versions": [],
+              "duedate": null,
+              "progress": {
+                "progress": 0,
+                "total": 0
+              },
+              "issuelinks": [],
+              "votes": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/issue/TEC-37/votes",
+                "votes": 0,
+                "hasVoted": false
+              },
+              "comment": {
+                "maxResults": 1,
+                "total": 1,
+                "startAt": 0,
+                "comments": [
+                  {
+                    "self": "https://medicalspin.atlassian.net/rest/api/2/issue/13210/comment/10053",
+                    "id": 10053,
+                    "author": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                        "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                        "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                        "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                      },
+                      "displayName": "arthur.medicalspin",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "body": "[~accountid:712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a]Para padronização, em ambas as planilhas, posso alterar o nome da coluna de IDlead para ID ?",
+                    "renderedBody": null,
+                    "updateAuthor": {
+                      "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3Aa4ec219f-5d9f-48be-8953-68ec4a42181d",
+                      "name": null,
+                      "key": null,
+                      "accountId": "712020:a4ec219f-5d9f-48be-8953-68ec4a42181d",
+                      "emailAddress": null,
+                      "avatarUrls": {
+                        "48x48": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                        "24x24": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                        "16x16": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png",
+                        "32x32": "https://secure.gravatar.com/avatar/879060d3460277d5cc6febc0e61731f0?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FA-6.png"
+                      },
+                      "displayName": "arthur.medicalspin",
+                      "active": true,
+                      "timeZone": "America/Bahia",
+                      "groups": null,
+                      "locale": null,
+                      "accountType": "atlassian"
+                    },
+                    "created": 1784221882109,
+                    "updated": 1784221882109,
+                    "visibility": null
+                  }
+                ],
+                "last": false
+              },
+              "assignee": {
+                "self": "https://medicalspin.atlassian.net/rest/api/2/user?accountId=712020%3A2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                "name": null,
+                "key": null,
+                "accountId": "712020:2ae71b42-d762-45f0-b820-d8bf8ccf041a",
+                "emailAddress": null,
+                "avatarUrls": {
+                  "48x48": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "24x24": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "16x16": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png",
+                  "32x32": "https://secure.gravatar.com/avatar/9dbe0f92083d65916394421619ed47af?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FDS-6.png"
+                },
+                "displayName": "Desenv - Medical Spin",
+                "active": true,
+                "timeZone": "America/Bahia",
+                "groups": null,
+                "locale": null,
+                "accountType": "atlassian"
+              },
+              "worklog": {
+                "maxResults": 20,
+                "total": 0,
+                "startAt": 0,
+                "worklogs": [],
+                "last": false
+              },
+              "updated": 1784221882109,
+              "status": {
+                "untranslatedNameValue": null,
+                "self": "https://medicalspin.atlassian.net/rest/api/2/status/10243",
+                "description": "",
+                "iconUrl": "https://medicalspin.atlassian.net/images/icons/statuses/generic.png",
+                "name": "Validação",
+                "untranslatedName": null,
+                "id": 10243,
+                "statusCategory": {
+                  "self": "https://medicalspin.atlassian.net/rest/api/2/statuscategory/4",
+                  "id": 4,
+                  "key": "indeterminate",
+                  "colorName": "yellow",
+                  "name": "In Progress"
+                }
+              }
+            },
+            "renderedFields": null
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/jira-task-comment",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "c7d7aeb4-6486-4c5c-add8-39b33f11e95a",
+  "activeVersionId": null,
+  "triggerCount": 4,
+  "shared": [
+    {
+      "updatedAt": "2026-07-15T12:26:07.309Z",
+      "createdAt": "2026-07-15T12:26:07.309Z",
+      "role": "workflow:owner",
+      "workflowId": "5fBV4LWXsxvcFX3H",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": [
+    {
+      "updatedAt": "2026-07-15T14:00:08.460Z",
+      "createdAt": "2026-07-15T14:00:08.460Z",
+      "id": "Nq6AgGIXlNO7H7a2",
+      "name": "GoogleChat"
+    },
+    {
+      "updatedAt": "2025-11-17T14:30:14.174Z",
+      "createdAt": "2025-11-17T14:30:14.174Z",
+      "id": "moijdFGlY2w64Ect",
+      "name": "Jira"
+    }
+  ]
+}
