@@ -1,0 +1,1717 @@
+{
+  "updatedAt": "2026-08-12T16:45:37.816Z",
+  "createdAt": "2026-07-14T18:57:00.322Z",
+  "id": "xbqPYnWoXEB6LQ2t",
+  "name": "[COMERCIAL] Ligações dashboard V2 - Voxfree + Sheets",
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "Ligações dashboard\n\nAtualiza as ligações do voxfree na planilha (dashboard)\nFiltrando Usuários e notificando caso fique em branco ou nome genérico\nAtualiza de hora em hora em horário comercial\n\n\n\n",
+        "width": 592
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -224
+      ],
+      "id": "520af1bc-656a-4475-b1bd-2c6ecc2bed69",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json._usuarioInvalido }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        -16
+      ],
+      "id": "a8bdf775-cc8a-45b2-8265-c9198816307b",
+      "name": "Usuário Não Identificado?"
+    },
+    {
+      "parameters": {
+        "jsCode": "const itens = $input.all();\n\nconst linhas = itens.map(item => {\n  const j = item.json;\n  const dataHora = j['Data / Hora'] || '(sem data)';\n  const telefone = j['Telefone'] || '(sem telefone)';\n  const usuario = j['_usuarioBruto'] || '(vazio)';\n  return `- ${dataHora} | Telefone: ${telefone} | Usuário bruto: ${usuario}`;\n});\n\nconst corpo = `Foram encontradas ${itens.length} ligação(ões) com usuário não identificado nesta execução (não foram gravadas na planilha):\\n\\n${linhas.join('\\n')}\\n\\nVerifique o VoxFree para identificar o SDR correspondente.`;\n\nreturn [{ json: {\n  assunto: `Ligações com usuário não identificado (${itens.length})`,\n  corpo\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1472,
+        192
+      ],
+      "id": "a2c20410-1fa1-4cbb-a8cd-c45442123a30",
+      "name": "Montar Corpo do Alerta"
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = new Date();\nconst dd = String(d.getDate()).padStart(2, '0');\nconst mm = String(d.getMonth() + 1).padStart(2, '0');\nconst yyyy = d.getFullYear();\nconst data = `${dd}/${mm}/${yyyy}`;\nreturn [{ json: { reservation: `${data} - ${data}` } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -384,
+        64
+      ],
+      "id": "9e3adce9-c8fd-4089-aac2-acdcb63fa68c",
+      "name": "Calcular Data de Hoje"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9-18 * * 1-5"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -560,
+        64
+      ],
+      "id": "2fa5e093-3796-44d1-9746-c551eb601aa4",
+      "name": "Gatilho 8 as 18 seg a sexta"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.voxfree.com.br/Login/loginAction",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "usuario",
+              "value": "adm@medical_spin"
+            },
+            {
+              "name": "senha",
+              "value": "Ms2026Dc."
+            },
+            {
+              "name": "destino"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -208,
+        -16
+      ],
+      "id": "4bec68f4-9e9d-4462-8190-b5141d9e887f",
+      "name": "Login VoxFree Etapa 1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.voxfree.com.br/Login/redirect_login",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Extrair Cookie de Sessão').item.json.cookie }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "txtAcao"
+            },
+            {
+              "name": "url",
+              "value": "Geral/inicio"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        176,
+        -16
+      ],
+      "id": "a6d67746-1be8-41a1-8eb4-0cabfda6a925",
+      "name": "Login VoxFree Etapa 2",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "https://app.voxfree.com.br/Inicio",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Extrair Cookie de Sessão').item.json.cookie }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        384,
+        -16
+      ],
+      "id": "9b0bc56f-5c19-4627-a035-238768937e70",
+      "name": "Login VoxFree Etapa 3",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q",
+          "mode": "list",
+          "cachedResultName": "Ligações / Reuniões (time comercial)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 243288521,
+          "mode": "list",
+          "cachedResultName": "Registros de ligações",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit#gid=243288521"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -208,
+        224
+      ],
+      "id": "04dfd3fc-3703-4484-833c-496be83810bf",
+      "name": "Ler Planilha Atual",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pega a ultima linha (mais recente) ja gravada na planilha,\n// para o Processar CSV saber a partir de onde continuar.\nconst items = $input.all();\nif (items.length === 0) {\n  return [{ json: { ultimaDataHora: null } }];\n}\nconst ultima = items[items.length - 1].json;\nreturn [{ json: { ultimaDataHora: ultima['Data / Hora'] || null } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        224
+      ],
+      "id": "3726df63-3349-4a72-9c27-e5e85e0f5220",
+      "name": "Pegar Data da Última Ligação Salva"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resposta = $input.first().json;\nconst caminho = (resposta.body || resposta.data || '').trim();\nconst caminhoLimpo = caminho.replace(/^\\.\\.\\//, '');\n\nconst partes = caminhoLimpo.split('/');\nconst arquivo = partes.pop();\nconst diretorio = partes.join('/');\n\nconst urlCSV = 'https://app.voxfree.com.br/' + diretorio + '/' + encodeURIComponent(arquivo);\n\nreturn [{ json: { csvUrl: urlCSV } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        -16
+      ],
+      "id": "cd83ddfd-98a8-4e3b-97fe-ccad1edf1c4b",
+      "name": "Montar URL CSV"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.voxfree.com.br/Relatorios/buscaLog_chamadas/exportar",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Extrair Cookie de Sessão').item.json.cookie }}"
+            },
+            {
+              "name": "X-Requested-With",
+              "value": "XMLHttpRequest"
+            },
+            {
+              "name": "Referer",
+              "value": "https://app.voxfree.com.br/Relatorios/log_chamadas"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "usuario",
+              "value": "todos"
+            },
+            {
+              "name": "sentido",
+              "value": "Ambos"
+            },
+            {
+              "name": "reservation",
+              "value": "={{ $('Calcular Data de Hoje').item.json.reservation }}"
+            },
+            {
+              "name": "numero_entrante"
+            },
+            {
+              "name": "numero"
+            },
+            {
+              "name": "resultado",
+              "value": "TODAS"
+            },
+            {
+              "name": "campanha"
+            },
+            {
+              "name": "protocolo"
+            },
+            {
+              "name": "acao",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        592,
+        -16
+      ],
+      "id": "fdbf2927-bdb5-417d-b976-179b3e124549",
+      "name": "Solicitar Exportação CSV",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst headers = item.headers || {};\nconst setCookie = headers['set-cookie'] || [];\nconst first = Array.isArray(setCookie) ? setCookie[0] : (setCookie || '');\nconst match = first.match(/ci_session=([^;]+)/);\nif (!match) throw new Error('Cookie não encontrado');\nreturn [{ json: { cookie: 'ci_session=' + match[1] } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        -16
+      ],
+      "id": "328058c8-fe47-47f3-b2bd-d24bec73d6db",
+      "name": "Extrair Cookie de Sessão"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Montar URL CSV').item.json.csvUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Extrair Cookie de Sessão').item.json.cookie }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        960,
+        -16
+      ],
+      "id": "df30dd41-8709-4a53-b6e0-992e402ccc73",
+      "name": "Baixar CSV Ligações Voxfree",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "chooseBranch"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1120,
+        160
+      ],
+      "id": "56e144d7-3875-4826-8985-e77361fa36eb",
+      "name": "Aguardar CSV e Planilha"
+    },
+    {
+      "parameters": {
+        "jsCode": "const csvTexto = $input.first().json.data || $input.first().json.body || '';\nconst ultimaDataHora = $('Pegar Data da Última Ligação Salva').first().json.ultimaDataHora;\n\nconst delimitador = csvTexto.includes(';') ? ';' : ',';\nconst linhas = csvTexto.split('\\n').filter(l => l.trim() !== '');\nif (linhas.length < 2) return [];\n\nconst cabecalho = linhas[0].split(delimitador).map(c => c.trim());\nconst idxDuracao  = cabecalho.findIndex(c => c.toLowerCase().includes('dura'));\nconst idxDataHora = cabecalho.findIndex(c => c.toLowerCase().includes('data'));\nconst idxUsuario  = cabecalho.findIndex(c => c.toLowerCase().includes('usu'));\n\nfunction toSegundos(dur) {\n  const p = (dur || '').trim().split(':');\n  if (p.length !== 3) return 0;\n  return parseInt(p[0]) * 3600 + parseInt(p[1]) * 60 + parseInt(p[2]);\n}\n\n// Converte \"DD/MM/AAAA HH:MM:SS\" em timestamp comparavel\nfunction paraTimestamp(dataHora) {\n  const partes = (dataHora || '').trim().split(' ');\n  if (partes.length < 2) return 0;\n  const [dd, mm, yyyy] = partes[0].split('/').map(Number);\n  const [h, m, s] = partes[1].split(':').map(Number);\n  return new Date(yyyy, mm - 1, dd, h, m, s || 0).getTime();\n}\n\nfunction nomeSDR(usuario) {\n  const u = (usuario || '').trim();\n  const m = u.match(/^vendas\\s+\\d+\\s+(.+)$/i);\n  if (m) return m[1].trim();\n  return u;\n}\n\n// Detecta usuario sem identificacao real: campo vazio, \"Vendas N\" sem nome\n// depois (ex: \"Vendas 4\" sozinho), ou \"Usuario N\" generico (ex: \"Usuario 3003\")\nfunction usuarioInvalido(usuarioBruto) {\n  const u = (usuarioBruto || '').trim();\n  if (u === '') return true;\n  if (/^vendas\\s+\\d+\\s*$/i.test(u)) return true;\n  if (/^usu[aá]rio\\s+\\d+\\s*$/i.test(u)) return true;\n  return false;\n}\n\nconst limiteTimestamp = ultimaDataHora ? paraTimestamp(ultimaDataHora) : 0;\n\nreturn linhas.slice(1).reduce((acc, linha) => {\n  const colunas = linha.split(delimitador).map(c => c.trim());\n\n  const dataHora = idxDataHora >= 0 ? (colunas[idxDataHora] || '') : '';\n  const ts = paraTimestamp(dataHora);\n\n  // So mantem ligacoes mais novas que a ultima ja gravada na planilha\n  if (ts <= limiteTimestamp) return acc;\n\n  const usuarioBruto = idxUsuario >= 0 ? (colunas[idxUsuario] || '') : '';\n\n  const duracao  = idxDuracao >= 0 ? (colunas[idxDuracao] || '00:00:00') : '00:00:00';\n  const atendida = toSegundos(duracao) >= 60 ? 'Sim' : 'Não';\n\n  const obj = {};\n  cabecalho.forEach((col, i) => { obj[col] = colunas[i] || ''; });\n\n  obj['Atendida'] = atendida;\n\n  if (usuarioInvalido(usuarioBruto)) {\n    // Usuario nao identificado: nao vai pra planilha, so gera alerta por e-mail\n    obj['_usuarioInvalido'] = true;\n    obj['_usuarioBruto'] = usuarioBruto === '' ? '(vazio)' : usuarioBruto;\n  } else if (idxUsuario >= 0) {\n    obj[cabecalho[idxUsuario]] = nomeSDR(usuarioBruto);\n  }\n\n  acc.push({ json: obj });\n  return acc;\n}, []);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1296,
+        -16
+      ],
+      "id": "6ff34b43-a062-4948-a07b-7a6ac9c644a6",
+      "name": "Filtrar Ligações Novas"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q",
+          "mode": "list",
+          "cachedResultName": "Ligações / Reuniões (time comercial)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 243288521,
+          "mode": "list",
+          "cachedResultName": "Registros de ligações",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit#gid=243288521"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Data / Hora",
+              "displayName": "Data / Hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Usuário",
+              "displayName": "Usuário",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Telefone",
+              "displayName": "Telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Resultado",
+              "displayName": "Resultado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Duração",
+              "displayName": "Duração",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Campanha",
+              "displayName": "Campanha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Operadora",
+              "displayName": "Operadora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Modo Disc.",
+              "displayName": "Modo Disc.",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Ação",
+              "displayName": "Ação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Número",
+              "displayName": "Número",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Protocolo",
+              "displayName": "Protocolo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Sentido",
+              "displayName": "Sentido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Atendida",
+              "displayName": "Atendida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1824,
+        -16
+      ],
+      "id": "b2bbde9f-c040-4380-9a6f-9a0564471ffb",
+      "name": "Adicionar Ligações na Planilha",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "executivo.negocios@medicalspin.com.br",
+        "subject": "={{ $json.assunto }}",
+        "message": "={{ $json.corpo }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1648,
+        192
+      ],
+      "id": "2cc8e9ee-b108-4ecf-a0df-6a984dc26a9a",
+      "name": "Email Usuário Não Identificado",
+      "retryOnFail": true,
+      "webhookId": "8ad4ac41-3eb9-458f-877c-969ef7139b8e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KvJgpEKJ3c13wnGv",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Usuário Não Identificado?": {
+      "main": [
+        [
+          {
+            "node": "Montar Corpo do Alerta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Adicionar Ligações na Planilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar Corpo do Alerta": {
+      "main": [
+        [
+          {
+            "node": "Email Usuário Não Identificado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Data de Hoje": {
+      "main": [
+        [
+          {
+            "node": "Login VoxFree Etapa 1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Ler Planilha Atual",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gatilho 8 as 18 seg a sexta": {
+      "main": [
+        [
+          {
+            "node": "Calcular Data de Hoje",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login VoxFree Etapa 1": {
+      "main": [
+        [
+          {
+            "node": "Extrair Cookie de Sessão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login VoxFree Etapa 2": {
+      "main": [
+        [
+          {
+            "node": "Login VoxFree Etapa 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login VoxFree Etapa 3": {
+      "main": [
+        [
+          {
+            "node": "Solicitar Exportação CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ler Planilha Atual": {
+      "main": [
+        [
+          {
+            "node": "Pegar Data da Última Ligação Salva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pegar Data da Última Ligação Salva": {
+      "main": [
+        [
+          {
+            "node": "Aguardar CSV e Planilha",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Montar URL CSV": {
+      "main": [
+        [
+          {
+            "node": "Baixar CSV Ligações Voxfree",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Solicitar Exportação CSV": {
+      "main": [
+        [
+          {
+            "node": "Montar URL CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extrair Cookie de Sessão": {
+      "main": [
+        [
+          {
+            "node": "Login VoxFree Etapa 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar CSV Ligações Voxfree": {
+      "main": [
+        [
+          {
+            "node": "Aguardar CSV e Planilha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aguardar CSV e Planilha": {
+      "main": [
+        [
+          {
+            "node": "Filtrar Ligações Novas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar Ligações Novas": {
+      "main": [
+        [
+          {
+            "node": "Usuário Não Identificado?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "Cw4BKEAZCX2tPyvL",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    },
+    "node:Gatilho 8 as 18 seg a sexta": {
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
+    }
+  },
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {
+    "Gatilho 8 as 18 seg a sexta": [
+      {
+        "json": {
+          "timestamp": "2026-08-12T13:00:00.014-03:00",
+          "Readable date": "August 12th 2026, 1:00:00 pm",
+          "Readable time": "1:00:00 pm",
+          "Day of week": "Wednesday",
+          "Year": "2026",
+          "Month": "August",
+          "Day of month": "12",
+          "Hour": "13",
+          "Minute": "00",
+          "Second": "00",
+          "Timezone": "America/Sao_Paulo (UTC-03:00)"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "b4f2d22d-5e30-4ab9-bd9d-2ce916eafe76",
+  "activeVersionId": "b4f2d22d-5e30-4ab9-bd9d-2ce916eafe76",
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-07-14T18:57:00.322Z",
+      "createdAt": "2026-07-14T18:57:00.322Z",
+      "role": "workflow:owner",
+      "workflowId": "xbqPYnWoXEB6LQ2t",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": {
+    "updatedAt": "2026-08-12T16:45:40.006Z",
+    "createdAt": "2026-08-12T16:45:37.821Z",
+    "versionId": "b4f2d22d-5e30-4ab9-bd9d-2ce916eafe76",
+    "workflowId": "xbqPYnWoXEB6LQ2t",
+    "nodes": [
+      {
+        "parameters": {
+          "content": "Ligações dashboard\n\nAtualiza as ligações do voxfree na planilha (dashboard)\nFiltrando Usuários e notificando caso fique em branco ou nome genérico\nAtualiza de hora em hora em horário comercial\n\n\n\n",
+          "width": 592
+        },
+        "type": "n8n-nodes-base.stickyNote",
+        "typeVersion": 1,
+        "position": [
+          448,
+          -224
+        ],
+        "id": "520af1bc-656a-4475-b1bd-2c6ecc2bed69",
+        "name": "Sticky Note"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 1
+            },
+            "conditions": [
+              {
+                "id": "c1",
+                "leftValue": "={{ $json._usuarioInvalido }}",
+                "rightValue": true,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1472,
+          -16
+        ],
+        "id": "a8bdf775-cc8a-45b2-8265-c9198816307b",
+        "name": "Usuário Não Identificado?"
+      },
+      {
+        "parameters": {
+          "jsCode": "const itens = $input.all();\n\nconst linhas = itens.map(item => {\n  const j = item.json;\n  const dataHora = j['Data / Hora'] || '(sem data)';\n  const telefone = j['Telefone'] || '(sem telefone)';\n  const usuario = j['_usuarioBruto'] || '(vazio)';\n  return `- ${dataHora} | Telefone: ${telefone} | Usuário bruto: ${usuario}`;\n});\n\nconst corpo = `Foram encontradas ${itens.length} ligação(ões) com usuário não identificado nesta execução (não foram gravadas na planilha):\\n\\n${linhas.join('\\n')}\\n\\nVerifique o VoxFree para identificar o SDR correspondente.`;\n\nreturn [{ json: {\n  assunto: `Ligações com usuário não identificado (${itens.length})`,\n  corpo\n} }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1472,
+          192
+        ],
+        "id": "a2c20410-1fa1-4cbb-a8cd-c45442123a30",
+        "name": "Montar Corpo do Alerta"
+      },
+      {
+        "parameters": {
+          "jsCode": "const d = new Date();\nconst dd = String(d.getDate()).padStart(2, '0');\nconst mm = String(d.getMonth() + 1).padStart(2, '0');\nconst yyyy = d.getFullYear();\nconst data = `${dd}/${mm}/${yyyy}`;\nreturn [{ json: { reservation: `${data} - ${data}` } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -384,
+          64
+        ],
+        "id": "9e3adce9-c8fd-4089-aac2-acdcb63fa68c",
+        "name": "Calcular Data de Hoje"
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "cronExpression",
+                "expression": "0 9-18 * * 1-5"
+              }
+            ]
+          }
+        },
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.3,
+        "position": [
+          -560,
+          64
+        ],
+        "id": "2fa5e093-3796-44d1-9746-c551eb601aa4",
+        "name": "Gatilho 8 as 18 seg a sexta"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://app.voxfree.com.br/Login/loginAction",
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "usuario",
+                "value": "adm@medical_spin"
+              },
+              {
+                "name": "senha",
+                "value": "Ms2026Dc."
+              },
+              {
+                "name": "destino"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {
+                "followRedirects": false
+              }
+            },
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          -208,
+          -16
+        ],
+        "id": "4bec68f4-9e9d-4462-8190-b5141d9e887f",
+        "name": "Login VoxFree Etapa 1",
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://app.voxfree.com.br/Login/redirect_login",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Cookie",
+                "value": "={{ $('Extrair Cookie de Sessão').item.json.cookie }}"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "txtAcao"
+              },
+              {
+                "name": "url",
+                "value": "Geral/inicio"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {
+                "followRedirects": false
+              }
+            },
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          176,
+          -16
+        ],
+        "id": "a6d67746-1be8-41a1-8eb4-0cabfda6a925",
+        "name": "Login VoxFree Etapa 2",
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "url": "https://app.voxfree.com.br/Inicio",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Cookie",
+                "value": "={{ $('Extrair Cookie de Sessão').item.json.cookie }}"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {
+                "followRedirects": false
+              }
+            },
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          384,
+          -16
+        ],
+        "id": "9b0bc56f-5c19-4627-a035-238768937e70",
+        "name": "Login VoxFree Etapa 3",
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q",
+            "mode": "list",
+            "cachedResultName": "Ligações / Reuniões (time comercial)",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 243288521,
+            "mode": "list",
+            "cachedResultName": "Registros de ligações",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit#gid=243288521"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          -208,
+          224
+        ],
+        "id": "04dfd3fc-3703-4484-833c-496be83810bf",
+        "name": "Ler Planilha Atual",
+        "retryOnFail": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "2DSmp4SarxDNx6pV",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "// Pega a ultima linha (mais recente) ja gravada na planilha,\n// para o Processar CSV saber a partir de onde continuar.\nconst items = $input.all();\nif (items.length === 0) {\n  return [{ json: { ultimaDataHora: null } }];\n}\nconst ultima = items[items.length - 1].json;\nreturn [{ json: { ultimaDataHora: ultima['Data / Hora'] || null } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          0,
+          224
+        ],
+        "id": "3726df63-3349-4a72-9c27-e5e85e0f5220",
+        "name": "Pegar Data da Última Ligação Salva"
+      },
+      {
+        "parameters": {
+          "jsCode": "const resposta = $input.first().json;\nconst caminho = (resposta.body || resposta.data || '').trim();\nconst caminhoLimpo = caminho.replace(/^\\.\\.\\//, '');\n\nconst partes = caminhoLimpo.split('/');\nconst arquivo = partes.pop();\nconst diretorio = partes.join('/');\n\nconst urlCSV = 'https://app.voxfree.com.br/' + diretorio + '/' + encodeURIComponent(arquivo);\n\nreturn [{ json: { csvUrl: urlCSV } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          784,
+          -16
+        ],
+        "id": "cd83ddfd-98a8-4e3b-97fe-ccad1edf1c4b",
+        "name": "Montar URL CSV"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://app.voxfree.com.br/Relatorios/buscaLog_chamadas/exportar",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Cookie",
+                "value": "={{ $('Extrair Cookie de Sessão').item.json.cookie }}"
+              },
+              {
+                "name": "X-Requested-With",
+                "value": "XMLHttpRequest"
+              },
+              {
+                "name": "Referer",
+                "value": "https://app.voxfree.com.br/Relatorios/log_chamadas"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "form-urlencoded",
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "usuario",
+                "value": "todos"
+              },
+              {
+                "name": "sentido",
+                "value": "Ambos"
+              },
+              {
+                "name": "reservation",
+                "value": "={{ $('Calcular Data de Hoje').item.json.reservation }}"
+              },
+              {
+                "name": "numero_entrante"
+              },
+              {
+                "name": "numero"
+              },
+              {
+                "name": "resultado",
+                "value": "TODAS"
+              },
+              {
+                "name": "campanha"
+              },
+              {
+                "name": "protocolo"
+              },
+              {
+                "name": "acao",
+                "value": "0"
+              }
+            ]
+          },
+          "options": {
+            "redirect": {
+              "redirect": {
+                "followRedirects": false
+              }
+            },
+            "response": {
+              "response": {
+                "fullResponse": true,
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          592,
+          -16
+        ],
+        "id": "fdbf2927-bdb5-417d-b976-179b3e124549",
+        "name": "Solicitar Exportação CSV",
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "jsCode": "const item = $input.first().json;\nconst headers = item.headers || {};\nconst setCookie = headers['set-cookie'] || [];\nconst first = Array.isArray(setCookie) ? setCookie[0] : (setCookie || '');\nconst match = first.match(/ci_session=([^;]+)/);\nif (!match) throw new Error('Cookie não encontrado');\nreturn [{ json: { cookie: 'ci_session=' + match[1] } }];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          -16,
+          -16
+        ],
+        "id": "328058c8-fe47-47f3-b2bd-d24bec73d6db",
+        "name": "Extrair Cookie de Sessão"
+      },
+      {
+        "parameters": {
+          "url": "={{ $('Montar URL CSV').item.json.csvUrl }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Cookie",
+                "value": "={{ $('Extrair Cookie de Sessão').item.json.cookie }}"
+              }
+            ]
+          },
+          "options": {
+            "response": {
+              "response": {
+                "neverError": true,
+                "responseFormat": "text"
+              }
+            }
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          960,
+          -16
+        ],
+        "id": "df30dd41-8709-4a53-b6e0-992e402ccc73",
+        "name": "Baixar CSV Ligações Voxfree",
+        "retryOnFail": true
+      },
+      {
+        "parameters": {
+          "mode": "chooseBranch"
+        },
+        "type": "n8n-nodes-base.merge",
+        "typeVersion": 3.2,
+        "position": [
+          1120,
+          160
+        ],
+        "id": "56e144d7-3875-4826-8985-e77361fa36eb",
+        "name": "Aguardar CSV e Planilha"
+      },
+      {
+        "parameters": {
+          "jsCode": "const csvTexto = $input.first().json.data || $input.first().json.body || '';\nconst ultimaDataHora = $('Pegar Data da Última Ligação Salva').first().json.ultimaDataHora;\n\nconst delimitador = csvTexto.includes(';') ? ';' : ',';\nconst linhas = csvTexto.split('\\n').filter(l => l.trim() !== '');\nif (linhas.length < 2) return [];\n\nconst cabecalho = linhas[0].split(delimitador).map(c => c.trim());\nconst idxDuracao  = cabecalho.findIndex(c => c.toLowerCase().includes('dura'));\nconst idxDataHora = cabecalho.findIndex(c => c.toLowerCase().includes('data'));\nconst idxUsuario  = cabecalho.findIndex(c => c.toLowerCase().includes('usu'));\n\nfunction toSegundos(dur) {\n  const p = (dur || '').trim().split(':');\n  if (p.length !== 3) return 0;\n  return parseInt(p[0]) * 3600 + parseInt(p[1]) * 60 + parseInt(p[2]);\n}\n\n// Converte \"DD/MM/AAAA HH:MM:SS\" em timestamp comparavel\nfunction paraTimestamp(dataHora) {\n  const partes = (dataHora || '').trim().split(' ');\n  if (partes.length < 2) return 0;\n  const [dd, mm, yyyy] = partes[0].split('/').map(Number);\n  const [h, m, s] = partes[1].split(':').map(Number);\n  return new Date(yyyy, mm - 1, dd, h, m, s || 0).getTime();\n}\n\nfunction nomeSDR(usuario) {\n  const u = (usuario || '').trim();\n  const m = u.match(/^vendas\\s+\\d+\\s+(.+)$/i);\n  if (m) return m[1].trim();\n  return u;\n}\n\n// Detecta usuario sem identificacao real: campo vazio, \"Vendas N\" sem nome\n// depois (ex: \"Vendas 4\" sozinho), ou \"Usuario N\" generico (ex: \"Usuario 3003\")\nfunction usuarioInvalido(usuarioBruto) {\n  const u = (usuarioBruto || '').trim();\n  if (u === '') return true;\n  if (/^vendas\\s+\\d+\\s*$/i.test(u)) return true;\n  if (/^usu[aá]rio\\s+\\d+\\s*$/i.test(u)) return true;\n  return false;\n}\n\nconst limiteTimestamp = ultimaDataHora ? paraTimestamp(ultimaDataHora) : 0;\n\nreturn linhas.slice(1).reduce((acc, linha) => {\n  const colunas = linha.split(delimitador).map(c => c.trim());\n\n  const dataHora = idxDataHora >= 0 ? (colunas[idxDataHora] || '') : '';\n  const ts = paraTimestamp(dataHora);\n\n  // So mantem ligacoes mais novas que a ultima ja gravada na planilha\n  if (ts <= limiteTimestamp) return acc;\n\n  const usuarioBruto = idxUsuario >= 0 ? (colunas[idxUsuario] || '') : '';\n\n  const duracao  = idxDuracao >= 0 ? (colunas[idxDuracao] || '00:00:00') : '00:00:00';\n  const atendida = toSegundos(duracao) >= 60 ? 'Sim' : 'Não';\n\n  const obj = {};\n  cabecalho.forEach((col, i) => { obj[col] = colunas[i] || ''; });\n\n  obj['Atendida'] = atendida;\n\n  if (usuarioInvalido(usuarioBruto)) {\n    // Usuario nao identificado: nao vai pra planilha, so gera alerta por e-mail\n    obj['_usuarioInvalido'] = true;\n    obj['_usuarioBruto'] = usuarioBruto === '' ? '(vazio)' : usuarioBruto;\n  } else if (idxUsuario >= 0) {\n    obj[cabecalho[idxUsuario]] = nomeSDR(usuarioBruto);\n  }\n\n  acc.push({ json: obj });\n  return acc;\n}, []);"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1296,
+          -16
+        ],
+        "id": "6ff34b43-a062-4948-a07b-7a6ac9c644a6",
+        "name": "Filtrar Ligações Novas"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q",
+            "mode": "list",
+            "cachedResultName": "Ligações / Reuniões (time comercial)",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": 243288521,
+            "mode": "list",
+            "cachedResultName": "Registros de ligações",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit#gid=243288521"
+          },
+          "columns": {
+            "mappingMode": "autoMapInputData",
+            "value": {},
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "Data / Hora",
+                "displayName": "Data / Hora",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Usuário",
+                "displayName": "Usuário",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Telefone",
+                "displayName": "Telefone",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Resultado",
+                "displayName": "Resultado",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Duração",
+                "displayName": "Duração",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Campanha",
+                "displayName": "Campanha",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Operadora",
+                "displayName": "Operadora",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Modo Disc.",
+                "displayName": "Modo Disc.",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Ação",
+                "displayName": "Ação",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Número",
+                "displayName": "Número",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Protocolo",
+                "displayName": "Protocolo",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Sentido",
+                "displayName": "Sentido",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "Atendida",
+                "displayName": "Atendida",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          1824,
+          -16
+        ],
+        "id": "b2bbde9f-c040-4380-9a6f-9a0564471ffb",
+        "name": "Adicionar Ligações na Planilha",
+        "retryOnFail": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "2DSmp4SarxDNx6pV",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "sendTo": "executivo.negocios@medicalspin.com.br",
+          "subject": "={{ $json.assunto }}",
+          "message": "={{ $json.corpo }}",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.gmail",
+        "typeVersion": 2.2,
+        "position": [
+          1648,
+          192
+        ],
+        "id": "2cc8e9ee-b108-4ecf-a0df-6a984dc26a9a",
+        "name": "Email Usuário Não Identificado",
+        "retryOnFail": true,
+        "webhookId": "8ad4ac41-3eb9-458f-877c-969ef7139b8e",
+        "credentials": {
+          "gmailOAuth2": {
+            "id": "KvJgpEKJ3c13wnGv",
+            "name": "Gmail account"
+          }
+        }
+      }
+    ],
+    "connections": {
+      "Usuário Não Identificado?": {
+        "main": [
+          [
+            {
+              "node": "Montar Corpo do Alerta",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Adicionar Ligações na Planilha",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Montar Corpo do Alerta": {
+        "main": [
+          [
+            {
+              "node": "Email Usuário Não Identificado",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Calcular Data de Hoje": {
+        "main": [
+          [
+            {
+              "node": "Login VoxFree Etapa 1",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Ler Planilha Atual",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Gatilho 8 as 18 seg a sexta": {
+        "main": [
+          [
+            {
+              "node": "Calcular Data de Hoje",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Login VoxFree Etapa 1": {
+        "main": [
+          [
+            {
+              "node": "Extrair Cookie de Sessão",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Login VoxFree Etapa 2": {
+        "main": [
+          [
+            {
+              "node": "Login VoxFree Etapa 3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Login VoxFree Etapa 3": {
+        "main": [
+          [
+            {
+              "node": "Solicitar Exportação CSV",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Ler Planilha Atual": {
+        "main": [
+          [
+            {
+              "node": "Pegar Data da Última Ligação Salva",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Pegar Data da Última Ligação Salva": {
+        "main": [
+          [
+            {
+              "node": "Aguardar CSV e Planilha",
+              "type": "main",
+              "index": 1
+            }
+          ]
+        ]
+      },
+      "Montar URL CSV": {
+        "main": [
+          [
+            {
+              "node": "Baixar CSV Ligações Voxfree",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Solicitar Exportação CSV": {
+        "main": [
+          [
+            {
+              "node": "Montar URL CSV",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extrair Cookie de Sessão": {
+        "main": [
+          [
+            {
+              "node": "Login VoxFree Etapa 2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Baixar CSV Ligações Voxfree": {
+        "main": [
+          [
+            {
+              "node": "Aguardar CSV e Planilha",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Aguardar CSV e Planilha": {
+        "main": [
+          [
+            {
+              "node": "Filtrar Ligações Novas",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filtrar Ligações Novas": {
+        "main": [
+          [
+            {
+              "node": "Usuário Não Identificado?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version b4f2d22d",
+    "description": "",
+    "autosaved": true
+  },
+  "tags": []
+}
