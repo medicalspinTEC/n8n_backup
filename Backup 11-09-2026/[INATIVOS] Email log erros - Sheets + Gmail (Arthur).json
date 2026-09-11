@@ -1,0 +1,244 @@
+{
+  "updatedAt": "2026-07-21T20:16:44.834Z",
+  "createdAt": "2026-07-08T15:26:27.327Z",
+  "id": "3pd6ABIXIVqQdw4E",
+  "name": "[INATIVOS] Email log erros - Sheets + Gmail (Arthur)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS OUTBOUND CNES2",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1656509236,
+          "mode": "list",
+          "cachedResultName": "Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit#gid=1656509236"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        64
+      ],
+      "id": "eade07c8-204f-4df3-b08f-33bce6d08e46",
+      "name": "Logs OB",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "qgv0wWTE3T75nqxi",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+          "mode": "list",
+          "cachedResultName": "BANCO DE DADOS INBOUND",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 320228705,
+          "mode": "list",
+          "cachedResultName": "Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit#gid=320228705"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        208
+      ],
+      "id": "61f80601-ceb5-4c55-94d3-87c34af4f740",
+      "name": "Logs IB",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "qgv0wWTE3T75nqxi",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "executivo.negocios@medicalspin.com.br",
+        "subject": "ERRO AUTOMAÇÃO OB",
+        "message": "Ocorreu um erro de automação OB, confira: https://docs.google.com/spreadsheets/d/1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM/edit?gid=1656509236#gid=1656509236",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        64
+      ],
+      "id": "174b3911-51f0-434b-8d4a-da035df43989",
+      "name": "Alerta OB",
+      "webhookId": "0b20c227-c043-4f63-9874-d716d947c0db",
+      "retryOnFail": true,
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KvJgpEKJ3c13wnGv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "executivo.negocios@medicalspin.com.br",
+        "subject": "ERRO AUTOMAÇÃO IB",
+        "message": "Ocorreu um erro de automação IB, confira: https://docs.google.com/spreadsheets/d/1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw/edit?gid=320228705#gid=320228705",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        208
+      ],
+      "id": "4a3b6c83-7a36-40cc-9aa1-f2076ae0e346",
+      "name": "Alerta IB",
+      "webhookId": "0b20c227-c043-4f63-9874-d716d947c0db",
+      "retryOnFail": true,
+      "executeOnce": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "KvJgpEKJ3c13wnGv",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Email log erros\n\nMonitora a aba \"Logs\" das planilhas OB e IB.\nQuando entra uma linha nova, dispara um e-mail de alerta\n(ERRO AUTOMAÇÃO OB / IB) para: executivo.negocios@medicalspin.com.br.\nRoda a cada 1 minuto.\n",
+        "height": 176,
+        "width": 480
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        80
+      ],
+      "id": "f9a2f96b-d763-4dec-880d-13c71e044c08",
+      "name": " a"
+    },
+    {
+      "parameters": {
+        "content": "# Arthur, Incorporei o node do Gmail no Fluxo de atualização das planilhas IB/OB e no fluxo de adição de leads automático nas planilhas.\n\nhttps://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/workflow/54jxOH41sbsU0cF3\nhttps://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/workflow/L3fLfuHeP5FRvICk\n\nEsse Trigger do sheets é muito instável e retorna erros desnecessários. \n\nBásicamente, após o erro ser registrado na planilha, o e-mail é enviado logo em seguida. Não alterei o node, Ctrl + c, Ctrl + v.\n\n",
+        "height": 592,
+        "width": 720
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        176,
+        -256
+      ],
+      "id": "db27e0e8-3bb9-42b3-828a-1b96b96cf6a9",
+      "name": "Sticky Note"
+    }
+  ],
+  "connections": {
+    "Logs OB": {
+      "main": [
+        [
+          {
+            "node": "Alerta OB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logs IB": {
+      "main": [
+        [
+          {
+            "node": "Alerta IB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": {
+    "node:Google Sheets Trigger": {
+      "documentId": "1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM",
+      "sheetId": 1656509236,
+      "lastIndexChecked": 10
+    },
+    "node:Google Sheets Trigger1": {
+      "documentId": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+      "sheetId": 320228705,
+      "lastIndexChecked": 25
+    },
+    "node:Logs OB": {
+      "documentId": "1eFvOc8SaopVMZsfN5AP_dpIF2xA6y1zgrxNdjkv5GWM",
+      "sheetId": 1656509236,
+      "lastIndexChecked": 15
+    },
+    "node:Logs IB": {
+      "documentId": "1HQgsz0SjvmM6n6GaiiuUM9I3g-5MHgZv7s10FZLa8Mw",
+      "sheetId": 320228705,
+      "lastIndexChecked": 29
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "9d09a74d-c171-4a3f-846a-df787af244d7",
+  "activeVersionId": null,
+  "triggerCount": 2,
+  "shared": [
+    {
+      "updatedAt": "2026-07-08T15:26:27.327Z",
+      "createdAt": "2026-07-08T15:26:27.327Z",
+      "role": "workflow:owner",
+      "workflowId": "3pd6ABIXIVqQdw4E",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
