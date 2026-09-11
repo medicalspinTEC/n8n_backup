@@ -1,0 +1,59 @@
+{
+  "updatedAt": "2026-09-04T16:58:26.394Z",
+  "createdAt": "2026-08-13T12:31:14.154Z",
+  "id": "XhLi7v9kCj9EaPpy",
+  "name": "My Sub-Workflow 1",
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "action": "create",
+        "entity": "pipeline"
+      },
+      "type": "n8n-nodes-base.pipedriveTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ad176cba-c089-495a-acb4-cbecdf0d61df",
+      "name": "Pipedrive Trigger",
+      "webhookId": "7941c74a-7f18-4ec0-a801-c719d13bb7d6",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "4qJXbNcTRplBXhrh",
+          "name": "Pipedrive account"
+        }
+      }
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:Pipedrive Trigger": {}
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "0e92703a-f898-47d4-9e07-e12fd0ed88f6",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-08-13T12:31:14.154Z",
+      "createdAt": "2026-08-13T12:31:14.154Z",
+      "role": "workflow:owner",
+      "workflowId": "XhLi7v9kCj9EaPpy",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
