@@ -1,0 +1,669 @@
+{
+  "updatedAt": "2026-07-14T19:18:42.937Z",
+  "createdAt": "2026-06-30T15:27:12.196Z",
+  "id": "Nm4XhUtGA7vwlj76",
+  "name": "[INATIVOS] Ligações dashboard - Voxfree + Sheets (Arthur)",
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                2,
+                3,
+                4,
+                5,
+                6,
+                1
+              ],
+              "triggerAtHour": 12,
+              "triggerAtMinute": 15
+            },
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "triggerAtHour": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        416,
+        -240
+      ],
+      "id": "5b8e6317-0797-45d9-850e-ad646258ab88",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.voxfree.com.br/Relatorios/buscaLog_chamadas/exportar",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Code in JavaScript - Step1').item.json.cookie }}\n\n"
+            },
+            {
+              "name": "X-Requested-With",
+              "value": "XMLHttpRequest"
+            },
+            {
+              "name": "Referer",
+              "value": "https://app.voxfree.com.br/Relatorios/log_chamadas"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "usuario",
+              "value": "todos"
+            },
+            {
+              "name": "sentido",
+              "value": "Ambos"
+            },
+            {
+              "name": "reservation",
+              "value": "={{ $('Calcular Data').item.json.reservation }}"
+            },
+            {
+              "name": "numero_entrante"
+            },
+            {
+              "name": "numero"
+            },
+            {
+              "name": "resultado",
+              "value": "TODAS"
+            },
+            {
+              "name": "campanha"
+            },
+            {
+              "name": "protocolo"
+            },
+            {
+              "name": "acao",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1472,
+        -240
+      ],
+      "id": "1c925f3b-6b22-40ec-bc8d-b6a5861abf64",
+      "name": "HTTP Request1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const agora = new Date();\nconst hora = agora.getHours();\n\nconst d = new Date();\nlet janela;\n\nif (hora < 9) {\n  // disparo das 5h → ontem, ligações a partir de 12:16\n  d.setDate(d.getDate() - 1);\n  janela = 'tarde';\n} else {\n  // disparo das 12:15 → hoje, ligações até 12:15\n  janela = 'manha';\n}\n\nconst dd = String(d.getDate()).padStart(2, '0');\nconst mm = String(d.getMonth() + 1).padStart(2, '0');\nconst yyyy = d.getFullYear();\n\nconst data = `${dd}/${mm}/${yyyy}`;\nreturn [{ json: { reservation: `${data} - ${data}`, janela } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        -240
+      ],
+      "id": "07f95232-1e3d-46c8-9d77-e88eff078c6b",
+      "name": "Calcular Data"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resposta = $input.first().json;\nconst caminho = (resposta.body || resposta.data || '').trim();\nconst caminhoLimpo = caminho.replace(/^\\.\\.\\//, '');\n\n// Separa diretório do nome do arquivo\nconst partes = caminhoLimpo.split('/');\nconst arquivo = partes.pop();\nconst diretorio = partes.join('/');\n\n// Codifica só o nome do arquivo (espaços, ç, õ)\nconst urlCSV = 'https://app.voxfree.com.br/' + diretorio + '/' + encodeURIComponent(arquivo);\n\nreturn [{ json: { csvUrl: urlCSV } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1648,
+        -240
+      ],
+      "id": "ced299fd-7750-48bc-a54c-1a2f43854cc0",
+      "name": "Montar URL CSV"
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Montar URL CSV').item.json.csvUrl }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Code in JavaScript - Step1').item.json.cookie }}\n"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1824,
+        -240
+      ],
+      "id": "4c84a552-d2ff-4574-80e6-19fadaee69c8",
+      "name": "Baixar CSV",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const csvTexto = $input.first().json.data || $input.first().json.body || '';\nconst janela = $('Calcular Data').first().json.janela;\n\nconst delimitador = csvTexto.includes(';') ? ';' : ',';\nconst linhas = csvTexto.split('\\n').filter(l => l.trim() !== '');\nif (linhas.length < 2) return [{ json: { erro: 'CSV vazio ou sem dados' } }];\n\nconst cabecalho = linhas[0].split(delimitador).map(c => c.trim());\nconst idxDuracao  = cabecalho.findIndex(c => c.toLowerCase().includes('dura'));\nconst idxDataHora = cabecalho.findIndex(c => c.toLowerCase().includes('data'));\nconst idxUsuario  = cabecalho.findIndex(c => c.toLowerCase().includes('usu'));\n\n// Converte HH:MM:SS em segundos\nfunction toSegundos(dur) {\n  const p = (dur || '').trim().split(':');\n  if (p.length !== 3) return 0;\n  return parseInt(p[0]) * 3600 + parseInt(p[1]) * 60 + parseInt(p[2]);\n}\n\n// Extrai só o nome do SDR: \"Vendas 4 Alisson\" -> \"Alisson\"\nfunction nomeSDR(usuario) {\n  const u = (usuario || '').trim();\n  // Remove o prefixo \"Vendas <numero> \" e fica com o resto\n  const m = u.match(/^vendas\\s+\\d+\\s+(.+)$/i);\n  if (m) return m[1].trim();\n  // Se não casar o padrão, devolve o valor original sem mexer\n  return u;\n}\n\n// Decide se a linha entra, conforme a janela de horário\nfunction passaFiltro(dataHora) {\n  const partes = (dataHora || '').trim().split(' ');\n  if (partes.length < 2) return false;\n  const [h, m] = partes[1].split(':').map(n => parseInt(n));\n  const minutos = h * 60 + m;       // minutos desde meia-noite\n  const corte   = 12 * 60 + 16;     // 12:16 = 736 minutos\n\n  if (janela === 'tarde') return minutos >= corte;  // 5h: a partir de 12:16\n  return minutos < corte;                           // 12:15: antes de 12:16\n}\n\nreturn linhas.slice(1).reduce((acc, linha) => {\n  const colunas = linha.split(delimitador).map(c => c.trim());\n\n  const dataHora = idxDataHora >= 0 ? (colunas[idxDataHora] || '') : '';\n  if (!passaFiltro(dataHora)) return acc;  // descarta fora da janela\n\n  const duracao  = idxDuracao >= 0 ? (colunas[idxDuracao] || '00:00:00') : '00:00:00';\n  const atendida = toSegundos(duracao) >= 60 ? 'Sim' : 'Não';\n\n  const obj = {};\n  cabecalho.forEach((col, i) => { obj[col] = colunas[i] || ''; });\n\n  // Sobrescreve a coluna Usuário com só o nome do SDR\n  if (idxUsuario >= 0) obj[cabecalho[idxUsuario]] = nomeSDR(colunas[idxUsuario]);\n\n  obj['Atendida'] = atendida;\n\n  acc.push({ json: obj });\n  return acc;\n}, []);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        -240
+      ],
+      "id": "be7538e9-3e07-452c-a721-78ba7990768f",
+      "name": "Processar CSV"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q",
+          "mode": "list",
+          "cachedResultName": "Ligações / Reuniões (time comercial)",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 243288521,
+          "mode": "list",
+          "cachedResultName": "Lista ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19PyO0-ZydfZYMpZBEbUgNNcOzJLHTx6Kx7vhNNqBi4Q/edit#gid=243288521"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Data / Hora",
+              "displayName": "Data / Hora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Usuário",
+              "displayName": "Usuário",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Telefone",
+              "displayName": "Telefone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Resultado",
+              "displayName": "Resultado",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Duração",
+              "displayName": "Duração",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Campanha",
+              "displayName": "Campanha",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Operadora",
+              "displayName": "Operadora",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Modo Disc.",
+              "displayName": "Modo Disc.",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Ação",
+              "displayName": "Ação",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Número",
+              "displayName": "Número",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Protocolo",
+              "displayName": "Protocolo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sentido",
+              "displayName": "Sentido",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Atendida",
+              "displayName": "Atendida",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2176,
+        -240
+      ],
+      "id": "3089f5c7-4320-4812-8a3a-e457906c71cc",
+      "name": "Append row in sheet",
+      "retryOnFail": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.voxfree.com.br/Login/loginAction",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "usuario",
+              "value": "adm@medical_spin"
+            },
+            {
+              "name": "senha",
+              "value": "Ms2026Dc."
+            },
+            {
+              "name": "destino"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        752,
+        -240
+      ],
+      "id": "683b9860-4cd1-4614-b8bf-49c59ae0eb32",
+      "name": "HTTP Request Login Step 1",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://app.voxfree.com.br/Login/redirect_login",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Code in JavaScript - Step1').item.json.cookie }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "txtAcao"
+            },
+            {
+              "name": "url",
+              "value": "Geral/inicio"
+            },
+            {
+              "name": "Geral/inicio",
+              "value": "adm@medical_spin"
+            },
+            {
+              "name": "pwSenha",
+              "value": "Ms2026Dc."
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1120,
+        -240
+      ],
+      "id": "b388f21e-d18c-4dd8-a2ad-797d7a6abdfa",
+      "name": "HTTP Request Login Step 2",
+      "retryOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\nconst headers = item.headers || {};\nconst setCookie = headers['set-cookie'] || [];\nconst first = Array.isArray(setCookie) ? setCookie[0] : (setCookie || '');\nconst match = first.match(/ci_session=([^;]+)/);\nif (!match) throw new Error('Cookie não encontrado');\nreturn [{ json: { cookie: 'ci_session=' + match[1] } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        -240
+      ],
+      "id": "46122bb7-59d9-4026-aa0c-ca05e76b24c2",
+      "name": "Code in JavaScript - Step1"
+    },
+    {
+      "parameters": {
+        "url": "https://app.voxfree.com.br/Inicio",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "={{ $('Code in JavaScript - Step1').item.json.cookie }}"
+            }
+          ]
+        },
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": false
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1296,
+        -240
+      ],
+      "id": "19657cc3-d6c5-477e-8abf-a5398977f113",
+      "name": "HTTP Request Login Step 3",
+      "retryOnFail": true
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Calcular Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular Data": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request Login Step 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Montar URL CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Montar URL CSV": {
+      "main": [
+        [
+          {
+            "node": "Baixar CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Baixar CSV": {
+      "main": [
+        [
+          {
+            "node": "Processar CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Processar CSV": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request Login Step 1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript - Step1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request Login Step 2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request Login Step 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript - Step1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request Login Step 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request Login Step 3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "aeb57e52-371b-49d9-b935-43bc9f81dfa0",
+  "activeVersionId": null,
+  "triggerCount": 1,
+  "shared": [
+    {
+      "updatedAt": "2026-06-30T15:27:12.196Z",
+      "createdAt": "2026-06-30T15:27:12.196Z",
+      "role": "workflow:owner",
+      "workflowId": "Nm4XhUtGA7vwlj76",
+      "projectId": "XZrA9Oiu8K5e6BgC"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
