@@ -1,0 +1,78 @@
+{
+  "id": "YSOOGG9NJBFp9muD",
+  "name": "[BDR-APP] Auditoria das ações do MCP - BDR (Wendel)",
+  "active": true,
+  "activeVersionId": "6cdcb098-91d9-44df-8669-2e5d76217866",
+  "createdAt": "2026-10-01T11:51:16.236Z",
+  "updatedAt": "2026-10-01T12:07:10.550Z",
+  "isArchived": false,
+  "versionId": "6cdcb098-91d9-44df-8669-2e5d76217866",
+  "triggerCount": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mcp-auditoria",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5d3a0b85-2715-430a-97ca-a1f95455b599",
+      "name": "Webhook",
+      "webhookId": "21bdf34b-7ec7-40c5-b0a3-425a608c3720"
+    }
+  ],
+  "connections": {},
+  "nodeGroups": [],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "meta": null,
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "YSOOGG9NJBFp9muD",
+      "projectId": "XZrA9Oiu8K5e6BgC",
+      "createdAt": "2026-10-01T11:51:16.236Z",
+      "updatedAt": "2026-10-01T11:51:16.236Z"
+    }
+  ],
+  "activeVersion": {
+    "versionId": "6cdcb098-91d9-44df-8669-2e5d76217866",
+    "workflowId": "YSOOGG9NJBFp9muD",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "mcp-auditoria",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "5d3a0b85-2715-430a-97ca-a1f95455b599",
+        "name": "Webhook",
+        "webhookId": "21bdf34b-7ec7-40c5-b0a3-425a608c3720"
+      }
+    ],
+    "connections": {},
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 6cdcb098",
+    "description": "",
+    "autosaved": true,
+    "createdAt": "2026-10-01T11:51:25.652Z",
+    "updatedAt": "2026-10-01T11:51:30.953Z"
+  }
+}
