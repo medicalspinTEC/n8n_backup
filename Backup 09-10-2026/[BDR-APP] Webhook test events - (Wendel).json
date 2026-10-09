@@ -1,0 +1,50 @@
+{
+  "id": "EYFFznPkY441pMT1",
+  "name": "[BDR-APP] Webhook test events - (Wendel)",
+  "active": false,
+  "activeVersionId": null,
+  "createdAt": "2026-08-14T12:46:01.343Z",
+  "updatedAt": "2026-10-02T14:22:49.367Z",
+  "isArchived": true,
+  "versionId": "b072664e-0507-4f02-9686-d413afa87599",
+  "triggerCount": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "campaigns-webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "b19b8b92-ebdb-437e-9758-2c83d51d828c",
+      "name": "Webhook",
+      "webhookId": "0a3212d1-2715-444e-ad2b-f6512290d312"
+    }
+  ],
+  "connections": {},
+  "nodeGroups": [],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "pinData": {},
+  "meta": null,
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "EYFFznPkY441pMT1",
+      "projectId": "XZrA9Oiu8K5e6BgC",
+      "createdAt": "2026-08-14T12:46:01.343Z",
+      "updatedAt": "2026-08-14T12:46:01.343Z"
+    }
+  ],
+  "activeVersion": null
+}
