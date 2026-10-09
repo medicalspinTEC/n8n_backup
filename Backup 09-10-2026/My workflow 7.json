@@ -1,0 +1,80 @@
+{
+  "id": "TOEz4RtLs9quHdhc",
+  "name": "My workflow 7",
+  "active": false,
+  "activeVersionId": null,
+  "createdAt": "2026-10-03T20:56:54.102Z",
+  "updatedAt": "2026-10-03T23:40:03.610Z",
+  "isArchived": false,
+  "versionId": "466feaf9-cc70-426c-9321-4bfd9b6bf403",
+  "triggerCount": 0,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "f02543a5-aed0-4a9c-a0ab-ff4c7c966048",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://fix.95.217.164.173.sslip.io/api/nocode/webhook/cmusuz8zo0000tpagpobpsuew?token=nc_0c7f1826532bad052e0316bc6b3c514f83476515a53262ee",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "teste",
+              "value": "teste"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f88d2fad-7bbc-4add-98fb-2cf63a7554cc",
+      "name": "HTTP Request"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodeGroups": [],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "meta": null,
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "TOEz4RtLs9quHdhc",
+      "projectId": "XZrA9Oiu8K5e6BgC",
+      "createdAt": "2026-10-03T20:56:54.102Z",
+      "updatedAt": "2026-10-03T20:56:54.102Z"
+    }
+  ],
+  "activeVersion": null
+}
