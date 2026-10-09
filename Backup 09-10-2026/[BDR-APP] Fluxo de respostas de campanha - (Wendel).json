@@ -1,0 +1,1725 @@
+{
+  "id": "6S7VBGXIThgmcuCK",
+  "name": "[BDR-APP] Fluxo de respostas de campanha - (Wendel)",
+  "active": true,
+  "activeVersionId": "b9840ee3-9bb5-4ee6-88ef-71099c6310d1",
+  "createdAt": "2026-01-12T12:56:29.168Z",
+  "updatedAt": "2026-10-03T12:59:21.479Z",
+  "isArchived": false,
+  "versionId": "deded596-1bda-4200-af50-a3785a1bb714",
+  "triggerCount": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Campaigns",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        544,
+        -160
+      ],
+      "id": "83e62bbc-b027-48e5-98c8-ef0a72be4bc1",
+      "name": "Webhook",
+      "webhookId": "bd533aca-f1db-488b-a6b2-a03c85d16d28"
+    },
+    {
+      "parameters": {
+        "jsCode": "const sender = $input.first().json.body.data.key.remoteJid;\n\nlet telefone = sender.split('@')[0];\n\n// Adiciona o 9 depois do DDD (Brasil)\nif (telefone.startsWith('55') && telefone.length === 12) {\n  telefone = telefone.slice(0, 4) + '9' + telefone.slice(4);\n}\n\nreturn [\n  {\n    json: {\n      telefone\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        784,
+        0
+      ],
+      "id": "ee2dd35f-5993-4690-bced-9fd921af2fc4",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "https://bdrautomatico.medicalspin.com.br/api/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1168,
+        -16
+      ],
+      "id": "e58fecde-68e7-4aec-bfd0-48eabdc30dec",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        112
+      ],
+      "id": "716ed1be-236c-409c-9ab9-a3af4597e99c",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6257d558-338b-4187-ba5d-8da8a08cedc1",
+              "leftValue": "={{ $('Webhook').item.json.body.data.key.fromMe }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        960,
+        0
+      ],
+      "id": "207b02b4-22fe-4f6d-824e-a15adb21c96b",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://bdrautomatico.medicalspin.com.br/api/webhook/entrada",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-webhook-token",
+              "value": "whin_c97796c480d7139a7307f65617e308bbd5b83e05ec4e6cf7ab1c14e003cbbea0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "evento",
+              "value": "RespostaLead"
+            },
+            {
+              "name": "dados",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2176,
+        -32
+      ],
+      "id": "d2997bf8-3467-42d6-8b0d-2a075f6eee37",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const telefoneEntrada = $('Code in JavaScript').first().json.telefone;\n\nconst leads = $input.all();\n\nconst normalizarTelefone = (valor) => {\n  let telefone = String(valor || '').replace(/\\D/g, '');\n\n  // Adiciona o código do Brasil apenas para números\n  // nacionais de 10 ou 11 dígitos.\n  if (telefone.length === 10 || telefone.length === 11) {\n    telefone = '55' + telefone;\n  }\n\n  return telefone;\n};\n\nconst telefoneBusca = normalizarTelefone(telefoneEntrada);\n\n// Procura o telefone em TODOS os itens\nconst leadEncontrado = leads.find(item => {\n  const telefoneLead = normalizarTelefone(item.json.telefone);\n\n  return telefoneLead === telefoneBusca;\n});\n\nconst telefonePresente = !!leadEncontrado;\n\nconst temCampanha =\n  telefonePresente &&\n  Array.isArray(leadEncontrado.json.campanhasIds) &&\n  leadEncontrado.json.campanhasIds.length > 0;\n\nreturn [\n  {\n    json: {\n      telefone: telefoneBusca,\n      telefonePresente,\n      temCampanha,\n      valido: telefonePresente && temCampanha\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        -16
+      ],
+      "id": "6e0cca51-b3da-4201-84e5-222785301fb1",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "49a7b897-fdee-4df1-b3d9-ae3fa54c37bc",
+              "leftValue": "={{ $json.temCampanha }}",
+              "rightValue": "=false {{ $('HTTP Request').item.json.leads[0].telefone }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1776,
+        -16
+      ],
+      "id": "359aa854-539e-447a-8142-684517d78b62",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2000,
+        96
+      ],
+      "id": "4d5e15d8-30c4-400b-94b6-5434f572bd32",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Webhook').first().json;\n\nreturn [\n  {\n    json: data\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        -32
+      ],
+      "id": "ec6858e0-101d-41ce-b579-20d1e66335ec",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "leads",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1376,
+        -16
+      ],
+      "id": "460fb0cf-1425-4cc9-b8cb-a9257b024afe",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "jsCode": "const sender = $input.first().json.body.data.key.remoteJid;\n\nlet telefone = sender.split('@')[0];\n\n// Adiciona o 9 depois do DDD (Brasil)\nif (telefone.startsWith('55') && telefone.length === 12) {\n  telefone = telefone.slice(0, 4) + '9' + telefone.slice(4);\n}\n\nreturn [\n  {\n    json: {\n      telefone\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        304
+      ],
+      "id": "3bf7d0a6-cb9d-4e56-b568-d0d11a36208f",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "url": "https://bdrautomatico.medicalspin.com.br/api/leads",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1152,
+        288
+      ],
+      "id": "7caba171-d3da-4181-a810-1ad293c81df3",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        416
+      ],
+      "id": "a072dae9-30a5-473e-9130-7025d5b883f9",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6257d558-338b-4187-ba5d-8da8a08cedc1",
+              "leftValue": "={{ $('Webhook1').item.json.body.data.key.fromMe }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        944,
+        304
+      ],
+      "id": "4380ce89-87f2-437d-955a-70b1463a103a",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://bdrautomatico.medicalspin.com.br/api/webhook/entrada",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-webhook-token",
+              "value": "whin_c97796c480d7139a7307f65617e308bbd5b83e05ec4e6cf7ab1c14e003cbbea0"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "evento",
+              "value": "RespostaLead"
+            },
+            {
+              "name": "dados",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2160,
+        272
+      ],
+      "id": "7d8b4dc3-b43d-4602-a822-39cd66445830",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "jsCode": "const telefoneEntrada = $('Code in JavaScript3').first().json.telefone;\n\nconst leads = $input.all();\n\nconst normalizarTelefone = (valor) => {\n  let telefone = String(valor || '').replace(/\\D/g, '');\n\n  // Adiciona o código do Brasil apenas para números\n  // nacionais de 10 ou 11 dígitos.\n  if (telefone.length === 10 || telefone.length === 11) {\n    telefone = '55' + telefone;\n  }\n\n  return telefone;\n};\n\nconst telefoneBusca = normalizarTelefone(telefoneEntrada);\n\n// Procura o telefone em TODOS os itens\nconst leadEncontrado = leads.find(item => {\n  const telefoneLead = normalizarTelefone(item.json.telefone);\n\n  return telefoneLead === telefoneBusca;\n});\n\nconst telefonePresente = !!leadEncontrado;\n\nconst temCampanha =\n  telefonePresente &&\n  Array.isArray(leadEncontrado.json.campanhasIds) &&\n  leadEncontrado.json.campanhasIds.length > 0;\n\nreturn [\n  {\n    json: {\n      telefone: telefoneBusca,\n      telefonePresente,\n      temCampanha,\n      valido: telefonePresente && temCampanha\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        288
+      ],
+      "id": "bdf7afb8-96ad-4dfb-99bb-a009ec513c34",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "49a7b897-fdee-4df1-b3d9-ae3fa54c37bc",
+              "leftValue": "={{ $json.temCampanha }}",
+              "rightValue": "=false {{ $('HTTP Request1').item.json.leads[0].telefone }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1760,
+        288
+      ],
+      "id": "f26266c9-e973-486e-8d54-f504ccc33b8e",
+      "name": "If3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('Webhook1').first().json;\n\nreturn [\n  {\n    json: data\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1984,
+        272
+      ],
+      "id": "1ed9ce22-19ce-4856-9102-2e4eb472c132",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1984,
+        400
+      ],
+      "id": "2bccbac7-dfb4-4446-9205-1f6be05138ad",
+      "name": "No Operation, do nothing3"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "leads",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1360,
+        288
+      ],
+      "id": "010de636-5b03-4b73-ac8e-4155c8ed3e22",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "testeBDR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        528,
+        144
+      ],
+      "id": "31530513-edfb-44ce-a3ca-ea42511fac89",
+      "name": "Webhook1",
+      "webhookId": "bd533aca-f1db-488b-a6b2-a03c85d16d28",
+      "disabled": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2352,
+        -32
+      ],
+      "id": "e53d0410-c9ed-4e32-8b50-66f9505fdaf4",
+      "name": "Wait",
+      "webhookId": "922ad724-bbe3-4ff3-9d47-7949a753044d"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "If3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodeGroups": [
+    {
+      "id": "84a901f8-ca6a-4b8f-bffe-b20bd26042d4",
+      "name": "SOMOS NÓS? 1",
+      "nodeIds": [
+        "3bf7d0a6-cb9d-4e56-b568-d0d11a36208f",
+        "7caba171-d3da-4181-a810-1ad293c81df3",
+        "a072dae9-30a5-473e-9130-7025d5b883f9",
+        "4380ce89-87f2-437d-955a-70b1463a103a",
+        "7d8b4dc3-b43d-4602-a822-39cd66445830",
+        "bdf7afb8-96ad-4dfb-99bb-a009ec513c34",
+        "f26266c9-e973-486e-8d54-f504ccc33b8e",
+        "1ed9ce22-19ce-4856-9102-2e4eb472c132",
+        "2bccbac7-dfb4-4446-9205-1f6be05138ad",
+        "010de636-5b03-4b73-ac8e-4155c8ed3e22"
+      ]
+    },
+    {
+      "id": "c73a4066-f428-42f2-beef-26e9587579a4",
+      "name": "FLUXO RESPOSTA",
+      "nodeIds": [
+        "ee2dd35f-5993-4690-bced-9fd921af2fc4",
+        "e58fecde-68e7-4aec-bfd0-48eabdc30dec",
+        "716ed1be-236c-409c-9ab9-a3af4597e99c",
+        "207b02b4-22fe-4f6d-824e-a15adb21c96b",
+        "d2997bf8-3467-42d6-8b0d-2a075f6eee37",
+        "6e0cca51-b3da-4201-84e5-222785301fb1",
+        "359aa854-539e-447a-8142-684517d78b62",
+        "4d5e15d8-30c4-400b-94b6-5434f572bd32",
+        "ec6858e0-101d-41ce-b579-20d1e66335ec",
+        "460fb0cf-1425-4cc9-b8cb-a9257b024afe",
+        "e53d0410-c9ed-4e32-8b50-66f9505fdaf4"
+      ]
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": {
+    "node:Schedule Trigger": {
+      "recurrenceRules": []
+    }
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "axios/1.13.2",
+            "content-length": "1501",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "10.0.1.1",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "10.0.1.1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "WendelTeste",
+            "data": {
+              "key": {
+                "remoteJid": "557991054765@s.whatsapp.net",
+                "remoteJidAlt": "557991054765@s.whatsapp.net",
+                "fromMe": false,
+                "id": "A543C365BDE2A106BEA482E66CCE70E8",
+                "participant": "",
+                "addressingMode": "lid"
+              },
+              "pushName": "Konnectaai",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "conversation": "Olá irmão",
+                "messageContextInfo": {
+                  "threadId": [],
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "senderKeyHash": {
+                      "0": 113,
+                      "1": 213,
+                      "2": 87,
+                      "3": 41,
+                      "4": 176,
+                      "5": 167,
+                      "6": 60,
+                      "7": 144,
+                      "8": 50,
+                      "9": 111
+                    },
+                    "senderTimestamp": {
+                      "low": 1788211281,
+                      "high": 0,
+                      "unsigned": true
+                    },
+                    "recipientKeyHash": {
+                      "0": 3,
+                      "1": 124,
+                      "2": 27,
+                      "3": 51,
+                      "4": 9,
+                      "5": 110,
+                      "6": 146,
+                      "7": 191,
+                      "8": 181,
+                      "9": 200
+                    },
+                    "recipientTimestamp": {
+                      "low": 1788356370,
+                      "high": 0,
+                      "unsigned": true
+                    }
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": {
+                    "0": 76,
+                    "1": 37,
+                    "2": 166,
+                    "3": 107,
+                    "4": 40,
+                    "5": 149,
+                    "6": 88,
+                    "7": 220,
+                    "8": 143,
+                    "9": 233,
+                    "10": 58,
+                    "11": 191,
+                    "12": 14,
+                    "13": 33,
+                    "14": 140,
+                    "15": 5,
+                    "16": 247,
+                    "17": 89,
+                    "18": 76,
+                    "19": 40,
+                    "20": 119,
+                    "21": 219,
+                    "22": 252,
+                    "23": 212,
+                    "24": 164,
+                    "25": 205,
+                    "26": 14,
+                    "27": 202,
+                    "28": 182,
+                    "29": 113,
+                    "30": 248,
+                    "31": 11
+                  }
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1788356875,
+              "instanceId": "3a6f7c63-6c52-4d0d-a995-9ba57b5a16da",
+              "source": "android"
+            },
+            "destination": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/Campaigns",
+            "date_time": "2026-09-02T10:47:56.096Z",
+            "sender": "557999801810@s.whatsapp.net",
+            "server_url": "http://evo-j0o08ok8sgwc4cog04w0owok.95.217.164.173.sslip.io",
+            "apikey": "0F84440B-9FC6-40E0-B9EF-0711AFA1D735"
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/Campaigns",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ],
+    "Webhook1": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "axios/1.13.2",
+            "content-length": "1433",
+            "accept": "application/json, text/plain, */*",
+            "accept-encoding": "gzip, compress, deflate, br",
+            "content-type": "application/json",
+            "x-forwarded-for": "10.0.1.1",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "10.0.1.1"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "event": "messages.upsert",
+            "instance": "testeresposta",
+            "data": {
+              "key": {
+                "remoteJid": "557991054765@s.whatsapp.net",
+                "remoteJidAlt": "557991054765@s.whatsapp.net",
+                "fromMe": false,
+                "id": "A53B922370DDDF6FA702296C5DDAED1D",
+                "participant": "",
+                "addressingMode": "lid"
+              },
+              "pushName": "Konnectaai",
+              "status": "DELIVERY_ACK",
+              "message": {
+                "conversation": "Teste resposta teste resposta",
+                "messageContextInfo": {
+                  "threadId": [],
+                  "deviceListMetadata": {
+                    "senderKeyIndexes": [],
+                    "recipientKeyIndexes": [],
+                    "senderTimestamp": {
+                      "low": 1790803483,
+                      "high": 0,
+                      "unsigned": true
+                    },
+                    "recipientKeyHash": {
+                      "0": 186,
+                      "1": 233,
+                      "2": 253,
+                      "3": 143,
+                      "4": 185,
+                      "5": 176,
+                      "6": 157,
+                      "7": 48,
+                      "8": 42,
+                      "9": 227
+                    },
+                    "recipientTimestamp": {
+                      "low": 1790951784,
+                      "high": 0,
+                      "unsigned": true
+                    }
+                  },
+                  "deviceListMetadataVersion": 2,
+                  "messageSecret": {
+                    "0": 101,
+                    "1": 40,
+                    "2": 189,
+                    "3": 200,
+                    "4": 131,
+                    "5": 145,
+                    "6": 254,
+                    "7": 88,
+                    "8": 152,
+                    "9": 30,
+                    "10": 246,
+                    "11": 81,
+                    "12": 65,
+                    "13": 69,
+                    "14": 172,
+                    "15": 67,
+                    "16": 129,
+                    "17": 159,
+                    "18": 221,
+                    "19": 158,
+                    "20": 19,
+                    "21": 195,
+                    "22": 96,
+                    "23": 93,
+                    "24": 252,
+                    "25": 87,
+                    "26": 220,
+                    "27": 141,
+                    "28": 239,
+                    "29": 161,
+                    "30": 150,
+                    "31": 188
+                  }
+                }
+              },
+              "messageType": "conversation",
+              "messageTimestamp": 1790952033,
+              "instanceId": "e563fe8b-a913-4e35-afdc-1bddef553ed4",
+              "source": "android"
+            },
+            "destination": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/testeBDR",
+            "date_time": "2026-10-02T11:40:33.407Z",
+            "sender": "557999801810@s.whatsapp.net",
+            "server_url": "http://evo-j0o08ok8sgwc4cog04w0owok.95.217.164.173.sslip.io",
+            "apikey": "7B697788-2832-4314-8C59-87EEE5B53D9E"
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/testeBDR",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [
+    {
+      "id": "Llfmd66GWbMUHQMr",
+      "name": "Http",
+      "createdAt": "2025-11-17T14:32:35.191Z",
+      "updatedAt": "2025-11-17T14:32:35.191Z"
+    }
+  ],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "6S7VBGXIThgmcuCK",
+      "projectId": "XZrA9Oiu8K5e6BgC",
+      "createdAt": "2026-01-12T12:56:29.168Z",
+      "updatedAt": "2026-01-12T12:56:29.168Z"
+    }
+  ],
+  "activeVersion": {
+    "versionId": "b9840ee3-9bb5-4ee6-88ef-71099c6310d1",
+    "workflowId": "6S7VBGXIThgmcuCK",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "Campaigns",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          544,
+          -160
+        ],
+        "id": "83e62bbc-b027-48e5-98c8-ef0a72be4bc1",
+        "name": "Webhook",
+        "webhookId": "bd533aca-f1db-488b-a6b2-a03c85d16d28"
+      },
+      {
+        "parameters": {
+          "jsCode": "const sender = $input.first().json.body.data.key.remoteJid;\n\nlet telefone = sender.split('@')[0];\n\n// Adiciona o 9 depois do DDD (Brasil)\nif (telefone.startsWith('55') && telefone.length === 12) {\n  telefone = telefone.slice(0, 4) + '9' + telefone.slice(4);\n}\n\nreturn [\n  {\n    json: {\n      telefone\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          784,
+          0
+        ],
+        "id": "ee2dd35f-5993-4690-bced-9fd921af2fc4",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "url": "https://bdrautomatico.medicalspin.com.br/api/leads",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1168,
+          -16
+        ],
+        "id": "e58fecde-68e7-4aec-bfd0-48eabdc30dec",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1168,
+          112
+        ],
+        "id": "716ed1be-236c-409c-9ab9-a3af4597e99c",
+        "name": "No Operation, do nothing"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "6257d558-338b-4187-ba5d-8da8a08cedc1",
+                "leftValue": "={{ $('Webhook').item.json.body.data.key.fromMe }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "false",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          960,
+          0
+        ],
+        "id": "207b02b4-22fe-4f6d-824e-a15adb21c96b",
+        "name": "If"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://bdrautomatico.medicalspin.com.br/api/webhook/entrada",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "x-webhook-token",
+                "value": "whin_c97796c480d7139a7307f65617e308bbd5b83e05ec4e6cf7ab1c14e003cbbea0"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "evento",
+                "value": "RespostaLead"
+              },
+              {
+                "name": "dados",
+                "value": "={{ $json }}"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          2176,
+          -32
+        ],
+        "id": "d2997bf8-3467-42d6-8b0d-2a075f6eee37",
+        "name": "HTTP Request4"
+      },
+      {
+        "parameters": {
+          "jsCode": "const telefoneEntrada = $('Code in JavaScript').first().json.telefone;\n\nconst leads = $input.all();\n\nconst normalizarTelefone = (valor) => {\n  let telefone = String(valor || '').replace(/\\D/g, '');\n\n  // Adiciona o código do Brasil apenas para números\n  // nacionais de 10 ou 11 dígitos.\n  if (telefone.length === 10 || telefone.length === 11) {\n    telefone = '55' + telefone;\n  }\n\n  return telefone;\n};\n\nconst telefoneBusca = normalizarTelefone(telefoneEntrada);\n\n// Procura o telefone em TODOS os itens\nconst leadEncontrado = leads.find(item => {\n  const telefoneLead = normalizarTelefone(item.json.telefone);\n\n  return telefoneLead === telefoneBusca;\n});\n\nconst telefonePresente = !!leadEncontrado;\n\nconst temCampanha =\n  telefonePresente &&\n  Array.isArray(leadEncontrado.json.campanhasIds) &&\n  leadEncontrado.json.campanhasIds.length > 0;\n\nreturn [\n  {\n    json: {\n      telefone: telefoneBusca,\n      telefonePresente,\n      temCampanha,\n      valido: telefonePresente && temCampanha\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1568,
+          -16
+        ],
+        "id": "6e0cca51-b3da-4201-84e5-222785301fb1",
+        "name": "Code in JavaScript1"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "49a7b897-fdee-4df1-b3d9-ae3fa54c37bc",
+                "leftValue": "={{ $json.temCampanha }}",
+                "rightValue": "=false {{ $('HTTP Request').item.json.leads[0].telefone }}",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1776,
+          -16
+        ],
+        "id": "359aa854-539e-447a-8142-684517d78b62",
+        "name": "If1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          2000,
+          96
+        ],
+        "id": "4d5e15d8-30c4-400b-94b6-5434f572bd32",
+        "name": "No Operation, do nothing1"
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $('Webhook').first().json;\n\nreturn [\n  {\n    json: data\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2000,
+          -32
+        ],
+        "id": "ec6858e0-101d-41ce-b579-20d1e66335ec",
+        "name": "Code in JavaScript2"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "leads",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1376,
+          -16
+        ],
+        "id": "460fb0cf-1425-4cc9-b8cb-a9257b024afe",
+        "name": "Split Out"
+      },
+      {
+        "parameters": {
+          "jsCode": "const sender = $input.first().json.body.data.key.remoteJid;\n\nlet telefone = sender.split('@')[0];\n\n// Adiciona o 9 depois do DDD (Brasil)\nif (telefone.startsWith('55') && telefone.length === 12) {\n  telefone = telefone.slice(0, 4) + '9' + telefone.slice(4);\n}\n\nreturn [\n  {\n    json: {\n      telefone\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          768,
+          304
+        ],
+        "id": "3bf7d0a6-cb9d-4e56-b568-d0d11a36208f",
+        "name": "Code in JavaScript3"
+      },
+      {
+        "parameters": {
+          "url": "https://bdrautomatico.medicalspin.com.br/api/leads",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          1152,
+          288
+        ],
+        "id": "7caba171-d3da-4181-a810-1ad293c81df3",
+        "name": "HTTP Request1"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1152,
+          416
+        ],
+        "id": "a072dae9-30a5-473e-9130-7025d5b883f9",
+        "name": "No Operation, do nothing2"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "6257d558-338b-4187-ba5d-8da8a08cedc1",
+                "leftValue": "={{ $('Webhook1').item.json.body.data.key.fromMe }}",
+                "rightValue": false,
+                "operator": {
+                  "type": "boolean",
+                  "operation": "false",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          944,
+          304
+        ],
+        "id": "4380ce89-87f2-437d-955a-70b1463a103a",
+        "name": "If2"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "https://bdrautomatico.medicalspin.com.br/api/webhook/entrada",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "x-webhook-token",
+                "value": "whin_c97796c480d7139a7307f65617e308bbd5b83e05ec4e6cf7ab1c14e003cbbea0"
+              }
+            ]
+          },
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "evento",
+                "value": "RespostaLead"
+              },
+              {
+                "name": "dados",
+                "value": "={{ $json }}"
+              }
+            ]
+          },
+          "options": {
+            "allowUnauthorizedCerts": true
+          }
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.4,
+        "position": [
+          2160,
+          272
+        ],
+        "id": "7d8b4dc3-b43d-4602-a822-39cd66445830",
+        "name": "HTTP Request5"
+      },
+      {
+        "parameters": {
+          "jsCode": "const telefoneEntrada = $('Code in JavaScript3').first().json.telefone;\n\nconst leads = $input.all();\n\nconst normalizarTelefone = (valor) => {\n  let telefone = String(valor || '').replace(/\\D/g, '');\n\n  // Adiciona o código do Brasil apenas para números\n  // nacionais de 10 ou 11 dígitos.\n  if (telefone.length === 10 || telefone.length === 11) {\n    telefone = '55' + telefone;\n  }\n\n  return telefone;\n};\n\nconst telefoneBusca = normalizarTelefone(telefoneEntrada);\n\n// Procura o telefone em TODOS os itens\nconst leadEncontrado = leads.find(item => {\n  const telefoneLead = normalizarTelefone(item.json.telefone);\n\n  return telefoneLead === telefoneBusca;\n});\n\nconst telefonePresente = !!leadEncontrado;\n\nconst temCampanha =\n  telefonePresente &&\n  Array.isArray(leadEncontrado.json.campanhasIds) &&\n  leadEncontrado.json.campanhasIds.length > 0;\n\nreturn [\n  {\n    json: {\n      telefone: telefoneBusca,\n      telefonePresente,\n      temCampanha,\n      valido: telefonePresente && temCampanha\n    }\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1552,
+          288
+        ],
+        "id": "bdf7afb8-96ad-4dfb-99bb-a009ec513c34",
+        "name": "Code in JavaScript4"
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "49a7b897-fdee-4df1-b3d9-ae3fa54c37bc",
+                "leftValue": "={{ $json.temCampanha }}",
+                "rightValue": "=false {{ $('HTTP Request1').item.json.leads[0].telefone }}",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "looseTypeValidation": true,
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1760,
+          288
+        ],
+        "id": "f26266c9-e973-486e-8d54-f504ccc33b8e",
+        "name": "If3"
+      },
+      {
+        "parameters": {
+          "jsCode": "const data = $('Webhook1').first().json;\n\nreturn [\n  {\n    json: data\n  }\n];"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          1984,
+          272
+        ],
+        "id": "1ed9ce22-19ce-4856-9102-2e4eb472c132",
+        "name": "Code in JavaScript5"
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.noOp",
+        "typeVersion": 1,
+        "position": [
+          1984,
+          400
+        ],
+        "id": "2bccbac7-dfb4-4446-9205-1f6be05138ad",
+        "name": "No Operation, do nothing3"
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "leads",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          1360,
+          288
+        ],
+        "id": "010de636-5b03-4b73-ac8e-4155c8ed3e22",
+        "name": "Split Out1"
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "testeBDR",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          528,
+          144
+        ],
+        "id": "31530513-edfb-44ce-a3ca-ea42511fac89",
+        "name": "Webhook1",
+        "webhookId": "bd533aca-f1db-488b-a6b2-a03c85d16d28",
+        "disabled": true
+      },
+      {
+        "parameters": {},
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          2352,
+          -32
+        ],
+        "id": "e53d0410-c9ed-4e32-8b50-66f9505fdaf4",
+        "name": "Wait",
+        "webhookId": "922ad724-bbe3-4ff3-9d47-7949a753044d"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript1": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript2": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript3": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "Split Out1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript4": {
+        "main": [
+          [
+            {
+              "node": "If3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If3": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript5",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "No Operation, do nothing3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript5": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out1": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook1": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request4": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [
+      {
+        "id": "84a901f8-ca6a-4b8f-bffe-b20bd26042d4",
+        "name": "SOMOS NÓS? 1",
+        "nodeIds": [
+          "3bf7d0a6-cb9d-4e56-b568-d0d11a36208f",
+          "7caba171-d3da-4181-a810-1ad293c81df3",
+          "a072dae9-30a5-473e-9130-7025d5b883f9",
+          "4380ce89-87f2-437d-955a-70b1463a103a",
+          "7d8b4dc3-b43d-4602-a822-39cd66445830",
+          "bdf7afb8-96ad-4dfb-99bb-a009ec513c34",
+          "f26266c9-e973-486e-8d54-f504ccc33b8e",
+          "1ed9ce22-19ce-4856-9102-2e4eb472c132",
+          "2bccbac7-dfb4-4446-9205-1f6be05138ad",
+          "010de636-5b03-4b73-ac8e-4155c8ed3e22"
+        ]
+      },
+      {
+        "id": "c73a4066-f428-42f2-beef-26e9587579a4",
+        "name": "FLUXO RESPOSTA",
+        "nodeIds": [
+          "ee2dd35f-5993-4690-bced-9fd921af2fc4",
+          "e58fecde-68e7-4aec-bfd0-48eabdc30dec",
+          "716ed1be-236c-409c-9ab9-a3af4597e99c",
+          "207b02b4-22fe-4f6d-824e-a15adb21c96b",
+          "d2997bf8-3467-42d6-8b0d-2a075f6eee37",
+          "6e0cca51-b3da-4201-84e5-222785301fb1",
+          "359aa854-539e-447a-8142-684517d78b62",
+          "4d5e15d8-30c4-400b-94b6-5434f572bd32",
+          "ec6858e0-101d-41ce-b579-20d1e66335ec",
+          "460fb0cf-1425-4cc9-b8cb-a9257b024afe",
+          "e53d0410-c9ed-4e32-8b50-66f9505fdaf4"
+        ]
+      }
+    ],
+    "authors": "Automações  Medical Spin",
+    "name": "Version b9840ee3",
+    "description": "",
+    "autosaved": false,
+    "createdAt": "2026-10-02T14:47:54.181Z",
+    "updatedAt": "2026-10-02T14:47:55.457Z"
+  }
+}
