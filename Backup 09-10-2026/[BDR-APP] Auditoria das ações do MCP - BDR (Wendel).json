@@ -1,0 +1,408 @@
+{
+  "id": "YSOOGG9NJBFp9muD",
+  "name": "[BDR-APP] Auditoria das ações do MCP - BDR (Wendel)",
+  "active": true,
+  "activeVersionId": "cabcf987-69f6-4053-929b-cd58ec892ef2",
+  "createdAt": "2026-10-01T11:51:16.236Z",
+  "updatedAt": "2026-10-02T14:29:44.266Z",
+  "isArchived": false,
+  "versionId": "cabcf987-69f6-4053-929b-cd58ec892ef2",
+  "triggerCount": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mcp-auditoria",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5d3a0b85-2715-430a-97ca-a1f95455b599",
+      "name": "Webhook",
+      "webhookId": "21bdf34b-7ec7-40c5-b0a3-425a608c3720"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw",
+          "mode": "list",
+          "cachedResultName": "MCP logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "mcpLogs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "EVENTO": "={{ $json.body.evento }}",
+            "DATA": "={{ $now.format('dd/LL/yyyy T') }}",
+            "FERRAMENTA": "={{ $json.body.dados.ferramenta }}",
+            "STATUS": "={{ $json.body.dados.sucesso }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "EVENTO",
+              "displayName": "EVENTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DATA",
+              "displayName": "DATA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FERRAMENTA",
+              "displayName": "FERRAMENTA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        0
+      ],
+      "id": "f93e610d-632e-4845-af42-a75be86c67d6",
+      "name": "Append row in sheet",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        400,
+        0
+      ],
+      "id": "a087e009-24f3-42b8-8c99-6c09a9cf497e",
+      "name": "Loop Over Items",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodeGroups": [],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "node",
+            "content-length": "203",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "content-type": "application/json",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.1.1",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "10.0.1.1",
+            "x-webhook-event": "mcp.acao_executada",
+            "x-webhook-signature": "sha256=908e18c04bccca1c951df343771fdb88b2587257add5527db6e1166b0b0505cb"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "evento": "mcp.acao_executada",
+            "enviadoEm": "2026-10-01T12:10:03.025Z",
+            "dados": {
+              "ferramenta": "listar_respostas_lead",
+              "argumentos": "{\"limite\":1}",
+              "sucesso": true,
+              "executadoEm": "2026-10-01T12:10:01.223Z"
+            }
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/mcp-auditoria",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "YSOOGG9NJBFp9muD",
+      "projectId": "XZrA9Oiu8K5e6BgC",
+      "createdAt": "2026-10-01T11:51:16.236Z",
+      "updatedAt": "2026-10-01T11:51:16.236Z"
+    }
+  ],
+  "activeVersion": {
+    "versionId": "cabcf987-69f6-4053-929b-cd58ec892ef2",
+    "workflowId": "YSOOGG9NJBFp9muD",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "mcp-auditoria",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "5d3a0b85-2715-430a-97ca-a1f95455b599",
+        "name": "Webhook",
+        "webhookId": "21bdf34b-7ec7-40c5-b0a3-425a608c3720"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw",
+            "mode": "list",
+            "cachedResultName": "MCP logs",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "mcpLogs",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "EVENTO": "={{ $json.body.evento }}",
+              "DATA": "={{ $now.format('dd/LL/yyyy T') }}",
+              "FERRAMENTA": "={{ $json.body.dados.ferramenta }}",
+              "STATUS": "={{ $json.body.dados.sucesso }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "EVENTO",
+                "displayName": "EVENTO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "DATA",
+                "displayName": "DATA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "FERRAMENTA",
+                "displayName": "FERRAMENTA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "STATUS",
+                "displayName": "STATUS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          224,
+          0
+        ],
+        "id": "f93e610d-632e-4845-af42-a75be86c67d6",
+        "name": "Append row in sheet",
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "2DSmp4SarxDNx6pV",
+            "name": "Google Sheets account"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          400,
+          0
+        ],
+        "id": "a087e009-24f3-42b8-8c99-6c09a9cf497e",
+        "name": "Loop Over Items",
+        "retryOnFail": true,
+        "waitBetweenTries": 5000
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append row in sheet": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version cabcf987",
+    "description": "",
+    "autosaved": true,
+    "createdAt": "2026-10-02T14:29:44.268Z",
+    "updatedAt": "2026-10-02T14:29:47.541Z"
+  }
+}
