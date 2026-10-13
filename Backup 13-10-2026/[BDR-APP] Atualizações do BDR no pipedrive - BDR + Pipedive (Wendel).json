@@ -1,0 +1,2406 @@
+{
+  "id": "JUrwDvxTBEmcKe5S",
+  "name": "[BDR-APP] Atualizações do BDR no pipedrive - BDR + Pipedive (Wendel)",
+  "active": true,
+  "activeVersionId": "42774f40-61c7-41de-a566-eb3fc2988cc0",
+  "createdAt": "2026-09-23T17:33:26.069Z",
+  "updatedAt": "2026-10-07T20:28:40.700Z",
+  "isArchived": false,
+  "versionId": "42774f40-61c7-41de-a566-eb3fc2988cc0",
+  "triggerCount": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "teste",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        32
+      ],
+      "id": "29d7007c-8b9c-4548-913c-6f384ac3398b",
+      "name": "Webhook",
+      "webhookId": "a52f2ed8-1be6-47f7-b9e7-220face26fc3"
+    },
+    {
+      "parameters": {
+        "url": "=https://bdrautomatico.medicalspin.com.br/api/leads/{{ $json.body.dados.lead.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        560,
+        112
+      ],
+      "id": "9b9cbd84-b579-462b-ab3e-cb4278819f3c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86491472-a3e0-46ef-90b8-19c2cef85e68",
+              "name": "nome",
+              "value": "={{ $('HTTP Request').item.json.lead.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "a23352ae-5add-490e-8a8f-b8e7674fb03d",
+              "name": "telefone",
+              "value": "={{ $('HTTP Request').item.json.lead.telefone }}",
+              "type": "string"
+            },
+            {
+              "id": "43496c51-7fbf-4f9c-b1d5-516af33ad6c9",
+              "name": "statusLead",
+              "value": "={{ $('HTTP Request').item.json.lead.status }}",
+              "type": "string"
+            },
+            {
+              "id": "c26ad579-14ac-4445-9226-a0e801c18c80",
+              "name": "notas",
+              "value": "={{ $('HTTP Request').item.json.lead.notas }}",
+              "type": "string"
+            },
+            {
+              "id": "2b52863d-6509-4e49-8b8d-bb55c2aa908e",
+              "name": "negocio",
+              "value": "={{ $('HTTP Request').item.json.lead.negocio }}",
+              "type": "string"
+            },
+            {
+              "id": "710df349-75d5-452f-83ae-c9a42984148d",
+              "name": "atividade",
+              "value": "={{ $('HTTP Request').item.json.lead.atividade }}",
+              "type": "string"
+            },
+            {
+              "id": "d87faaf6-5a94-4ed4-b43d-b9bd1a48bf04",
+              "name": "campanhaNome",
+              "value": "={{ $json.campanha.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "55457b82-6453-4f26-98dc-4edd006ab6f0",
+              "name": "campanhaTipo",
+              "value": "={{ $json.campanha.tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "6e5a5d55-0424-4ac8-b523-930f2323ad1d",
+              "name": "mensagem",
+              "value": "={{ $('Webhook').item.json.body.dados.mensagem }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1008,
+        112
+      ],
+      "id": "8520fe16-c6bb-4773-a602-fee6bfd99408",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "=https://bdrautomatico.medicalspin.com.br/api/campanhas/{{ $('Webhook').item.json.body.dados.campanhaId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        752,
+        112
+      ],
+      "id": "637dbe65-45a1-41be-b50a-e61e230200f1",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "subject": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})",
+        "done": true,
+        "type": "=enviar_whatsapp",
+        "additionalFields": {
+          "deal_id": "={{ Number($('Edit Fields').item.json.negocio) }}",
+          "note": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})<br>\n<br>\nLead: {{ $json.nome }}<br>\nTelefone: {{ $json.telefone }}<br>\nStatus: {{ $json.statusLead }}<br>\nNegócio: {{ $json.negocio }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nCampanha Tipo: {{ $json.campanhaTipo }}<br>\nNota Interna BDR:<br> \n{{ $json.notas }}\n<br>\nÚltimo envio:<br>\n{{ $json.mensagem }}<br>\n<br>\nData/Hora:<br> \n{{ $now.format('dd/LL/yyyy T') }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        128
+      ],
+      "id": "cb91ddc4-9076-41e1-b9d0-04295a0ea495",
+      "name": "Create an activity",
+      "retryOnFail": true,
+      "credentials": {
+        "pipedriveApi": {
+          "id": "4qJXbNcTRplBXhrh",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.evento }}",
+                    "rightValue": "mensagem.enviada",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7a25140a-582a-40e6-84f0-b89335539ab4"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mensagem.enviada"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2189ded0-6061-4b54-ad51-4e1792584d7a",
+                    "leftValue": "={{ $json.body.evento }}",
+                    "rightValue": "mensagem.manual",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mensagem.manual"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "99463264-0576-411a-955a-ed33b4c4f24b",
+                    "leftValue": "={{ $json.body.evento }}",
+                    "rightValue": "lead.entrou_em_campanha",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "lead.entrou_em_campanha"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2a4cb169-4a84-462f-be00-caec6be9bb21",
+                    "leftValue": "={{ $json.body.evento }}",
+                    "rightValue": "campanha.iniciada",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "campanha.iniciada"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "39d11fc9-8541-47a3-933b-fef0d538c48d",
+                    "leftValue": "={{ $json.body.evento }}",
+                    "rightValue": "mensagem.resposta",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "mensagem.resposta"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "2294b459-d303-4242-b98e-ad2e182b6b00",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "=https://bdrautomatico.medicalspin.com.br/api/leads/{{ $json.body.dados.lead.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        560,
+        224
+      ],
+      "id": "fe874302-29bd-4ad5-9353-726395b7f3e5",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86491472-a3e0-46ef-90b8-19c2cef85e68",
+              "name": "nome",
+              "value": "={{ $('HTTP Request2').item.json.lead.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "a23352ae-5add-490e-8a8f-b8e7674fb03d",
+              "name": "telefone",
+              "value": "={{ $('HTTP Request2').item.json.lead.telefone }}",
+              "type": "string"
+            },
+            {
+              "id": "43496c51-7fbf-4f9c-b1d5-516af33ad6c9",
+              "name": "statusLead",
+              "value": "={{ $('HTTP Request2').item.json.lead.status }}",
+              "type": "string"
+            },
+            {
+              "id": "c26ad579-14ac-4445-9226-a0e801c18c80",
+              "name": "notas",
+              "value": "={{ $('HTTP Request2').item.json.lead.notas }}",
+              "type": "string"
+            },
+            {
+              "id": "2b52863d-6509-4e49-8b8d-bb55c2aa908e",
+              "name": "negocio",
+              "value": "={{ $('HTTP Request2').item.json.lead.negocio }}",
+              "type": "string"
+            },
+            {
+              "id": "d87faaf6-5a94-4ed4-b43d-b9bd1a48bf04",
+              "name": "campanhaNome",
+              "value": "={{ $json.campanha.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "55457b82-6453-4f26-98dc-4edd006ab6f0",
+              "name": "campanhaTipo",
+              "value": "={{ $json.campanha.tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "4a05f722-7710-418a-bbc7-bae9437edbf4",
+              "name": "cadencia",
+              "value": "={{ $json.campanha.mensagens.map(m => {\n  const data = new Date();\n  data.setDate(data.getDate() + m.dia);\n  return `${String(data.getDate()).padStart(2, '0')}/${String(data.getMonth() + 1).padStart(2, '0')}`;\n}).join('\\n') }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1376,
+        224
+      ],
+      "id": "e1f64541-abf6-455d-a8a9-244ba03bd2dd",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "url": "=https://bdrautomatico.medicalspin.com.br/api/campanhas/{{ $('Webhook').item.json.body.dados.campanha.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        752,
+        224
+      ],
+      "id": "25d5ff3f-2619-4fd2-b6c7-dfb3dc694d9c",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "subject": "=🏧 BDR Automático - Em campanha ativa.({{ $json.campanhaNome }})",
+        "done": true,
+        "type": "=enviar_whatsapp",
+        "additionalFields": {
+          "deal_id": "={{ Number($('Edit Fields1').item.json.negocio) }}",
+          "note": "=🏧 BDR Automático - Em campanha ativa.({{ $json.campanhaNome }})<br>\n<br>\nNome: {{ $json.campanhaNome }}<br>\nCadência:<br> \n{{ $json.cadencia }}<br>\n<br>\nTipo: {{ $json.campanhaTipo }}<br>\n⛔ Humano, não envie msg até final da cadência ou resposta do lead para nós. ⛔"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        224
+      ],
+      "id": "3c46a5ba-5bc0-43db-bdf3-2afc284fdfe9",
+      "name": "Create an activity1",
+      "retryOnFail": true,
+      "credentials": {
+        "pipedriveApi": {
+          "id": "4qJXbNcTRplBXhrh",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://bdrautomatico.medicalspin.com.br/api/leads/{{ $json.body.dados.lead.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        560,
+        336
+      ],
+      "id": "70cb5025-1044-4078-95e8-b4e2aca3b6eb",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86491472-a3e0-46ef-90b8-19c2cef85e68",
+              "name": "nome",
+              "value": "={{ $('HTTP Request4').item.json.lead.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "a23352ae-5add-490e-8a8f-b8e7674fb03d",
+              "name": "telefone",
+              "value": "={{ $('HTTP Request4').item.json.lead.telefone }}",
+              "type": "string"
+            },
+            {
+              "id": "43496c51-7fbf-4f9c-b1d5-516af33ad6c9",
+              "name": "statusLead",
+              "value": "={{ $('HTTP Request4').item.json.lead.status }}",
+              "type": "string"
+            },
+            {
+              "id": "c26ad579-14ac-4445-9226-a0e801c18c80",
+              "name": "notas",
+              "value": "={{ $('HTTP Request4').item.json.lead.notas }}",
+              "type": "string"
+            },
+            {
+              "id": "2b52863d-6509-4e49-8b8d-bb55c2aa908e",
+              "name": "negocio",
+              "value": "={{ $('HTTP Request4').item.json.lead.negocio }}",
+              "type": "string"
+            },
+            {
+              "id": "d87faaf6-5a94-4ed4-b43d-b9bd1a48bf04",
+              "name": "campanhaNome",
+              "value": "={{ $json.campanha.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "55457b82-6453-4f26-98dc-4edd006ab6f0",
+              "name": "campanhaTipo",
+              "value": "={{ $json.campanha.tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "02946ac7-32de-40c7-aa7b-b471c0ddbffa",
+              "name": "resposta",
+              "value": "={{ $('Webhook').item.json.body.dados.resposta }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1152,
+        336
+      ],
+      "id": "c9489723-e23c-4701-a9d4-36347a68f38c",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "url": "=https://bdrautomatico.medicalspin.com.br/api/campanhas/{{ $('Webhook').item.json.body.dados.campanha.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        752,
+        336
+      ],
+      "id": "51bb5abd-fcfc-4547-8dd7-b4d91820f1f1",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "subject": "=🏧 BDR Automático - Resposta do Lead. ",
+        "done": true,
+        "type": "=enviar_whatsapp",
+        "additionalFields": {
+          "deal_id": "={{ Number($('Edit Fields2').item.json.negocio) }}",
+          "note": "=🏧 BDR Automático - Resposta do Lead. !<br>\n<br>\nNome: {{ $json.campanhaNome }}<br>\nResposta:{{ $json.resposta }}<br> \nStatus: {{ $json.statusLead }}<br>\nNota:<br> \n{{ $json.notas }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nTipo de campanha: {{ $json.campanhaTipo }}<br>"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        1328,
+        336
+      ],
+      "id": "095650c4-8580-49db-ae28-3b7b2b3ac964",
+      "name": "Create an activity2",
+      "retryOnFail": true,
+      "credentials": {
+        "pipedriveApi": {
+          "id": "4qJXbNcTRplBXhrh",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6f3ae3e6-e86d-4abc-b6d6-a1fb4fd75854",
+              "leftValue": "={{ $json.campanha.status }}",
+              "rightValue": "ativa",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        944,
+        224
+      ],
+      "id": "0e4c16ff-d1e6-4681-96f5-68830b7ecd39",
+      "name": "If",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4db6b078-c2f1-417a-90a3-7d7c9342caff",
+              "leftValue": "={{ $json.atividade }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1232,
+        112
+      ],
+      "id": "6f2f7d7f-a5f2-4873-bdc1-08d5aa8bf7e4",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "operation": "update",
+        "activityId": "={{ Number($json.atividade) }}",
+        "updateFields": {
+          "deal_id": "={{ Number($json.negocio) }}",
+          "done": true,
+          "note": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})<br>\n<br>\nLead: {{ $json.nome }}<br>\nTelefone: {{ $json.telefone }}<br>\nStatus: {{ $json.statusLead }}<br>\nNegócio: {{ $json.negocio }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nCampanha Tipo: {{ $json.campanhaTipo }}<br>\nNota Interna BDR:<br> \n{{ $json.notas }}\n<br>\nÚltimo envio:<br>\n{{ $json.mensagem }}<br>\n<br>\nData/Hora:<br> \n{{ $now.format('dd/LL/yyyy T') }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        0
+      ],
+      "id": "81b3608c-ee60-4753-a5c1-89ac69e6495a",
+      "name": "Update an activity",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "4qJXbNcTRplBXhrh",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "operation": "update",
+        "activityId": "={{ Number($json.atividade) }}",
+        "updateFields": {
+          "deal_id": "={{ Number($json.negocio) }}",
+          "done": true,
+          "note": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})<br>\n<br>\nLead: {{ $json.nome }}<br>\nTelefone: {{ $json.telefone }}<br>\nStatus: {{ $json.statusLead }}<br>\nNegócio: {{ $json.negocio }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nCampanha Tipo: {{ $json.campanhaTipo }}<br>\nNota Interna BDR:<br> \n{{ $json.notas }}\n<br>\nÚltimo envio:<br>\n{{ $json.mensagem }}<br>\n<br>\nData/Hora:<br> \n{{ $now.format('dd/LL/yyyy T') }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        112
+      ],
+      "id": "a7993f70-438e-4909-a569-28480e7d3f19",
+      "name": "Update an activity1",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "4qJXbNcTRplBXhrh",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "4db6b078-c2f1-417a-90a3-7d7c9342caff",
+              "leftValue": "={{ $json.atividade }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1232,
+        224
+      ],
+      "id": "93c1ce20-8108-46f4-8180-a5de49ee3388",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "subject": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})",
+        "done": true,
+        "type": "=enviar_whatsapp",
+        "additionalFields": {
+          "deal_id": "={{ Number($('Edit Fields3').item.json.negocio) }}",
+          "note": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})<br>\n<br>\nLead: {{ $json.nome }}<br>\nTelefone: {{ $json.telefone }}<br>\nStatus: {{ $json.statusLead }}<br>\nNegócio: {{ $json.negocio }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nCampanha Tipo: {{ $json.campanhaTipo }}<br>\nNota Interna BDR:<br> \n{{ $json.notas }}\n<br>\nÚltimo envio:<br>\n{{ $json.mensagem }}<br>\n<br>\nData/Hora:<br> \n{{ $now.format('dd/LL/yyyy T') }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 2,
+      "position": [
+        1552,
+        240
+      ],
+      "id": "f3eb49b5-ad98-47f7-a5ca-a0f5e30b4653",
+      "name": "Create an activity3",
+      "retryOnFail": true,
+      "credentials": {
+        "pipedriveApi": {
+          "id": "4qJXbNcTRplBXhrh",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://bdrautomatico.medicalspin.com.br/api/campanhas/{{ $('Webhook').item.json.body.dados.campanhaId }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        752,
+        224
+      ],
+      "id": "24166b95-ffe7-45b0-870d-6077f9fc3607",
+      "name": "HTTP Request7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "86491472-a3e0-46ef-90b8-19c2cef85e68",
+              "name": "nome",
+              "value": "={{ $('HTTP Request6').item.json.lead.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "a23352ae-5add-490e-8a8f-b8e7674fb03d",
+              "name": "telefone",
+              "value": "={{ $('HTTP Request6').item.json.lead.telefone }}",
+              "type": "string"
+            },
+            {
+              "id": "43496c51-7fbf-4f9c-b1d5-516af33ad6c9",
+              "name": "statusLead",
+              "value": "={{ $('HTTP Request6').item.json.lead.status }}",
+              "type": "string"
+            },
+            {
+              "id": "c26ad579-14ac-4445-9226-a0e801c18c80",
+              "name": "notas",
+              "value": "={{ $('HTTP Request6').item.json.lead.notas }}",
+              "type": "string"
+            },
+            {
+              "id": "2b52863d-6509-4e49-8b8d-bb55c2aa908e",
+              "name": "negocio",
+              "value": "={{ $('HTTP Request6').item.json.lead.negocio }}",
+              "type": "string"
+            },
+            {
+              "id": "710df349-75d5-452f-83ae-c9a42984148d",
+              "name": "atividade",
+              "value": "={{ $('HTTP Request6').item.json.lead.atividade }}",
+              "type": "string"
+            },
+            {
+              "id": "d87faaf6-5a94-4ed4-b43d-b9bd1a48bf04",
+              "name": "campanhaNome",
+              "value": "={{ $json.campanha.nome }}",
+              "type": "string"
+            },
+            {
+              "id": "55457b82-6453-4f26-98dc-4edd006ab6f0",
+              "name": "campanhaTipo",
+              "value": "={{ $json.campanha.tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "6e5a5d55-0424-4ac8-b523-930f2323ad1d",
+              "name": "mensagem",
+              "value": "={{ $('Webhook').item.json.body.dados.mensagem }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {
+          "ignoreConversionErrors": true
+        }
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1008,
+        224
+      ],
+      "id": "b57806d0-2ccf-4d27-8b89-462ab351207f",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "url": "=https://bdrautomatico.medicalspin.com.br/api/leads/{{ $json.body.dados.lead.id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer CampaignsApiToken2026!"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        560,
+        224
+      ],
+      "id": "33a87f44-68c6-4ef7-9623-0668b78a8147",
+      "name": "HTTP Request6"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Create an activity1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Create an activity2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update an activity",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create an activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an activity": {
+      "main": [
+        []
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Update an activity1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create an activity3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request7": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodeGroups": [
+    {
+      "id": "1614f30f-b661-4859-8b38-46ffbc7e39d7",
+      "name": "RespostaDoLead",
+      "nodeIds": [
+        "70cb5025-1044-4078-95e8-b4e2aca3b6eb",
+        "c9489723-e23c-4701-a9d4-36347a68f38c",
+        "51bb5abd-fcfc-4547-8dd7-b4d91820f1f1",
+        "095650c4-8580-49db-ae28-3b7b2b3ac964"
+      ]
+    },
+    {
+      "id": "88399da1-14d2-4656-8a74-770696f63c68",
+      "name": "LeadEmCampanhaAtiva",
+      "nodeIds": [
+        "fe874302-29bd-4ad5-9353-726395b7f3e5",
+        "e1f64541-abf6-455d-a8a9-244ba03bd2dd",
+        "25d5ff3f-2619-4fd2-b6c7-dfb3dc694d9c",
+        "3c46a5ba-5bc0-43db-bdf3-2afc284fdfe9",
+        "0e4c16ff-d1e6-4681-96f5-68830b7ecd39"
+      ]
+    },
+    {
+      "id": "8ff3eae9-e77e-415d-8225-e011991b32db",
+      "name": "MensagemEnviada",
+      "nodeIds": [
+        "9b9cbd84-b579-462b-ab3e-cb4278819f3c",
+        "8520fe16-c6bb-4773-a602-fee6bfd99408",
+        "637dbe65-45a1-41be-b50a-e61e230200f1",
+        "cb91ddc4-9076-41e1-b9d0-04295a0ea495",
+        "6f2f7d7f-a5f2-4873-bdc1-08d5aa8bf7e4",
+        "81b3608c-ee60-4753-a5c1-89ac69e6495a"
+      ]
+    },
+    {
+      "id": "3f4d207c-997e-44fb-9d7e-d272605233ce",
+      "name": "MensagemManual",
+      "nodeIds": [
+        "33a87f44-68c6-4ef7-9623-0668b78a8147",
+        "b57806d0-2ccf-4d27-8b89-462ab351207f",
+        "24166b95-ffe7-45b0-870d-6077f9fc3607",
+        "f3eb49b5-ad98-47f7-a5ca-a0f5e30b4653",
+        "93c1ce20-8108-46f4-8180-a5de49ee3388",
+        "a7993f70-438e-4909-a569-28480e7d3f19"
+      ]
+    }
+  ],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "staticData": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "node",
+            "content-length": "418",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "content-type": "application/json",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.1.1",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "10.0.1.1",
+            "x-webhook-event": "mensagem.enviada",
+            "x-webhook-signature": "sha256=a450597d0089eb82c4afcdb57726b4e3f66327a0c9a820638779e0b15d086d09"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "evento": "mensagem.enviada",
+            "enviadoEm": "2026-09-24T14:47:13.365Z",
+            "dados": {
+              "eventoId": "cmufnb092000401ru4rhsmnn6",
+              "lead": {
+                "id": "cmu608u5j000001lfnedbli3o",
+                "nome": "Teste",
+                "telefone": "5579991054765"
+              },
+              "campanhaId": "cmufn9116000001ru9l9cadc8",
+              "mensagemId": "cmufn9167000101ru3izp86a2",
+              "descricao": "Mensagem inicial da campanha enviada pela engine.",
+              "mensagem": "Teste teste teste",
+              "detalhes": "Enviada para 5579991054765"
+            }
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/teste",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "JUrwDvxTBEmcKe5S",
+      "projectId": "XZrA9Oiu8K5e6BgC",
+      "createdAt": "2026-09-23T17:33:26.069Z",
+      "updatedAt": "2026-09-23T17:33:26.069Z"
+    }
+  ],
+  "activeVersion": {
+    "versionId": "42774f40-61c7-41de-a566-eb3fc2988cc0",
+    "workflowId": "JUrwDvxTBEmcKe5S",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "teste",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          32
+        ],
+        "id": "29d7007c-8b9c-4548-913c-6f384ac3398b",
+        "name": "Webhook",
+        "webhookId": "a52f2ed8-1be6-47f7-b9e7-220face26fc3"
+      },
+      {
+        "parameters": {
+          "url": "=https://bdrautomatico.medicalspin.com.br/api/leads/{{ $json.body.dados.lead.id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          560,
+          112
+        ],
+        "id": "9b9cbd84-b579-462b-ab3e-cb4278819f3c",
+        "name": "HTTP Request"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "86491472-a3e0-46ef-90b8-19c2cef85e68",
+                "name": "nome",
+                "value": "={{ $('HTTP Request').item.json.lead.nome }}",
+                "type": "string"
+              },
+              {
+                "id": "a23352ae-5add-490e-8a8f-b8e7674fb03d",
+                "name": "telefone",
+                "value": "={{ $('HTTP Request').item.json.lead.telefone }}",
+                "type": "string"
+              },
+              {
+                "id": "43496c51-7fbf-4f9c-b1d5-516af33ad6c9",
+                "name": "statusLead",
+                "value": "={{ $('HTTP Request').item.json.lead.status }}",
+                "type": "string"
+              },
+              {
+                "id": "c26ad579-14ac-4445-9226-a0e801c18c80",
+                "name": "notas",
+                "value": "={{ $('HTTP Request').item.json.lead.notas }}",
+                "type": "string"
+              },
+              {
+                "id": "2b52863d-6509-4e49-8b8d-bb55c2aa908e",
+                "name": "negocio",
+                "value": "={{ $('HTTP Request').item.json.lead.negocio }}",
+                "type": "string"
+              },
+              {
+                "id": "710df349-75d5-452f-83ae-c9a42984148d",
+                "name": "atividade",
+                "value": "={{ $('HTTP Request').item.json.lead.atividade }}",
+                "type": "string"
+              },
+              {
+                "id": "d87faaf6-5a94-4ed4-b43d-b9bd1a48bf04",
+                "name": "campanhaNome",
+                "value": "={{ $json.campanha.nome }}",
+                "type": "string"
+              },
+              {
+                "id": "55457b82-6453-4f26-98dc-4edd006ab6f0",
+                "name": "campanhaTipo",
+                "value": "={{ $json.campanha.tipo }}",
+                "type": "string"
+              },
+              {
+                "id": "6e5a5d55-0424-4ac8-b523-930f2323ad1d",
+                "name": "mensagem",
+                "value": "={{ $('Webhook').item.json.body.dados.mensagem }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {
+            "ignoreConversionErrors": true
+          }
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.5,
+        "position": [
+          1008,
+          112
+        ],
+        "id": "8520fe16-c6bb-4773-a602-fee6bfd99408",
+        "name": "Edit Fields"
+      },
+      {
+        "parameters": {
+          "url": "=https://bdrautomatico.medicalspin.com.br/api/campanhas/{{ $('Webhook').item.json.body.dados.campanhaId }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          752,
+          112
+        ],
+        "id": "637dbe65-45a1-41be-b50a-e61e230200f1",
+        "name": "HTTP Request1"
+      },
+      {
+        "parameters": {
+          "resource": "activity",
+          "subject": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})",
+          "done": true,
+          "type": "=enviar_whatsapp",
+          "additionalFields": {
+            "deal_id": "={{ Number($('Edit Fields').item.json.negocio) }}",
+            "note": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})<br>\n<br>\nLead: {{ $json.nome }}<br>\nTelefone: {{ $json.telefone }}<br>\nStatus: {{ $json.statusLead }}<br>\nNegócio: {{ $json.negocio }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nCampanha Tipo: {{ $json.campanhaTipo }}<br>\nNota Interna BDR:<br> \n{{ $json.notas }}\n<br>\nÚltimo envio:<br>\n{{ $json.mensagem }}<br>\n<br>\nData/Hora:<br> \n{{ $now.format('dd/LL/yyyy T') }}"
+          }
+        },
+        "type": "n8n-nodes-base.pipedrive",
+        "typeVersion": 2,
+        "position": [
+          1552,
+          128
+        ],
+        "id": "cb91ddc4-9076-41e1-b9d0-04295a0ea495",
+        "name": "Create an activity",
+        "retryOnFail": true,
+        "credentials": {
+          "pipedriveApi": {
+            "id": "4qJXbNcTRplBXhrh",
+            "name": "Pipedrive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.evento }}",
+                      "rightValue": "mensagem.enviada",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      },
+                      "id": "7a25140a-582a-40e6-84f0-b89335539ab4"
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "mensagem.enviada"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "2189ded0-6061-4b54-ad51-4e1792584d7a",
+                      "leftValue": "={{ $json.body.evento }}",
+                      "rightValue": "mensagem.manual",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "mensagem.manual"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "99463264-0576-411a-955a-ed33b4c4f24b",
+                      "leftValue": "={{ $json.body.evento }}",
+                      "rightValue": "lead.entrou_em_campanha",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "lead.entrou_em_campanha"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "2a4cb169-4a84-462f-be00-caec6be9bb21",
+                      "leftValue": "={{ $json.body.evento }}",
+                      "rightValue": "campanha.iniciada",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "campanha.iniciada"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": true,
+                    "leftValue": "",
+                    "typeValidation": "strict",
+                    "version": 3
+                  },
+                  "conditions": [
+                    {
+                      "id": "39d11fc9-8541-47a3-933b-fef0d538c48d",
+                      "leftValue": "={{ $json.body.evento }}",
+                      "rightValue": "mensagem.resposta",
+                      "operator": {
+                        "type": "string",
+                        "operation": "equals"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "renameOutput": true,
+                "outputKey": "mensagem.resposta"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.4,
+        "position": [
+          224,
+          -16
+        ],
+        "id": "2294b459-d303-4242-b98e-ad2e182b6b00",
+        "name": "Switch"
+      },
+      {
+        "parameters": {
+          "url": "=https://bdrautomatico.medicalspin.com.br/api/leads/{{ $json.body.dados.lead.id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          560,
+          224
+        ],
+        "id": "fe874302-29bd-4ad5-9353-726395b7f3e5",
+        "name": "HTTP Request2"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "86491472-a3e0-46ef-90b8-19c2cef85e68",
+                "name": "nome",
+                "value": "={{ $('HTTP Request2').item.json.lead.nome }}",
+                "type": "string"
+              },
+              {
+                "id": "a23352ae-5add-490e-8a8f-b8e7674fb03d",
+                "name": "telefone",
+                "value": "={{ $('HTTP Request2').item.json.lead.telefone }}",
+                "type": "string"
+              },
+              {
+                "id": "43496c51-7fbf-4f9c-b1d5-516af33ad6c9",
+                "name": "statusLead",
+                "value": "={{ $('HTTP Request2').item.json.lead.status }}",
+                "type": "string"
+              },
+              {
+                "id": "c26ad579-14ac-4445-9226-a0e801c18c80",
+                "name": "notas",
+                "value": "={{ $('HTTP Request2').item.json.lead.notas }}",
+                "type": "string"
+              },
+              {
+                "id": "2b52863d-6509-4e49-8b8d-bb55c2aa908e",
+                "name": "negocio",
+                "value": "={{ $('HTTP Request2').item.json.lead.negocio }}",
+                "type": "string"
+              },
+              {
+                "id": "d87faaf6-5a94-4ed4-b43d-b9bd1a48bf04",
+                "name": "campanhaNome",
+                "value": "={{ $json.campanha.nome }}",
+                "type": "string"
+              },
+              {
+                "id": "55457b82-6453-4f26-98dc-4edd006ab6f0",
+                "name": "campanhaTipo",
+                "value": "={{ $json.campanha.tipo }}",
+                "type": "string"
+              },
+              {
+                "id": "4a05f722-7710-418a-bbc7-bae9437edbf4",
+                "name": "cadencia",
+                "value": "={{ $json.campanha.mensagens.map(m => {\n  const data = new Date();\n  data.setDate(data.getDate() + m.dia);\n  return `${String(data.getDate()).padStart(2, '0')}/${String(data.getMonth() + 1).padStart(2, '0')}`;\n}).join('\\n') }}",
+                "type": "array"
+              }
+            ]
+          },
+          "options": {
+            "ignoreConversionErrors": true
+          }
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.5,
+        "position": [
+          1376,
+          224
+        ],
+        "id": "e1f64541-abf6-455d-a8a9-244ba03bd2dd",
+        "name": "Edit Fields1"
+      },
+      {
+        "parameters": {
+          "url": "=https://bdrautomatico.medicalspin.com.br/api/campanhas/{{ $('Webhook').item.json.body.dados.campanha.id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          752,
+          224
+        ],
+        "id": "25d5ff3f-2619-4fd2-b6c7-dfb3dc694d9c",
+        "name": "HTTP Request3"
+      },
+      {
+        "parameters": {
+          "resource": "activity",
+          "subject": "=🏧 BDR Automático - Em campanha ativa.({{ $json.campanhaNome }})",
+          "done": true,
+          "type": "=enviar_whatsapp",
+          "additionalFields": {
+            "deal_id": "={{ Number($('Edit Fields1').item.json.negocio) }}",
+            "note": "=🏧 BDR Automático - Em campanha ativa.({{ $json.campanhaNome }})<br>\n<br>\nNome: {{ $json.campanhaNome }}<br>\nCadência:<br> \n{{ $json.cadencia }}<br>\n<br>\nTipo: {{ $json.campanhaTipo }}<br>\n⛔ Humano, não envie msg até final da cadência ou resposta do lead para nós. ⛔"
+          }
+        },
+        "type": "n8n-nodes-base.pipedrive",
+        "typeVersion": 2,
+        "position": [
+          1552,
+          224
+        ],
+        "id": "3c46a5ba-5bc0-43db-bdf3-2afc284fdfe9",
+        "name": "Create an activity1",
+        "retryOnFail": true,
+        "credentials": {
+          "pipedriveApi": {
+            "id": "4qJXbNcTRplBXhrh",
+            "name": "Pipedrive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://bdrautomatico.medicalspin.com.br/api/leads/{{ $json.body.dados.lead.id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          560,
+          336
+        ],
+        "id": "70cb5025-1044-4078-95e8-b4e2aca3b6eb",
+        "name": "HTTP Request4"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "86491472-a3e0-46ef-90b8-19c2cef85e68",
+                "name": "nome",
+                "value": "={{ $('HTTP Request4').item.json.lead.nome }}",
+                "type": "string"
+              },
+              {
+                "id": "a23352ae-5add-490e-8a8f-b8e7674fb03d",
+                "name": "telefone",
+                "value": "={{ $('HTTP Request4').item.json.lead.telefone }}",
+                "type": "string"
+              },
+              {
+                "id": "43496c51-7fbf-4f9c-b1d5-516af33ad6c9",
+                "name": "statusLead",
+                "value": "={{ $('HTTP Request4').item.json.lead.status }}",
+                "type": "string"
+              },
+              {
+                "id": "c26ad579-14ac-4445-9226-a0e801c18c80",
+                "name": "notas",
+                "value": "={{ $('HTTP Request4').item.json.lead.notas }}",
+                "type": "string"
+              },
+              {
+                "id": "2b52863d-6509-4e49-8b8d-bb55c2aa908e",
+                "name": "negocio",
+                "value": "={{ $('HTTP Request4').item.json.lead.negocio }}",
+                "type": "string"
+              },
+              {
+                "id": "d87faaf6-5a94-4ed4-b43d-b9bd1a48bf04",
+                "name": "campanhaNome",
+                "value": "={{ $json.campanha.nome }}",
+                "type": "string"
+              },
+              {
+                "id": "55457b82-6453-4f26-98dc-4edd006ab6f0",
+                "name": "campanhaTipo",
+                "value": "={{ $json.campanha.tipo }}",
+                "type": "string"
+              },
+              {
+                "id": "02946ac7-32de-40c7-aa7b-b471c0ddbffa",
+                "name": "resposta",
+                "value": "={{ $('Webhook').item.json.body.dados.resposta }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {
+            "ignoreConversionErrors": true
+          }
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.5,
+        "position": [
+          1152,
+          336
+        ],
+        "id": "c9489723-e23c-4701-a9d4-36347a68f38c",
+        "name": "Edit Fields2"
+      },
+      {
+        "parameters": {
+          "url": "=https://bdrautomatico.medicalspin.com.br/api/campanhas/{{ $('Webhook').item.json.body.dados.campanha.id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          752,
+          336
+        ],
+        "id": "51bb5abd-fcfc-4547-8dd7-b4d91820f1f1",
+        "name": "HTTP Request5"
+      },
+      {
+        "parameters": {
+          "resource": "activity",
+          "subject": "=🏧 BDR Automático - Resposta do Lead. ",
+          "done": true,
+          "type": "=enviar_whatsapp",
+          "additionalFields": {
+            "deal_id": "={{ Number($('Edit Fields2').item.json.negocio) }}",
+            "note": "=🏧 BDR Automático - Resposta do Lead. !<br>\n<br>\nNome: {{ $json.campanhaNome }}<br>\nResposta:{{ $json.resposta }}<br> \nStatus: {{ $json.statusLead }}<br>\nNota:<br> \n{{ $json.notas }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nTipo de campanha: {{ $json.campanhaTipo }}<br>"
+          }
+        },
+        "type": "n8n-nodes-base.pipedrive",
+        "typeVersion": 2,
+        "position": [
+          1328,
+          336
+        ],
+        "id": "095650c4-8580-49db-ae28-3b7b2b3ac964",
+        "name": "Create an activity2",
+        "retryOnFail": true,
+        "credentials": {
+          "pipedriveApi": {
+            "id": "4qJXbNcTRplBXhrh",
+            "name": "Pipedrive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "6f3ae3e6-e86d-4abc-b6d6-a1fb4fd75854",
+                "leftValue": "={{ $json.campanha.status }}",
+                "rightValue": "ativa",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          944,
+          224
+        ],
+        "id": "0e4c16ff-d1e6-4681-96f5-68830b7ecd39",
+        "name": "If",
+        "disabled": true
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "4db6b078-c2f1-417a-90a3-7d7c9342caff",
+                "leftValue": "={{ $json.atividade }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1232,
+          112
+        ],
+        "id": "6f2f7d7f-a5f2-4873-bdc1-08d5aa8bf7e4",
+        "name": "If1"
+      },
+      {
+        "parameters": {
+          "resource": "activity",
+          "operation": "update",
+          "activityId": "={{ Number($json.atividade) }}",
+          "updateFields": {
+            "deal_id": "={{ Number($json.negocio) }}",
+            "done": true,
+            "note": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})<br>\n<br>\nLead: {{ $json.nome }}<br>\nTelefone: {{ $json.telefone }}<br>\nStatus: {{ $json.statusLead }}<br>\nNegócio: {{ $json.negocio }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nCampanha Tipo: {{ $json.campanhaTipo }}<br>\nNota Interna BDR:<br> \n{{ $json.notas }}\n<br>\nÚltimo envio:<br>\n{{ $json.mensagem }}<br>\n<br>\nData/Hora:<br> \n{{ $now.format('dd/LL/yyyy T') }}"
+          }
+        },
+        "type": "n8n-nodes-base.pipedrive",
+        "typeVersion": 2,
+        "position": [
+          1552,
+          0
+        ],
+        "id": "81b3608c-ee60-4753-a5c1-89ac69e6495a",
+        "name": "Update an activity",
+        "credentials": {
+          "pipedriveApi": {
+            "id": "4qJXbNcTRplBXhrh",
+            "name": "Pipedrive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "resource": "activity",
+          "operation": "update",
+          "activityId": "={{ Number($json.atividade) }}",
+          "updateFields": {
+            "deal_id": "={{ Number($json.negocio) }}",
+            "done": true,
+            "note": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})<br>\n<br>\nLead: {{ $json.nome }}<br>\nTelefone: {{ $json.telefone }}<br>\nStatus: {{ $json.statusLead }}<br>\nNegócio: {{ $json.negocio }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nCampanha Tipo: {{ $json.campanhaTipo }}<br>\nNota Interna BDR:<br> \n{{ $json.notas }}\n<br>\nÚltimo envio:<br>\n{{ $json.mensagem }}<br>\n<br>\nData/Hora:<br> \n{{ $now.format('dd/LL/yyyy T') }}"
+          }
+        },
+        "type": "n8n-nodes-base.pipedrive",
+        "typeVersion": 2,
+        "position": [
+          1552,
+          112
+        ],
+        "id": "a7993f70-438e-4909-a569-28480e7d3f19",
+        "name": "Update an activity1",
+        "credentials": {
+          "pipedriveApi": {
+            "id": "4qJXbNcTRplBXhrh",
+            "name": "Pipedrive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 3
+            },
+            "conditions": [
+              {
+                "id": "4db6b078-c2f1-417a-90a3-7d7c9342caff",
+                "leftValue": "={{ $json.atividade }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "string",
+                  "operation": "exists",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.3,
+        "position": [
+          1232,
+          224
+        ],
+        "id": "93c1ce20-8108-46f4-8180-a5de49ee3388",
+        "name": "If2"
+      },
+      {
+        "parameters": {
+          "resource": "activity",
+          "subject": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})",
+          "done": true,
+          "type": "=enviar_whatsapp",
+          "additionalFields": {
+            "deal_id": "={{ Number($('Edit Fields3').item.json.negocio) }}",
+            "note": "=🏧 BDR Automático: Follow-up Whatsapp.({{ $json.campanhaNome }})<br>\n<br>\nLead: {{ $json.nome }}<br>\nTelefone: {{ $json.telefone }}<br>\nStatus: {{ $json.statusLead }}<br>\nNegócio: {{ $json.negocio }}<br>\nCampanha: {{ $json.campanhaNome }}<br>\nCampanha Tipo: {{ $json.campanhaTipo }}<br>\nNota Interna BDR:<br> \n{{ $json.notas }}\n<br>\nÚltimo envio:<br>\n{{ $json.mensagem }}<br>\n<br>\nData/Hora:<br> \n{{ $now.format('dd/LL/yyyy T') }}"
+          }
+        },
+        "type": "n8n-nodes-base.pipedrive",
+        "typeVersion": 2,
+        "position": [
+          1552,
+          240
+        ],
+        "id": "f3eb49b5-ad98-47f7-a5ca-a0f5e30b4653",
+        "name": "Create an activity3",
+        "retryOnFail": true,
+        "credentials": {
+          "pipedriveApi": {
+            "id": "4qJXbNcTRplBXhrh",
+            "name": "Pipedrive account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "url": "=https://bdrautomatico.medicalspin.com.br/api/campanhas/{{ $('Webhook').item.json.body.dados.campanhaId }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          752,
+          224
+        ],
+        "id": "24166b95-ffe7-45b0-870d-6077f9fc3607",
+        "name": "HTTP Request7"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "86491472-a3e0-46ef-90b8-19c2cef85e68",
+                "name": "nome",
+                "value": "={{ $('HTTP Request6').item.json.lead.nome }}",
+                "type": "string"
+              },
+              {
+                "id": "a23352ae-5add-490e-8a8f-b8e7674fb03d",
+                "name": "telefone",
+                "value": "={{ $('HTTP Request6').item.json.lead.telefone }}",
+                "type": "string"
+              },
+              {
+                "id": "43496c51-7fbf-4f9c-b1d5-516af33ad6c9",
+                "name": "statusLead",
+                "value": "={{ $('HTTP Request6').item.json.lead.status }}",
+                "type": "string"
+              },
+              {
+                "id": "c26ad579-14ac-4445-9226-a0e801c18c80",
+                "name": "notas",
+                "value": "={{ $('HTTP Request6').item.json.lead.notas }}",
+                "type": "string"
+              },
+              {
+                "id": "2b52863d-6509-4e49-8b8d-bb55c2aa908e",
+                "name": "negocio",
+                "value": "={{ $('HTTP Request6').item.json.lead.negocio }}",
+                "type": "string"
+              },
+              {
+                "id": "710df349-75d5-452f-83ae-c9a42984148d",
+                "name": "atividade",
+                "value": "={{ $('HTTP Request6').item.json.lead.atividade }}",
+                "type": "string"
+              },
+              {
+                "id": "d87faaf6-5a94-4ed4-b43d-b9bd1a48bf04",
+                "name": "campanhaNome",
+                "value": "={{ $json.campanha.nome }}",
+                "type": "string"
+              },
+              {
+                "id": "55457b82-6453-4f26-98dc-4edd006ab6f0",
+                "name": "campanhaTipo",
+                "value": "={{ $json.campanha.tipo }}",
+                "type": "string"
+              },
+              {
+                "id": "6e5a5d55-0424-4ac8-b523-930f2323ad1d",
+                "name": "mensagem",
+                "value": "={{ $('Webhook').item.json.body.dados.mensagem }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {
+            "ignoreConversionErrors": true
+          }
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.5,
+        "position": [
+          1008,
+          224
+        ],
+        "id": "b57806d0-2ccf-4d27-8b89-462ab351207f",
+        "name": "Edit Fields3"
+      },
+      {
+        "parameters": {
+          "url": "=https://bdrautomatico.medicalspin.com.br/api/leads/{{ $json.body.dados.lead.id }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "Bearer CampaignsApiToken2026!"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.5,
+        "position": [
+          560,
+          224
+        ],
+        "id": "33a87f44-68c6-4ef7-9623-0668b78a8147",
+        "name": "HTTP Request6"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Switch",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "If1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Switch": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "HTTP Request6",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "HTTP Request2",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [],
+          [
+            {
+              "node": "HTTP Request4",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields1": {
+        "main": [
+          [
+            {
+              "node": "Create an activity1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request3": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request2": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request4": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request5",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields2": {
+        "main": [
+          [
+            {
+              "node": "Create an activity2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request5": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If1": {
+        "main": [
+          [
+            {
+              "node": "Update an activity",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Create an activity",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Create an activity": {
+        "main": [
+          []
+        ]
+      },
+      "If2": {
+        "main": [
+          [
+            {
+              "node": "Update an activity1",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Create an activity3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request7": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields3",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields3": {
+        "main": [
+          [
+            {
+              "node": "If2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request6": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request7",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [
+      {
+        "id": "1614f30f-b661-4859-8b38-46ffbc7e39d7",
+        "name": "RespostaDoLead",
+        "nodeIds": [
+          "70cb5025-1044-4078-95e8-b4e2aca3b6eb",
+          "c9489723-e23c-4701-a9d4-36347a68f38c",
+          "51bb5abd-fcfc-4547-8dd7-b4d91820f1f1",
+          "095650c4-8580-49db-ae28-3b7b2b3ac964"
+        ]
+      },
+      {
+        "id": "88399da1-14d2-4656-8a74-770696f63c68",
+        "name": "LeadEmCampanhaAtiva",
+        "nodeIds": [
+          "fe874302-29bd-4ad5-9353-726395b7f3e5",
+          "e1f64541-abf6-455d-a8a9-244ba03bd2dd",
+          "25d5ff3f-2619-4fd2-b6c7-dfb3dc694d9c",
+          "3c46a5ba-5bc0-43db-bdf3-2afc284fdfe9",
+          "0e4c16ff-d1e6-4681-96f5-68830b7ecd39"
+        ]
+      },
+      {
+        "id": "8ff3eae9-e77e-415d-8225-e011991b32db",
+        "name": "MensagemEnviada",
+        "nodeIds": [
+          "9b9cbd84-b579-462b-ab3e-cb4278819f3c",
+          "8520fe16-c6bb-4773-a602-fee6bfd99408",
+          "637dbe65-45a1-41be-b50a-e61e230200f1",
+          "cb91ddc4-9076-41e1-b9d0-04295a0ea495",
+          "6f2f7d7f-a5f2-4873-bdc1-08d5aa8bf7e4",
+          "81b3608c-ee60-4753-a5c1-89ac69e6495a"
+        ]
+      },
+      {
+        "id": "3f4d207c-997e-44fb-9d7e-d272605233ce",
+        "name": "MensagemManual",
+        "nodeIds": [
+          "33a87f44-68c6-4ef7-9623-0668b78a8147",
+          "b57806d0-2ccf-4d27-8b89-462ab351207f",
+          "24166b95-ffe7-45b0-870d-6077f9fc3607",
+          "f3eb49b5-ad98-47f7-a5ca-a0f5e30b4653",
+          "93c1ce20-8108-46f4-8180-a5de49ee3388",
+          "a7993f70-438e-4909-a569-28480e7d3f19"
+        ]
+      }
+    ],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 42774f40",
+    "description": "",
+    "autosaved": false,
+    "createdAt": "2026-10-07T13:10:39.789Z",
+    "updatedAt": "2026-10-07T13:10:40.914Z"
+  }
+}
