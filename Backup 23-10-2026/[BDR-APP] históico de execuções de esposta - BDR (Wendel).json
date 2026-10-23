@@ -1,0 +1,78 @@
+{
+  "id": "ZzlwoLRMsJOYTt0L",
+  "name": "[BDR-APP] históico de execuções de esposta - BDR (Wendel)",
+  "active": true,
+  "activeVersionId": "4118f0fa-0a18-4a88-898f-30751600c4d0",
+  "createdAt": "2026-10-04T13:03:36.219Z",
+  "updatedAt": "2026-10-04T13:15:20.908Z",
+  "isArchived": false,
+  "versionId": "4118f0fa-0a18-4a88-898f-30751600c4d0",
+  "triggerCount": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bdr-execucoes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "be864e5a-fa25-407f-a7fc-e2a7c4ea785d",
+      "name": "Webhook",
+      "webhookId": "cd8763c0-058f-4ce6-a3a7-efb03faa189c"
+    }
+  ],
+  "connections": {},
+  "nodeGroups": [],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {},
+  "meta": null,
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "ZzlwoLRMsJOYTt0L",
+      "projectId": "XZrA9Oiu8K5e6BgC",
+      "createdAt": "2026-10-04T13:03:36.219Z",
+      "updatedAt": "2026-10-04T13:03:36.219Z"
+    }
+  ],
+  "activeVersion": {
+    "versionId": "4118f0fa-0a18-4a88-898f-30751600c4d0",
+    "workflowId": "ZzlwoLRMsJOYTt0L",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "bdr-execucoes",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "be864e5a-fa25-407f-a7fc-e2a7c4ea785d",
+        "name": "Webhook",
+        "webhookId": "cd8763c0-058f-4ce6-a3a7-efb03faa189c"
+      }
+    ],
+    "connections": {},
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 4118f0fa",
+    "description": "",
+    "autosaved": true,
+    "createdAt": "2026-10-04T13:03:56.131Z",
+    "updatedAt": "2026-10-04T13:04:00.678Z"
+  }
+}
