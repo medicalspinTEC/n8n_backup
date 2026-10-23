@@ -1,0 +1,721 @@
+{
+  "id": "YSOOGG9NJBFp9muD",
+  "name": "[BDR-APP] Auditoria das ações do MCP - BDR (Wendel)",
+  "active": true,
+  "activeVersionId": "ff22a83a-0a9c-49b5-9591-7ea9733c09d8",
+  "createdAt": "2026-10-01T11:51:16.236Z",
+  "updatedAt": "2026-10-14T12:34:24.251Z",
+  "isArchived": false,
+  "versionId": "ff22a83a-0a9c-49b5-9591-7ea9733c09d8",
+  "triggerCount": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mcp-auditoria",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5d3a0b85-2715-430a-97ca-a1f95455b599",
+      "name": "Webhook",
+      "webhookId": "21bdf34b-7ec7-40c5-b0a3-425a608c3720"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw",
+          "mode": "list",
+          "cachedResultName": "MCP logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "mcpLogs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "EVENTO": "={{ $('Webhook').item.json.body.evento }}",
+            "DATA": "={{ $now.format('dd/LL/yyyy T') }}",
+            "FERRAMENTA": "={{ $('Webhook').item.json.body.dados.ferramenta }}",
+            "STATUS": "={{ $('Webhook').item.json.body.dados.sucesso }}",
+            "AGENTE": "={{ $('Webhook').item.json.body.dados.cliente.agenteUsuario }}",
+            "ARGUMENTOS": "={{ $('Webhook').item.json.body.dados.argumentos }}",
+            "WORKSPACEID": "={{ $('Webhook').item.json.body.dados.cliente.workspaceId }}",
+            "CORRELATIONID": "={{ $('Webhook').item.json.body.dados.correlationId }}",
+            "RESULTADO": "={{ $json.resumo }}",
+            "ERRO": "={{ $('Webhook').item.json.body.dados.erro }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "EVENTO",
+              "displayName": "EVENTO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FERRAMENTA",
+              "displayName": "FERRAMENTA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AGENTE",
+              "displayName": "AGENTE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ARGUMENTOS",
+              "displayName": "ARGUMENTOS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "WORKSPACEID",
+              "displayName": "WORKSPACEID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "CORRELATIONID",
+              "displayName": "CORRELATIONID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "RESULTADO",
+              "displayName": "RESULTADO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "STATUS",
+              "displayName": "STATUS",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ERRO",
+              "displayName": "ERRO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DATA",
+              "displayName": "DATA",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        0
+      ],
+      "id": "f93e610d-632e-4845-af42-a75be86c67d6",
+      "name": "Append row in sheet",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "2DSmp4SarxDNx6pV",
+          "name": "Google Sheets account"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        848,
+        0
+      ],
+      "id": "a087e009-24f3-42b8-8c99-6c09a9cf497e",
+      "name": "Loop Over Items",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst resultado = $input.first().json.body.dados.resultado;\n\nconst linhas = [\n  `Consulta: ${resultado.ok ? 'sucesso' : 'falha'}`,\n  `Total de itens: ${resultado.totalItens}`,\n  `Lote: ${resultado.lote}/${resultado.totalLotes}`,\n  `Tamanho da página: ${resultado.tamanhoPagina}`,\n  `Existe próxima página/lote: ${resultado.temProximoLote ? 'sim' : 'não'}`,\n  ''\n];\n\nfor (const pagina of resultado.paginas ?? []) {\n  linhas.push(`=== Página ${pagina.pagina} (${pagina.quantidade} itens) ===`);\n\n  for (const lead of pagina.itens ?? []) {\n    linhas.push([\n      `ID: ${lead.id ?? 'não informado'}`,\n      `Nome: ${lead.nome ?? 'não informado'}`,\n      `Telefone: ${lead.telefone ?? 'não informado'}`,\n      `Negócio: ${lead.negocio ?? 'não informado'}`,\n      `Atividade: ${lead.atividade ?? 'não informado'}`,\n      `Status: ${lead.status ?? 'não informado'}`,\n      `Produto: ${lead.produto || 'não informado'}`,\n      `Marca: ${lead.marca || 'não informado'}`,\n      `Persona: ${lead.persona || 'não informado'}`,\n      `Região: ${lead.regiao || 'não informado'}`,\n      `CNPJ: ${lead.cnpj ?? 'não informado'}`,\n      `Criado em: ${lead.criadoEm ?? 'não informado'}`,\n      `Último contato: ${lead.ultimoContato ?? 'não informado'}`,\n      `Campanha principal: ${lead.campanhaNome ?? 'não informado'}`,\n      `Campanhas: ${(lead.campanhasNomes ?? []).join(', ') || 'nenhuma'}`,\n      `Mensagens enviadas: ${lead.mensagensEnviadas ?? 0}`,\n      `Respostas: ${lead.respostas ?? 0}`,\n      `Notas: ${lead.notas || 'nenhuma'}`\n    ].join('\\n'));\n\n    linhas.push('');\n  }\n}\n\nreturn [{\n  json: {\n    resumo: linhas.join('\\n')\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "bac0190b-cc07-4b65-b9c8-d27e48fe8a69",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d0bc11a2-4e65-42a0-b374-0a2604e93227",
+              "name": "body.dados.resultado",
+              "value": "={{ $json.body.dados.resultado }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "756bee78-8ac1-4ff0-976b-7015a3b8f03f",
+      "name": "Edit Fields"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodeGroups": [],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "node",
+            "content-length": "1533",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "content-type": "application/json",
+            "sec-fetch-mode": "cors",
+            "x-forwarded-for": "10.0.1.1",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "10.0.1.1",
+            "x-webhook-event": "mcp.acao_executada",
+            "x-webhook-signature": "sha256=9212a508c3d3de38f1f9b4d28cb6ff433fc622ff70a98e14e4abd2dbc7b0b3e8"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "evento": "mcp.acao_executada",
+            "enviadoEm": "2026-10-14T12:07:16.398Z",
+            "dados": {
+              "correlationId": "14514223-5a61-4bda-8adc-f7e59d6861a2",
+              "executadoEm": "2026-10-14T12:07:16.041Z",
+              "ferramenta": "listar_leads",
+              "cliente": {
+                "workspaceId": "cmuva3ajz0001mi01ic5t9ghs",
+                "tokenPrefixo": "mcp_d367b1d5",
+                "usuario": {
+                  "tipo": "mcp",
+                  "id": "mcp"
+                },
+                "agenteUsuario": "openai-mcp/1.0.0",
+                "ip": "20.206.101.198"
+              },
+              "idsEnvolvidos": {},
+              "argumentos": "{\"busca\":\"Konnecta\"}",
+              "sucesso": true,
+              "erro": null,
+              "resultado": {
+                "ok": true,
+                "lote": 1,
+                "totalLotes": 1,
+                "totalItens": 1,
+                "quantidadeNoLote": 1,
+                "tamanhoLote": 600,
+                "tamanhoPagina": 50,
+                "temProximoLote": false,
+                "proximoLote": null,
+                "instrucao": "Lote 1 de 1 entregue. Todos os 1 itens existentes já foram retornados.",
+                "paginas": [
+                  {
+                    "pagina": 1,
+                    "quantidade": 1,
+                    "itens": [
+                      {
+                        "id": "cmv2g1poj000jr4015vtjbmk9",
+                        "nome": "Konnectaai",
+                        "telefone": "5579991054765",
+                        "produto": "",
+                        "marca": "",
+                        "persona": "",
+                        "regiao": "",
+                        "status": "em_campanha",
+                        "notas": "Lead iniciou o contato através do whatsapp e pareceu no chat.",
+                        "negocio": "3533",
+                        "atividade": "554433",
+                        "cnpj": "59085732000174",
+                        "cnpjConsultadoEm": "2026-10-12T11:32:14.747Z",
+                        "campanhaId": "cmv2ef4600004m001m5t78cdv",
+                        "criadoEm": "2026-10-10T13:42:28.675Z",
+                        "entradaCampanhaEm": "2026-10-13T11:51:51.730Z",
+                        "campanhasIds": [
+                          "cmv2ef4600004m001m5t78cdv",
+                          "cmv6mvcxe00b6oa0157gn2aeb"
+                        ],
+                        "campanhasNomes": [
+                          "Wendel - Medical Spin",
+                          "Teste mcp"
+                        ],
+                        "campanhaNome": "Wendel - Medical Spin",
+                        "ultimoContato": "2026-10-13T12:06:42.874Z",
+                        "mensagensEnviadas": 2,
+                        "respostas": 1,
+                        "campanhasRespondidasIds": [],
+                        "campanhasRespondidasNomes": []
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/mcp-auditoria",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "YSOOGG9NJBFp9muD",
+      "projectId": "XZrA9Oiu8K5e6BgC",
+      "createdAt": "2026-10-01T11:51:16.236Z",
+      "updatedAt": "2026-10-01T11:51:16.236Z"
+    }
+  ],
+  "activeVersion": {
+    "versionId": "ff22a83a-0a9c-49b5-9591-7ea9733c09d8",
+    "workflowId": "YSOOGG9NJBFp9muD",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "mcp-auditoria",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "5d3a0b85-2715-430a-97ca-a1f95455b599",
+        "name": "Webhook",
+        "webhookId": "21bdf34b-7ec7-40c5-b0a3-425a608c3720"
+      },
+      {
+        "parameters": {
+          "operation": "append",
+          "documentId": {
+            "__rl": true,
+            "value": "128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw",
+            "mode": "list",
+            "cachedResultName": "MCP logs",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw/edit?usp=drivesdk"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list",
+            "cachedResultName": "mcpLogs",
+            "cachedResultUrl": "https://docs.google.com/spreadsheets/d/128k7a6e19iRRK6_Wl_LCto4D6wH06Rr3-Kaykn1LfUw/edit#gid=0"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "EVENTO": "={{ $('Webhook').item.json.body.evento }}",
+              "DATA": "={{ $now.format('dd/LL/yyyy T') }}",
+              "FERRAMENTA": "={{ $('Webhook').item.json.body.dados.ferramenta }}",
+              "STATUS": "={{ $('Webhook').item.json.body.dados.sucesso }}",
+              "AGENTE": "={{ $('Webhook').item.json.body.dados.cliente.agenteUsuario }}",
+              "ARGUMENTOS": "={{ $('Webhook').item.json.body.dados.argumentos }}",
+              "WORKSPACEID": "={{ $('Webhook').item.json.body.dados.cliente.workspaceId }}",
+              "CORRELATIONID": "={{ $('Webhook').item.json.body.dados.correlationId }}",
+              "RESULTADO": "={{ $json.resumo }}",
+              "ERRO": "={{ $('Webhook').item.json.body.dados.erro }}"
+            },
+            "matchingColumns": [],
+            "schema": [
+              {
+                "id": "EVENTO",
+                "displayName": "EVENTO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "FERRAMENTA",
+                "displayName": "FERRAMENTA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "AGENTE",
+                "displayName": "AGENTE",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ARGUMENTOS",
+                "displayName": "ARGUMENTOS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "WORKSPACEID",
+                "displayName": "WORKSPACEID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "CORRELATIONID",
+                "displayName": "CORRELATIONID",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "RESULTADO",
+                "displayName": "RESULTADO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "STATUS",
+                "displayName": "STATUS",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "ERRO",
+                "displayName": "ERRO",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              },
+              {
+                "id": "DATA",
+                "displayName": "DATA",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ],
+            "attemptToConvertTypes": false,
+            "convertFieldsToString": false
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.7,
+        "position": [
+          672,
+          0
+        ],
+        "id": "f93e610d-632e-4845-af42-a75be86c67d6",
+        "name": "Append row in sheet",
+        "retryOnFail": true,
+        "maxTries": 3,
+        "waitBetweenTries": 5000,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "2DSmp4SarxDNx6pV",
+            "name": "Google Sheets account"
+          }
+        },
+        "onError": "continueErrorOutput"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          848,
+          0
+        ],
+        "id": "a087e009-24f3-42b8-8c99-6c09a9cf497e",
+        "name": "Loop Over Items",
+        "retryOnFail": true,
+        "waitBetweenTries": 5000
+      },
+      {
+        "parameters": {
+          "jsCode": "\nconst resultado = $input.first().json.body.dados.resultado;\n\nconst linhas = [\n  `Consulta: ${resultado.ok ? 'sucesso' : 'falha'}`,\n  `Total de itens: ${resultado.totalItens}`,\n  `Lote: ${resultado.lote}/${resultado.totalLotes}`,\n  `Tamanho da página: ${resultado.tamanhoPagina}`,\n  `Existe próxima página/lote: ${resultado.temProximoLote ? 'sim' : 'não'}`,\n  ''\n];\n\nfor (const pagina of resultado.paginas ?? []) {\n  linhas.push(`=== Página ${pagina.pagina} (${pagina.quantidade} itens) ===`);\n\n  for (const lead of pagina.itens ?? []) {\n    linhas.push([\n      `ID: ${lead.id ?? 'não informado'}`,\n      `Nome: ${lead.nome ?? 'não informado'}`,\n      `Telefone: ${lead.telefone ?? 'não informado'}`,\n      `Negócio: ${lead.negocio ?? 'não informado'}`,\n      `Atividade: ${lead.atividade ?? 'não informado'}`,\n      `Status: ${lead.status ?? 'não informado'}`,\n      `Produto: ${lead.produto || 'não informado'}`,\n      `Marca: ${lead.marca || 'não informado'}`,\n      `Persona: ${lead.persona || 'não informado'}`,\n      `Região: ${lead.regiao || 'não informado'}`,\n      `CNPJ: ${lead.cnpj ?? 'não informado'}`,\n      `Criado em: ${lead.criadoEm ?? 'não informado'}`,\n      `Último contato: ${lead.ultimoContato ?? 'não informado'}`,\n      `Campanha principal: ${lead.campanhaNome ?? 'não informado'}`,\n      `Campanhas: ${(lead.campanhasNomes ?? []).join(', ') || 'nenhuma'}`,\n      `Mensagens enviadas: ${lead.mensagensEnviadas ?? 0}`,\n      `Respostas: ${lead.respostas ?? 0}`,\n      `Notas: ${lead.notas || 'nenhuma'}`\n    ].join('\\n'));\n\n    linhas.push('');\n  }\n}\n\nreturn [{\n  json: {\n    resumo: linhas.join('\\n')\n  }\n}];\n"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          448,
+          0
+        ],
+        "id": "bac0190b-cc07-4b65-b9c8-d27e48fe8a69",
+        "name": "Code in JavaScript"
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "d0bc11a2-4e65-42a0-b374-0a2604e93227",
+                "name": "body.dados.resultado",
+                "value": "={{ $json.body.dados.resultado }}",
+                "type": "object"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.5,
+        "position": [
+          224,
+          0
+        ],
+        "id": "756bee78-8ac1-4ff0-976b-7015a3b8f03f",
+        "name": "Edit Fields"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Append row in sheet": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Loop Over Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop Over Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code in JavaScript": {
+        "main": [
+          [
+            {
+              "node": "Append row in sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Code in JavaScript",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version ff22a83a",
+    "description": "",
+    "autosaved": false,
+    "createdAt": "2026-10-14T12:34:24.252Z",
+    "updatedAt": "2026-10-14T12:35:33.753Z"
+  }
+}
