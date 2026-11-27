@@ -1,0 +1,139 @@
+{
+  "id": "gRFV1oRr5QfFKaxq",
+  "name": "[BDR-APP] Backup automático BDR - BDR (Wendel)",
+  "active": true,
+  "activeVersionId": "1df826b4-0e94-44f2-a396-8b65e806c709",
+  "createdAt": "2026-10-04T13:15:35.382Z",
+  "updatedAt": "2026-10-04T20:17:40.531Z",
+  "isArchived": false,
+  "versionId": "1df826b4-0e94-44f2-a396-8b65e806c709",
+  "triggerCount": 1,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "backup-bdr",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7e1670e6-29ee-4d3f-8621-78624f87c2b0",
+      "name": "Webhook",
+      "webhookId": "1d6be9ae-f929-40e3-942b-41624c5f4634"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "nodeGroups": [],
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "user-agent": "painel-campanhas-backup/1.0",
+            "content-length": "2170",
+            "accept": "*/*",
+            "accept-encoding": "br, gzip, deflate",
+            "accept-language": "*",
+            "cache-control": "no-cache",
+            "content-disposition": "attachment; filename=\"backup-2026-10-04-1716.json\"",
+            "content-type": "application/octet-stream",
+            "pragma": "no-cache",
+            "sec-fetch-mode": "cors",
+            "x-backup-attempt": "1",
+            "x-backup-event": "backup.arquivo",
+            "x-backup-filename": "backup-2026-10-04-1716.json",
+            "x-backup-id": "cmuu9hipj0000tpg08s2qhjy3",
+            "x-forwarded-for": "45.233.99.26",
+            "x-forwarded-host": "n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "21ebda4186cf",
+            "x-real-ip": "45.233.99.26"
+          },
+          "params": {},
+          "query": {},
+          "body": {},
+          "webhookUrl": "https://n8n-www4kggggc4c8k8ow4w8g4g0.95.217.164.173.sslip.io/webhook/backup-bdr",
+          "executionMode": "production"
+        },
+        "binary": {
+          "data": {
+            "mimeType": "application/octet-stream",
+            "fileExtension": "bin",
+            "data": "filesystem-v2",
+            "fileName": "backup-2026-10-04-1716.json",
+            "id": "filesystem-v2:workflows/gRFV1oRr5QfFKaxq/executions/184795/binary_data/1e08fb7e-e5dd-4320-9089-ace73783b4ed",
+            "fileSize": "2.17 kB",
+            "bytes": 2170
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "meta": null,
+  "tags": [],
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "workflowId": "gRFV1oRr5QfFKaxq",
+      "projectId": "XZrA9Oiu8K5e6BgC",
+      "createdAt": "2026-10-04T13:15:35.382Z",
+      "updatedAt": "2026-10-04T13:15:35.382Z"
+    }
+  ],
+  "activeVersion": {
+    "versionId": "1df826b4-0e94-44f2-a396-8b65e806c709",
+    "workflowId": "gRFV1oRr5QfFKaxq",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "backup-bdr",
+          "options": {}
+        },
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2.1,
+        "position": [
+          0,
+          0
+        ],
+        "id": "7e1670e6-29ee-4d3f-8621-78624f87c2b0",
+        "name": "Webhook",
+        "webhookId": "1d6be9ae-f929-40e3-942b-41624c5f4634"
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          []
+        ]
+      }
+    },
+    "nodeGroups": [],
+    "authors": "Automações  Medical Spin",
+    "name": "Version 1df826b4",
+    "description": "",
+    "autosaved": true,
+    "createdAt": "2026-10-04T13:57:55.496Z",
+    "updatedAt": "2026-10-04T20:17:41.929Z"
+  }
+}
